@@ -18,11 +18,9 @@ function UserManagement() {
 
    useEffect(() => {
       axios.get("/admin/user_management",{headers:{"x-access-token":localStorage.getItem("adminToken")}}).then((response) => {
-            console.log(response)
             setUsers(response.data)
          })
          .catch((error) => {
-            console.log(error,'its error console')
             if(!error.response.data.auth){
                toast.warn(error.response.data.message)
                navigate('/admin_login')
@@ -45,7 +43,6 @@ function UserManagement() {
           label: 'Yes',
           onClick: () => 
           axios.put("/admin/user_management/block_user",{userId}).then((res)=>{
-            console.log(res);
             if(res.data.update){
              toast.warn("User blocked successfully!",{
                 position: "top-center",

@@ -45,6 +45,14 @@ const userSchema = mongoose.Schema({
     status:{
         type:String,
         default:"active"
+    },
+    followers:{
+        type:Array,
+        default:[]
+    },
+    following:{
+        type:Array,
+        default:[]
     }
 })
 

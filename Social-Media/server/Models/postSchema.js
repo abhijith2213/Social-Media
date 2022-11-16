@@ -1,4 +1,5 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
+const { array } = require('../config/multerConfig');
 
 
 
@@ -12,9 +13,22 @@ const postSchema = mongoose.Schema({
     },
     description:{
         type:String,
-        
-    }
-})
+        required:true
+    },
+    image:{
+        type:String
+    },
+    status:{
+        type:String,
+        default:'active'
+    },
+    likes:{
+        type:Array,
+        default:[]
+    },
+
+    
+},{timestamps:true})
 
 const Post = mongoose.model('posts',postSchema);
 module.exports = Post

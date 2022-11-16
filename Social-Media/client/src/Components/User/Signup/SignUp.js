@@ -11,12 +11,12 @@ function                           SignUp() {
   const [formValues,setFormvalues] = useState(initialValues)
   const [formError,setFormError] = useState()
 
+  console.log(formValues);
   /* ------------------------------ INPUT FIELD HANDLE CHANGE------------------------------ */
 
   const handleChange = (e)=>{
     const {name,value} = e.target
     setFormvalues({...formValues,[name]:value})
-    console.log(formValues);
   }
 
 
@@ -49,11 +49,12 @@ function                           SignUp() {
         setFormError("phone number must be 10 digits");
       }else if (!formValues.password) {
         setFormError("Password is required");
-      } else if(formValues.password < 6 || formValues.password > 15){
+      } else if(formValues.password.length < 6 || formValues.password.length > 15){
         setFormError('Password must be in between 6 to 15 characters')
       }else{
-
+        setFormError('')
         axios.post('/create_account',{...formValues}).then((res)=>{
+          setFormvalues(initialValues)
         console.log(res);
         navigate('/signin')
 

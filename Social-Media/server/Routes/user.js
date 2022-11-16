@@ -1,6 +1,8 @@
 const express = require('express')
 const router = express.Router()
-const {postCreateAccount, postSignIn, postAddNewPost} = require('../Controller/userController')
+const upload = require('../config/multerConfig')
+const {postCreateAccount, postSignIn, postAddNewPost, getSuggestions,
+        putFollowUser, postImageUpload, getTimelinePost, getPostUser, putLikePost} = require('../Controller/userController')
 
 
 
@@ -12,6 +14,19 @@ router.post('/signin',postSignIn)
 
 
 router.post('/add_new_post',postAddNewPost)
+
+router.post('/uploadImage',upload.single('file'),postImageUpload)
+
+router.get('/post/timeline_post/:id',getTimelinePost)
+
+router.get('/postDetails/:id',getPostUser)
+
+
+router.get('/suggestions/:id',getSuggestions)
+
+router.put('/:id/follow',putFollowUser)
+
+router.put('/post/like/:id',putLikePost)
 
 
 
