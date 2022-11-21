@@ -34,15 +34,16 @@ function SignIn() {
         setFormError("enter a valid email");
         }else if(!formValues.password){
           setFormError('password is required')
-        }else if(formValues.password < 6 || formValues.password > 12){
+        }else if(formValues.password.length < 6 || formValues.password.length > 12){
           setFormError('Password must be in between 6 to 15 characters')
         }else{
           axios.post('/signin',{...formValues}).then((res)=>{
               console.log(res,'its signin res');
+              console.log(res.data.details,'its signin res');
               if(res.data.auth){
                 localStorage.setItem("userToken", res.data.userToken)
-                localStorage.setItem("user",JSON.stringify(res.data.user))
-                dispatch(update(res.data.user))
+                localStorage.setItem("user",JSON.stringify(res.data.details))
+                dispatch(update(res.data.details))
                 navigate('/home')
               }else{
                 console.log('error with login');

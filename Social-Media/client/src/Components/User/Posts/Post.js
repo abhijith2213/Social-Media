@@ -1,8 +1,10 @@
 
-import React, {  useState, useEffect } from "react"
+import React, {  useState, useEffect, useRef } from "react"
 import axios from '../../../Axios/axios' 
 import {format} from 'timeago.js'
 import { useSelector } from "react-redux"
+import { ToastContainer, toast } from 'react-toastify';  //Toast
+import 'react-toastify/dist/ReactToastify.css';  //Toast Css
 
 import profile from "../../../assets/images/download.png"
 
@@ -15,6 +17,8 @@ import { FcLike } from "react-icons/fc"
 
 
 function Post({post}) {
+  
+   const effectRan = useRef(false)
 
    const userData = useSelector(state =>state.user)
    const userId = userData._id;
@@ -24,14 +28,17 @@ function Post({post}) {
 
     useEffect(() => {
 
+      if(effectRan.current === false){
         const fetchPostUser = async ()=>{
             const res = await axios.get(`/postDetails/users?userId=${post.userId}`)
             console.log(res,'post res 12');
 
             setUser(res.data)
         }
+        fetchPostUser()
+        return () => effectRan.current = true
+        }
   
-      fetchPostUser()
 
     }, [post.userId]);
     
@@ -39,7 +46,7 @@ function Post({post}) {
 
 const [likeState,setLikeState] = useState(false)
 
-const [like,setLike] = useState(post.likes.length)
+const [like,setLike] = useState(post?.likes?.length)
 
 const handleLike=async(e)=>{
 
@@ -61,6 +68,80 @@ useEffect(() => {
    setLikeState(post.likes.includes(userId))
 
 }, [userId,post._id]);
+
+/* -------------------------- POST COMMENT HANDLING ------------------------- */
+
+// State 
+
+const [commentUpdate, setCommentUpdate ] = useState(false)
+const [comment, setComment] = useState('')
+
+
+// function 
+
+const handleSetComment = (e)=>{
+   console.log('call');
+   if(/^\s/.test(e.target.value))
+   setComment('')
+   else
+   setComment(e.target.value)
+}
+
+
+const handleComment =async (e) =>{
+
+   e.preventDefault()
+   const data ={
+      userId:userId,
+      comment:comment
+   }
+
+   try {
+
+    let res =  await axios.put(`/post/comment/${post._id}`,{...data})
+      setComment('')
+      effectRan.current = false
+      setCommentUpdate(!commentUpdate)
+      toast.success(res.data.message,{
+         position: "top-right",
+         autoClose: 2000,
+         hideProgressBar: true,
+         theme:"dark"
+       })
+
+   } catch (error) {
+      console.log('in error');
+      console.log(error);
+   }
+
+}
+
+
+/* ---------------------------- VIEW ALL COMMENTS --------------------------- */
+
+const [viewComment, setViewComment] = useState(false)
+const [allComments,setAllComments] = useState([])
+
+useEffect(() => {
+   if(effectRan.current === false){
+      const fetchComments = async ()=>{
+         let res = await axios.get(`/post/viewComments/${post._id}`)
+         setAllComments(res.data)
+         console.log('update on effect cccoommmeennt');
+      }
+      fetchComments()
+      return () => effectRan.current = true
+   }
+}, [viewComment,commentUpdate]);
+
+
+const handleViewComment = async(e)=>{
+   e.preventDefault()
+   setViewComment(!viewComment)
+   effectRan.current = false
+}
+
+
 
 
 
@@ -103,7 +184,6 @@ useEffect(() => {
                                  <br />
                                  <br />
                               </span>
-                              {/* <span className="text-gray-400">...&nbsp; more</span> */}
                            </div>
                         </div>
                      </div>
@@ -127,10 +207,10 @@ useEffect(() => {
                               </div>
 
                               <div className='flex items-center gap-1'>
-                                 <span title='comment' className='text-gray-600'>
+                                 <span title='comment' className='text-gray-600' onClick={handleViewComment}>
                                     {React.createElement(FaRegComment, { size: 18 })}
                                  </span>
-                                 <span>10</span>
+                                 <span>{allComments.length}</span>
                               </div>
 
                               <span title='Share' className='text-gray-600'>
@@ -149,26 +229,47 @@ useEffect(() => {
 
                      <hr />
                      <div className=' px-6 py-2'>
-                        <div className=''>
+                     { viewComment ? allComments.map((comment,i)=>{
+                          return(
+                          <div className="flex gap-3 my-2 items-center">
+                             <div>
+                                 <img className="w-8 rounded-full" src={profile} alt="profile" />
+                             </div>
+                             <div>
+                              <div>
+                                 <span className="font-medium text-sm mr-2">{comment.userId.userName}</span>
+                                 <span className="">{comment.comment}</span>
+                              </div>
+                              <p className="text-slate-500 text-xs ">{format(comment.createdAt) }</p>
+                             </div>
+                          </div>
+                          )
+
+                     })
+                     
+                     : <div className=''>
                            <form className='flex justify-between'>
                               <textarea
                                  name='comment'
                                  id='comment'
                                  rows='1'
+                                 value={comment}
+                                 onChange={handleSetComment}
                                  placeholder='Add your comments'
                                  className='w-3/4'
                               ></textarea>
                               <div>
-                                 <button className='text-blue-300'>Post</button>
+                                 <button disabled={!comment} className='text-blue-500 disabled:opacity-50' onClick={handleComment}>Post</button>
                               </div>
                            </form>
-                        </div>
+                        </div>}
                      </div>
                   </div>
                </div>
 
                {/* FEEDS AREA END  */}
-            </div>                                                                        
+            </div>
+            <ToastContainer />                                                                        
   </div>
   )
 }

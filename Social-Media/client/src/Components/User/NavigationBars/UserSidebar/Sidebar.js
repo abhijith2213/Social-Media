@@ -55,7 +55,7 @@ function Sidebar() {
         { name: "Notifications", link: "/home", icon: MdNotificationsNone },
         { name: "Create", link: "/home", icon: BiMessageSquareAdd },
         { name: "Setting", link: "/home", icon: RiSettings4Line },
-        { name: "My Profile", link: "/home", icon: CgProfile ,bottom:true},
+        { name: "My Profile", link: "/profile", icon: CgProfile ,bottom:true},
         { name: "Logout", link: "/home", icon: HiOutlineLogout ,},
       ];
 
@@ -92,7 +92,6 @@ function Sidebar() {
           ))}
         </div>
       </div>
-
       
      
 

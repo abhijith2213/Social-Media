@@ -56,8 +56,8 @@ function Bottombar() {
             Search
         </div> */}
         <div className="flex gap-5 text-2xl sm:text-3xl">
-        {React.createElement(MdNotificationsNone, )}
-        {React.createElement(CgProfile, )}
+        <Link>{React.createElement(MdNotificationsNone, )}</Link>
+        <Link to={'/profile'}>{React.createElement(CgProfile, )}</Link>
         </div>
         </div>
       </div>

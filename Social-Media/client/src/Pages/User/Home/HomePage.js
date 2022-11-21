@@ -7,10 +7,10 @@ import Bottombar from '../../../Components/User/NavigationBars/Bottombar.js/Bott
 function HomePage() {
   return (
 
-    <div className=' bg-[#FAFAFA] w-full '>
+    <div className=' bg-[#FAFAFA] w-full min-h-screen'>
       <Sidebar/>
 
-      <div className=' w-full flex justify-center'>
+      <div className=' w-full flex justify-center pb-6'>
       <Home/>
       </div>
       <RightSidebar/>

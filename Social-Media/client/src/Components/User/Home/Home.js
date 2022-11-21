@@ -5,12 +5,9 @@ import { ToastContainer, toast } from 'react-toastify';  //Toast
 import 'react-toastify/dist/ReactToastify.css';  //Toast Css
 
 import profile from "../../../assets/images/download.png"
-import post1 from "../../../assets/images/hiring poster.png"
 
 /* ------------------------------ ICONS IMPORT ------------------------------ */
-
-import { BsThreeDotsVertical } from "react-icons/bs"
-import { FaRegHeart, FaRegComment, FaRegPaperPlane, FaRegStar } from "react-icons/fa"
+import {AiOutlineCloseCircle} from 'react-icons/ai'
 import { BiImage } from "react-icons/bi"
 import {useSelector } from "react-redux"
 import Post from "../Posts/Post";
@@ -18,9 +15,6 @@ import Post from "../Posts/Post";
 function Home() {
 
    const userData = useSelector(state =>state.user)
-
-
-   
 
    /* ------------------------------ADD POST HANDLING ----------------------------- */
 
@@ -30,7 +24,7 @@ function Home() {
    const [postImage, setPostImage] = useState()
    const [showImage, setShowImage] = useState()
 
-const handleImage =(e)=>{
+   const handleImage =(e)=>{
    console.log('yyyyyy');
    setShowImage(URL.createObjectURL(e.target.files[0]))
    setPostImage(e.target.files[0])
@@ -52,11 +46,13 @@ const handleImage =(e)=>{
          const data = new FormData()
          const fileName = postImage.name
          data.append('file',postImage)
-         data.append('name',fileName)
-         postDetails.image = fileName
+         // data.append('name',fileName)
+         data.append('userId',userData._id)
+         data.append('description',description)
+         // postDetails.image = fileName
 
       try {
-      axios.post('/uploadImage',data).then((res)=>{
+      axios.post('/uploadPost',data).then((res)=>{
          console.log(res,'its res post');
          window.location.reload()
       }).catch((err)=>{
@@ -67,32 +63,32 @@ const handleImage =(e)=>{
    }
   }
 // Description 
-  try {
+//   try {
 
-    axios.post('/add_new_post',postDetails).then((res)=>{
-      console.log(res,'post res');
-      toast.warn("Post added successfully!",{
-         position: "top-center",
-         autoClose: 2000,
-         hideProgressBar: true,
-         theme:"dark"
-       });
-    }).catch((err)=>{
-      console.log(err,'p error');
-    })
+//     axios.post('/add_new_post',postDetails).then((res)=>{
+//       console.log(res,'post res');
+//       toast.warn("Post added successfully!",{
+//          position: "top-center",
+//          autoClose: 2000,
+//          hideProgressBar: true,
+//          theme:"dark"
+//        });
+//     }).catch((err)=>{
+//       console.log(err,'p error');
+//     })
 
-  } catch (error) {
-   console.log(error.message);
-  }
+//   } catch (error) {
+//    console.log(error.message);
+//   }
 }
 /* ---------------------------ADD POST HANDLING ENDS --------------------------- */
 
 
 
-/* ----------------------------- FEED DISPLAYING ---------------------------- */
+/* ----------------------------- FEED DISPLAYING FUNCTION---------------------------- */
 
 const [feedPosts, setFeedPosts] = useState([])
-
+console.log(feedPosts,'poooooooosssttststs');
 useEffect(() => {
    const userId = userData._id
    console.log(userId,'uid');
@@ -109,7 +105,7 @@ useEffect(() => {
    fetchPost()
 }, []);
 
-/* ----------------------------- FEED DISPLAYING END ---------------------------- */
+/* ----------------------------- FEED DISPLAYING FUNCTION END ---------------------------- */
 
 
 // ****** FUNCTION ENDS *******//
@@ -143,11 +139,15 @@ useEffect(() => {
                         id='description'
                         cols='50'
                         rows='3'
-                        placeholder='Post new Jobs! '
+                        placeholder='Whats new! '
                         value={description}
                         onChange={(e)=>{setDescription(e.target.value)}}
                      ></textarea>
-                     <img src={showImage} alt="" />
+                  { showImage ?  <span>
+                    <span className="absolute"> <AiOutlineCloseCircle/></span>
+                     <img src={showImage} alt="" className="relative"/>
+                     </span> : null}
+
                   </div>
                   <hr />
                   <div className='flex justify-between p-4'>   
@@ -170,15 +170,18 @@ useEffect(() => {
          </div>
 
          {
-            feedPosts.map((post,i)=>(
+           feedPosts? feedPosts.map((post,i)=>(
                <Post key={post.userId} post={post}/>
-            ))
+            )) : <div className="flex justify-center mt-20 ">
+               <p className="text-blue-400 font-medium text-xl h-max">Follow SomeOne to See Posts!</p>
+            </div>
          }
 
             {/* DUMMY POSTS  */}
 
            
          </div>
+         <ToastContainer />
       </>
    )
 }

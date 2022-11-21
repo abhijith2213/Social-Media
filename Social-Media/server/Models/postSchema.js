@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const { array } = require('../config/multerConfig');
 
 
 

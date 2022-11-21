@@ -20,6 +20,7 @@ import AdminLoginPage from './Pages/Admin/AdminLogin/AdminLoginPage';
 import AdminDashboard from './Components/Admin/AdminDashboard/AdminDashboard';
 import UserManagement from './Components/Admin/UserManagement/UserManagement';
 import AdminStructure from './Pages/Admin/AdminStructure/AdminStructure';
+import UserProfilePage from './Pages/User/UserProfile/UserProfilePage';
 
 
 
@@ -38,6 +39,7 @@ function App() {
         <Routes>        
           <Route path='/signin' element={<SigninPage/>}></Route>
           <Route path='/home' element={<HomePage/>}></Route>
+          <Route path='/profile' element={<UserProfilePage/>}></Route>
         </Routes>
           </Provider>
 

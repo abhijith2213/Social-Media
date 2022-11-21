@@ -5,7 +5,7 @@ import { createSlice } from '@reduxjs/toolkit'
 const defaultUser = JSON.parse(localStorage.getItem('user'))
 console.log(defaultUser,'defaultUser');
 if(defaultUser){
-    var {fullName,userName,email,phone,accountType,_id,} = defaultUser
+    var {fullName,userName,accountType,_id,} = defaultUser
 }else{
 
 }
@@ -17,8 +17,6 @@ const userSlice = createSlice({
         _id,
         fullName,
         userName,
-        email,
-        phone,
         accountType,
     },
     reducers:{
@@ -26,8 +24,6 @@ const userSlice = createSlice({
             state._id = action.payload._id
             state.fullName = action.payload.fullName
             state.userName = action.payload.userName
-            state.email = action.payload.email
-            state.phone = action.payload.phone
             state.accountType = action.payload.accountType
         }, 
         remove:(state) => {state ={} }

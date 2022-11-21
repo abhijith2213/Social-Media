@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react"
 import axios from '../../../../Axios/axios'
 
-import { GrAdd } from "react-icons/gr"
-
 import profile2 from "../../../../assets/images/profile11.jpg"
 import { useSelector } from "react-redux"
 
@@ -21,7 +19,6 @@ useEffect(() => {
 
     
     axios.get('/suggestions/'+userId).then((res)=>{
-    console.log(res,'its sidebar res right');
     setSuggestions(res.data)
 
 }).catch((error)=>{
@@ -43,6 +40,17 @@ const handleFollow= (Id)=>{
 
 }
 
+// HANDLE UN FOLLOW 
+
+const handleUnFollow = (Id)=>{
+  console.log(userId,'pppoid');
+  axios.put(`/${userId}/unfollow`,{Id}).then((res)=>{
+    setState(!state)
+  }).catch((err)=>{
+    console.log(err);
+  })
+}
+
 
 
 
@@ -53,25 +61,24 @@ const handleFollow= (Id)=>{
 
          {suggestions?.map((user,index)=>{
           if(user._id != userId ){
-            if(!user.followers.includes(userId)){
+            
 
               return   (
              
-                <div className='flex justify-between mb-5 gap-11' key={index}>
+                <div className='flex justify-between items-center mb-5 gap-11' key={index}>
                    <div className='flex'>
-                      <img className='rounded-full w-14 ' src={profile2} alt='pic' />
+                      <img className='rounded-full w-14 h-14 ' src={profile2} alt='pic' />
                       <div className='flex flex-col justify-center items-center ml-3'>
                          <p className='font-medium text-sm'>{user.userName}</p>
                          <p className='font-normal text-xs'>{user.accountType}</p>
                       </div>
                    </div>
-                   <span title='follow' className='m-4 ' onClick={(e)=>handleFollow(user._id)}>
-                      {React.createElement(GrAdd, { size: 20 })}
-                   </span>
-                </div>
+                  { !user.followers.includes(userId)?
+                   <button type="button" className="text-white flex justify-center bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:outline-none  font-medium rounded-lg text-sm px-4 py-2 text-center mr-2 mb-2 w-20"  onClick={(e)=>handleFollow(user._id)}>follow</button>
+                   :  <button type="button" className="text-white flex justify-center bg-gradient-to-r from-violet-500 via-violet-600 to-violet-700 hover:bg-gradient-to-br focus:outline-none  font-medium rounded-lg text-sm px-4 py-2 text-center mr-2 mb-2 w-20"  onClick={(e)=>handleUnFollow(user._id)}>unfollow</button>
+                  }
+                  </div>
                 )
-
-            }
             
         
           }

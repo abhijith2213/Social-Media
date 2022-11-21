@@ -1,7 +1,6 @@
 const bcrypt = require('bcrypt');
 const User = require('../Models/userSchema');
 const jwt = require('jsonwebtoken');
-const Post = require('../Models/postSchema');
 
 /* ----------------------------- CREATE ACCOUNT ----------------------------- */
 
@@ -59,15 +58,16 @@ const postCreateAccount = async (req,res)=>{
 const postSignIn = async (req,res)=>{
     try {
         let {email,password} = req.body
-        const user = await User.findOne({email})
+        const user = await User.findOne({email}) 
         if(user){
 
             const pass = await bcrypt.compare(password,user.password)
             if(pass){
                 if(user.status === "active"){
                     const id = user._id
+                    const {phone,email,password,...details} = user._doc
                     const token = jwt.sign({id},process.env.JWT_SECRET,{expiresIn:300})
-                    res.status(200).json({userToken:token,user,auth:true})
+                    res.status(200).json({userToken:token,details,auth:true})
                 }else{
                     res.status(409).json({message:'Your account is blocked'})
                 }
@@ -120,52 +120,26 @@ const putFollowUser = async (req,res)=>{
     }
 }
 
-/* -------------------------- ADD POST DESCRIPTION -------------------------- */
+/* ------------------------------ UNFOLLOW USER ----------------------------- */
 
-const postAddNewPost =(req,res)=>{
-    try {
-        let {userId,description,image} = req.body
-        Post.create({userId, description,image}).then((response)=>{
-            res.status(200).json({message:'Post added successfully'})
-        }).catch((err)=>{
-            res.status(500).json({message:'Post Add failed'})
-        })
-    } catch (error) {
-        res.status(500).json({message:'Something went wrong'})
+const putUnfollowUser =async (req,res)=>{
+console.log(req.body,'pp');
+console.log(req.params.id,'eeepp');
+try {
+    const user = await User.findById({_id:req.params.id})
+    const userToUnfollow = await User.findById({_id:req.body.Id})
+    if(user.following.includes(req.body.Id)){
+     await user.updateOne({ $pull : {following: req.body.Id}});
+     await userToUnfollow.updateOne({$pull : {followers: req.params.id}})
+     res.status(200).json('UnFollowed')
+
+    }else{
+     res.status(403).json('You already unfollowed this user')
     }
-}
+ } catch (error) {
+     res.status(500).json({message:'Something went wrong'})
+ }
 
-
-/* ------------------------------ IMAGE UPLOAD ------------------------------ */
-
-const postImageUpload=(req,res)=>{
-    console.log('helooo reacged img');
-    try {
-        res.status(200).json('image uploaded')
-    } catch (error) {
-        res.status(500).json('Something went wrong!')
-    }
-}
-
-/* -------------------------------- GET TIMELINE POSTS ------------------------------- */
-
-const getTimelinePost =async (req,res)=>{
-    console.log('reached timeline post');
-    console.log(req.params.id,'timeline post');
-    try {
-        console.log('juuu');
-        const user = await User.findById(req.params.id)
-        console.log(user,'timeline user');
-        const feedPosts = await Promise.all(user.following.map((id)=>{
-            return Post.find({userId:id}).sort({createdAt:-1})
-        })
-      )
-      res.status(200).json(...feedPosts)
-
-    } catch (error) {
-        console.log('error');
-        res.status(500).json('Something went wrong!')
-    }
 }
 
 /* ------------------------- GET USERDETAILS OF POST ------------------------ */
@@ -188,24 +162,5 @@ const getPostUser =async (req,res)=>{
     }
 }
 
-/* -------------------------- POST LIKE MANAGEMENT -------------------------- */
 
-const putLikePost = async (req,res)=>{
-    console.log('calle reached');
-    console.log(req.body);
-    console.log(req.params.id);
-
-    const post = await Post.findById(req.params.id)
-    
-    if(!post.likes.includes(req.body.userId)){
-        await post.updateOne({$push:{likes:req.body.userId}})
-        res.status(200).json({message:'post Liked'})
-    }else{
-        await post.updateOne({$pull:{likes:req.body.userId}})
-        res.status(200).json({message:'post disliked!'})
-    }
-
-}
-
-module.exports ={postCreateAccount, postSignIn, postAddNewPost, getSuggestions,putFollowUser,
-     postImageUpload,getTimelinePost, getPostUser, putLikePost}
+module.exports ={postCreateAccount, postSignIn, getSuggestions,putFollowUser,getPostUser, putUnfollowUser}
