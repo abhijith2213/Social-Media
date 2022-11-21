@@ -10,7 +10,7 @@ const {postCreateAccount, postSignIn, getSuggestions,putFollowUser, getPostUser,
 const {postUpload,getTimelinePost,putLikePost,putPostComment,getViewComments,getUserPosts} = require('../Controller/postController')
 
 
-/* --------------------------------- ROUTES --------------------------------- */
+/* --------------------------------- ROUTES ------------------------------------ */
 
 router.post('/create_account',postCreateAccount)
 
