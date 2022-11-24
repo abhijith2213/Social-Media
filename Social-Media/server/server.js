@@ -4,6 +4,8 @@ const express = require('express')
 const server = express()
 const userRouter = require('./Routes/user')
 const adminRouter = require('./Routes/admin')
+const chatRouter = require('./Routes/chat')
+const messageRouter = require('./Routes/message')
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const path = require('path')
@@ -23,6 +25,8 @@ server.use('/images',express.static(path.join(__dirname,'public/images')))
 
 server.use('/',userRouter)
 server.use('/admin',adminRouter)
+server.use('/chat',chatRouter)
+server.use('/message',messageRouter)
 
 /* ---------------------------- Connect Database ---------------------------- */
 

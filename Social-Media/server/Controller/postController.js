@@ -41,12 +41,14 @@ const getTimelinePost =async (req,res)=>{
     console.log(req.params.id,'timeline post');
     try {
         const user = await User.findById(req.params.id)
+        const myPost = await Post.find({userId:req.params.id}).sort({createdAt:-1})
         const feedPosts = await Promise.all(user.following.map((id)=>{
+            console.log(id,'jjjdddxxxcc');
             return Post.find({userId:id}).sort({createdAt:-1})
         })
       )
-      res.status(200).json(...feedPosts)
-
+      console.log(myPost.concat(...feedPosts) ,'oijuhgcsdfgujhgbvsdxcv');
+      res.status(200).json(myPost.concat(...feedPosts) )
     } catch (error) {
         res.status(500).json('Something went wrong!')
     }

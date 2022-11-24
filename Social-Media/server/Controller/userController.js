@@ -162,5 +162,21 @@ const getPostUser =async (req,res)=>{
     }
 }
 
+/* ---------------------------- GET USER DETAILS ---------------------------- */
 
-module.exports ={postCreateAccount, postSignIn, getSuggestions,putFollowUser,getPostUser, putUnfollowUser}
+const getUserDetails = async (req,res)=>{
+    const {userId} = req.params
+    console.log(userId,'vvvvvvvvv');
+    try {
+        const user = await User.findById(userId)
+        const {phone,password,...details} = user._doc
+        res.status(200).json(details)
+        console.log(details,'llkkoopp');
+    } catch (error) {
+        res.status(500).json(error)
+    }
+
+}
+
+
+module.exports ={postCreateAccount, postSignIn, getSuggestions,putFollowUser,getPostUser, putUnfollowUser,getUserDetails}

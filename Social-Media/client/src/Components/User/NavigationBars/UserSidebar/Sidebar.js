@@ -51,7 +51,7 @@ function Sidebar() {
 
     const menus = [
         { name: "Home", link: "/home", icon: BiHome },
-        { name: "messages", link: "/home", icon: FiMessageSquare },
+        { name: "messages", link: "/message", icon: FiMessageSquare },
         { name: "Notifications", link: "/home", icon: MdNotificationsNone },
         { name: "Create", link: "/home", icon: BiMessageSquareAdd },
         { name: "Setting", link: "/home", icon: RiSettings4Line },

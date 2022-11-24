@@ -12,6 +12,7 @@ import LandingPage from './Pages/User/LandingPage/LandingPage';
 import SignupPage from './Pages/User/SignUp/SignupPage';
 import SigninPage from './Pages/User/Signin/SigninPage';
 import HomePage from './Pages/User/Home/HomePage';
+import ChatPage from './Pages/User/ChatPage/ChatPage';
 
 
 // ADMIN 
@@ -39,7 +40,8 @@ function App() {
         <Routes>        
           <Route path='/signin' element={<SigninPage/>}></Route>
           <Route path='/home' element={<HomePage/>}></Route>
-          <Route path='/profile' element={<UserProfilePage/>}></Route>
+          <Route path='/profile/:userName' element={<UserProfilePage/>}></Route>
+          <Route path='/message' element={<ChatPage/>}></Route>
         </Routes>
           </Provider>
 

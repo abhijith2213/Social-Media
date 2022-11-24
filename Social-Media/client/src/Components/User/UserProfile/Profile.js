@@ -3,29 +3,36 @@ import "./Profile.css";
 import cover from "../../../assets/images/bgImg.avif"
 import profile from '../../../assets/images/antony.png'
 import {BsGrid1X2} from 'react-icons/bs'
-import post1 from '../../../assets/images/hiring poster.png'
 import axios from "../../../Axios/axios";
 import {useSelector} from 'react-redux'
+import {useParams} from 'react-router'
 
 function Profile() {
 
   const PF = process.env.REACT_APP_PUBLIC_FOLDER ;
 
   const userData = useSelector(state =>state.user)
-  const userId = userData?._id
+  let userId = userData?._id
 
   const [myPosts,setMyPosts] = useState([])
-  console.log(myPosts,'llkkk');
+  const userName = useParams().userName
 
-useEffect(() => {
-  console.log('axios call getposts');
+ 
+    useEffect(() => {
+      console.log('axios call getposts');
+      try {
+        let user = 
+        axios.get(`/profile/myposts/${userId}`).then((res)=>{
+          console.log(res,'ooop posts res');
+          setMyPosts(res.data)
+        })
+        
+      } catch (error) {
+        console.log(error);
+      }
+    
+    }, []);
 
-  axios.get(`/profile/myposts/${userId}`).then((res)=>{
-    console.log(res,'ooop posts res');
-    setMyPosts(res.data)
-  })
-
-}, []);
 
 
   return (

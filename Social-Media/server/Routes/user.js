@@ -4,7 +4,7 @@ const upload = require('../config/multerConfig')
 
 
 //************* */ USER CONTROLLER 
-const {postCreateAccount, postSignIn, getSuggestions,putFollowUser, getPostUser,putUnfollowUser} = require('../Controller/userController')
+const {postCreateAccount, postSignIn, getSuggestions,putFollowUser, getPostUser,putUnfollowUser,getUserDetails} = require('../Controller/userController')
 
 //************** */ POST CONTROLLER 
 const {postUpload,getTimelinePost,putLikePost,putPostComment,getViewComments,getUserPosts} = require('../Controller/postController')
@@ -48,7 +48,7 @@ router.get('/post/viewComments/:id',getViewComments)
 
 router.get('/profile/myposts/:id',getUserPosts)
 
-
+router.get('/users/:userId',getUserDetails)
 
 
 

@@ -25,9 +25,15 @@ function Home() {
    const [showImage, setShowImage] = useState()
 
    const handleImage =(e)=>{
-   console.log('yyyyyy');
    setShowImage(URL.createObjectURL(e.target.files[0]))
    setPostImage(e.target.files[0])
+}
+
+// REMOVE IMAGE 
+
+const removeImage=(e)=>{
+   setShowImage('')
+   setPostImage('')
 }
 
   
@@ -62,24 +68,7 @@ function Home() {
       alert(error)
    }
   }
-// Description 
-//   try {
 
-//     axios.post('/add_new_post',postDetails).then((res)=>{
-//       console.log(res,'post res');
-//       toast.warn("Post added successfully!",{
-//          position: "top-center",
-//          autoClose: 2000,
-//          hideProgressBar: true,
-//          theme:"dark"
-//        });
-//     }).catch((err)=>{
-//       console.log(err,'p error');
-//     })
-
-//   } catch (error) {
-//    console.log(error.message);
-//   }
 }
 /* ---------------------------ADD POST HANDLING ENDS --------------------------- */
 
@@ -92,17 +81,19 @@ console.log(feedPosts,'poooooooosssttststs');
 useEffect(() => {
    const userId = userData._id
    console.log(userId,'uid');
+   
    const fetchPost = async()=>{
       const res = await axios.get(`/post/timeline_post/${userId}`)
-      console.log(res.data[0],'timeline post res');
-      setFeedPosts(res.data)
-      // setFeedPosts(
-      //    res.data.sort((pst1,pst2)=>{
-      //       return new Date(pst1.createdAt) - new Date(pst2.createdAt)
-      //    })
-      // )
+      console.log(res.data,'timeline post res');
+      // setFeedPosts(res.data)
+      setFeedPosts(
+         res.data.sort((pst1,pst2)=>{
+            return new Date(pst1.createdAt) - new Date(pst2.createdAt)
+         })
+      )
    }
    fetchPost()
+
 }, []);
 
 /* ----------------------------- FEED DISPLAYING FUNCTION END ---------------------------- */
@@ -144,7 +135,7 @@ useEffect(() => {
                         onChange={(e)=>{setDescription(e.target.value)}}
                      ></textarea>
                   { showImage ?  <span>
-                    <span className="absolute"> <AiOutlineCloseCircle/></span>
+                    <span className="absolute" onClick={removeImage}> <AiOutlineCloseCircle/></span>
                      <img src={showImage} alt="" className="relative"/>
                      </span> : null}
 
@@ -171,7 +162,7 @@ useEffect(() => {
 
          {
            feedPosts? feedPosts.map((post,i)=>(
-               <Post key={post.userId} post={post}/>
+               <Post key={post._id} post={post}/>
             )) : <div className="flex justify-center mt-20 ">
                <p className="text-blue-400 font-medium text-xl h-max">Follow SomeOne to See Posts!</p>
             </div>
@@ -182,6 +173,7 @@ useEffect(() => {
            
          </div>
          <ToastContainer />
+         
       </>
    )
 }
