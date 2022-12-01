@@ -6,6 +6,7 @@ const userRouter = require('./Routes/user')
 const adminRouter = require('./Routes/admin')
 const chatRouter = require('./Routes/chat')
 const messageRouter = require('./Routes/message')
+const worksRouter = require('./Routes/works')
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const path = require('path')
@@ -27,6 +28,7 @@ server.use('/',userRouter)
 server.use('/admin',adminRouter)
 server.use('/chat',chatRouter)
 server.use('/message',messageRouter)
+server.use('/works',worksRouter)
 
 /* ---------------------------- Connect Database ---------------------------- */
 

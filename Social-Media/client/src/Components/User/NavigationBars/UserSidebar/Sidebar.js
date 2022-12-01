@@ -2,13 +2,13 @@
 /* --------------------------------- ASSETS --------------------------------- */
 
 import {  HiOutlineLogout } from "react-icons/hi";
-import { MdNotificationsNone } from "react-icons/md";
+import { MdNotificationsNone , MdWorkOutline} from "react-icons/md";
 import { RiSettings4Line } from "react-icons/ri";
 import { FiMessageSquare} from "react-icons/fi";
 import { BiHome, BiMessageSquareAdd} from "react-icons/bi";
 import { CgProfile} from "react-icons/cg";
 
-import logo from '../../../../assets/images/logo6.png'
+import log from '../../../../assets/images/talentF-c.png'
 
 
 /* --------------------------------- ASSETS END--------------------------------- */
@@ -54,9 +54,9 @@ function Sidebar() {
         { name: "messages", link: "/message", icon: FiMessageSquare },
         { name: "Notifications", link: "/home", icon: MdNotificationsNone },
         { name: "Create", link: "/home", icon: BiMessageSquareAdd },
-        { name: "Setting", link: "/home", icon: RiSettings4Line },
-        { name: "My Profile", link: "/profile", icon: CgProfile ,bottom:true},
-        { name: "Logout", link: "/home", icon: HiOutlineLogout ,},
+        { name: "Works", link: "/works", icon: MdWorkOutline },
+        { name: "My Profile", link: "/myprofile", icon: CgProfile ,bottom:true},   
+        { name: "Logout", link: "/home", icon: HiOutlineLogout},
       ];
 
 
@@ -66,9 +66,10 @@ function Sidebar() {
         
         <div hidden className="text-center mt-8 mb-9 lg:block flex justify-center ">
         
-          <img className="md:w-1/2 lg:w-1/3 inline" src={logo} alt="" />
+          {/* <img className="md:w-1/2 lg:w-1/3 inline" src={logo} alt="" /> */}
+          <img  className="md:w-1/2 lg:w-3/4  mt-2" src={log} alt="" />
             
-          <h2 hidden className="font-bold text-xl lg:block">LOGO</h2>
+          {/* <h2 hidden className="font-bold text-xl lg:block">LOGO</h2> */}
         </div>
         <div className=" flex flex-col gap-6 justify-start relative md:items-center lg:items-start">
           {menus?.map((menu, i) => (

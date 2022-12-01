@@ -2,9 +2,9 @@ import React,{useState, useEffect} from "react";
 import { getUser } from "../../../Apis/userRequests";
 
 function Conversation({data, currentUserId, online}) {
-
+  console.log(data,'data yyyyyyy');
     const [userData, setUserData] = useState(null)
-
+  console.log(userData,'uuuuuuussssssssssseeeeeeerrrrchat');
     useEffect(() => {
         const userId = data.members.find((id)=>id!== currentUserId)
         const getUserData = async()=>{

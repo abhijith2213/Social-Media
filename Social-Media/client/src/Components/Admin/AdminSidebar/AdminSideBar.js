@@ -42,11 +42,11 @@ function AdminSideBar() {
     const menus = [
         { name: "dashboard", link: "/admin/admin_panel", icon: MdOutlineDashboard },
         { name: "User Management", link: "/admin/user_management", icon: AiOutlineUser },
-        { name: "Post Management", link: "/admin/admin_panel", icon: FiFolder },
-        { name: "messages", link: "/admin/admin_panel", icon: FiMessageSquare , margin: true},
-        { name: "analytics", link: "/admin/admin_panel", icon: TbReportAnalytics },
-        { name: "Setting", link: "/admin/admin_panel", icon: RiSettings4Line },
-        { name: "Logout", link: "/admin_login", icon: HiOutlineLogout },
+        { name: "Post Management", link: "/admin/post_management", icon: FiFolder },
+        // { name: "messages", link: "/admin/admin_panel", icon: FiMessageSquare , margin: true},
+        // { name: "analytics", link: "/admin/admin_panel", icon: TbReportAnalytics },
+        // { name: "Setting", link: "/admin/admin_panel", icon: RiSettings4Line },
+        { name: "Logout", link: "/admin_login", icon: HiOutlineLogout, margin: true },
       ];
       const [open, setOpen] = useState(true);
 
@@ -72,7 +72,7 @@ function AdminSideBar() {
               to={menu?.link}
               key={i}
               className={` ${
-                menu?.margin && "mt-5"
+                menu?.margin && "mt-10"
               } group flex items-center text-sm  gap-3.5 font-medium p-2 hover:bg-gray-800 rounded-md`}>
               {menu?.name=="Logout" ? <div onClick={handleLogout}>{React.createElement(menu?.icon, { size: "20" })}</div>: <div>{React.createElement(menu?.icon, { size: "20" })}</div> }
               <h2

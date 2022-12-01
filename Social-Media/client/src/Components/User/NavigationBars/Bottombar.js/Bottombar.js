@@ -5,6 +5,7 @@ import { BiHome, BiMessageSquareAdd} from "react-icons/bi";
 import { CgProfile} from "react-icons/cg";
 
 import logo from '../../../../assets/images/logo6.png'
+import log from '../../../../assets/images/talentF-c.png'
 
 
 import { Link } from "react-router-dom";
@@ -14,7 +15,7 @@ function Bottombar() {
     const menus = [
         { name: "Home", link: "/home", icon: BiHome },
         { name: "Create", link: "/home", icon: BiMessageSquareAdd },
-        { name: "Messages", link: "/home", icon: FiMessageSquare ,bottom:true},
+        { name: "Messages", link: "/message", icon: FiMessageSquare ,bottom:true},
       ];
 
   return (
@@ -49,15 +50,14 @@ function Bottombar() {
 
       <div className="flex justify-between items-center relative p-3 ">
         <div className="flex items-center justify-between">
-          <img className="w-8 h-auto sm:w-10" src={logo} alt="" />
-          <h2 className="pl-2 sm:text-3xl">Logo</h2>
+          <img className="w-20 h-auto sm:w-10" src={log} alt="" />
         </div>
         {/* <div>
             Search
         </div> */}
         <div className="flex gap-5 text-2xl sm:text-3xl">
         <Link>{React.createElement(MdNotificationsNone, )}</Link>
-        <Link to={'/profile'}>{React.createElement(CgProfile, )}</Link>
+        <Link to={'/myprofile'}>{React.createElement(CgProfile, )}</Link>
         </div>
         </div>
       </div>

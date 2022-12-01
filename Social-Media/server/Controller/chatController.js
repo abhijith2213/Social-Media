@@ -7,10 +7,16 @@ const createChat = async(req,res)=>{
         members:[req.body.senderId, req.body.receiverId]
     });
     try {
-
-        const result = await newChat.save();
-        console.log('fghjjhgfdfghj');
-        res.status(200).json(result);
+        const chat = await ChatModel.findOne({
+            members: {$all: [req.body.senderId, req.body.receiverId]}
+        })
+        console.log(chat,'findchat');
+        if(!chat){
+            const result = await newChat.save();
+            res.status(200).json(result);
+        }else{
+            res.status(200).json(chat)
+        }
         
     } catch (error) {
         res.status(500).json(error)
@@ -19,7 +25,7 @@ const createChat = async(req,res)=>{
 }
 
 const userChats = async (req,res)=>{
-
+    console.log('in user chaaaaaattsssss');
     try {
 
         const chat = await ChatModel.find({

@@ -16,7 +16,7 @@ const postAdminLogin =(req,res)=>{
 
             if(adminPass === req.body.password){
                 const id = "admin4rt3"
-                const token = jwt.sign({id},process.env.JWT_SECRET,{expiresIn:300})
+                const token = jwt.sign({id},process.env.JWT_SECRET,{expiresIn:30000})
                 res.status(200).json({adminToken:token,admin:true})
             }else{
                 res.status(401).json('Incorrect Password')

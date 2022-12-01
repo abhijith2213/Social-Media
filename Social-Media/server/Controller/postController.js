@@ -1,31 +1,16 @@
 const Post = require('../Models/postSchema');
 const Comment = require('../Models/commentSchema')
-const User = require('../Models/userSchema')
+const User = require('../Models/userSchema');
+const Report = require('../Models/reportsSchema');
 
-/* -------------------------- ADD POST DESCRIPTION -------------------------- */
 
-// const postAddNewPost =(req,res)=>{
-//     try {
-//         let {userId,description,image} = req.body
-//         Post.create({userId, description,image}).then((response)=>{
-//             res.status(200).json({message:'Post added successfully'})
-//         }).catch((err)=>{
-//             res.status(500).json({message:'Post Add failed'})
-//         })
-//     } catch (error) {
-//         res.status(500).json({message:'Something went wrong'})
-//     }
-// }
 
 
 /* ------------------------------  UPLOAD NEW POST------------------------------ */
 
 const postUpload=(req,res)=>{
-    console.log('helooo reacged img');
-    console.log(req.body,'image upload req body');
         let{userId,description}= req.body
-        let image = req.file.filename
-        console.log(image,userId,description,'dddddddddd');
+        let image = req?.file?.filename
         Post.create({userId,description,image}).then((response)=>{
             res.status(200).json({message:'Post added successfully'})
         }).catch((err)=>{
@@ -37,19 +22,17 @@ const postUpload=(req,res)=>{
 /* -------------------------------- GET TIMELINE POSTS ------------------------------- */
 
 const getTimelinePost =async (req,res)=>{
-    console.log('reached timeline post');
-    console.log(req.params.id,'timeline post');
     try {
         const user = await User.findById(req.params.id)
-        const myPost = await Post.find({userId:req.params.id}).sort({createdAt:-1})
+        const myPost = await Post.find({userId:req.params.id,status:'active'}).sort({createdAt:-1})
         const feedPosts = await Promise.all(user.following.map((id)=>{
-            console.log(id,'jjjdddxxxcc');
-            return Post.find({userId:id}).sort({createdAt:-1})
+        return Post.find({userId:id,status:'active',reports:{$ne:req.params.id}}).sort({createdAt:-1})
         })
       )
-      console.log(myPost.concat(...feedPosts) ,'oijuhgcsdfgujhgbvsdxcv');
+        console.log(feedPosts);
       res.status(200).json(myPost.concat(...feedPosts) )
     } catch (error) {
+        console.log(error);
         res.status(500).json('Something went wrong!')
     }
 }
@@ -59,20 +42,14 @@ const getTimelinePost =async (req,res)=>{
 /* -------------------------- POST LIKE MANAGEMENT -------------------------- */
 
 const putLikePost = async (req,res)=>{
-    console.log('calle reached');
-    console.log(req.body);
-    console.log(req.params.id);
-
     const post = await Post.findById(req.params.id)
-
-    if(!post.likes.includes(req.body.userId)){
+    if(!post?.likes?.includes(req.body.userId)){
         await post.updateOne({$push:{likes:req.body.userId}})
         res.status(200).json({message:'post Liked'})
     }else{
         await post.updateOne({$pull:{likes:req.body.userId}})
         res.status(200).json({message:'post disliked!'})
     }
-
 }
 
 /* ------------------------- POST COMMENT MANAGEMENT ------------------------ */
@@ -97,11 +74,9 @@ const putPostComment = async (req,res)=>{
 /* --------------------------- VIEW POST COMMENTS --------------------------- */
 
 const getViewComments = async(req,res)=>{
-    console.log('in view comments');
 
     try {        
         let comments =await Comment.find({postId:req.params.id}).populate('userId','userName')
-        console.log(comments,'ooopp');
         res.status(200).json(comments)
 
     } catch (error) {
@@ -115,12 +90,130 @@ const getViewComments = async(req,res)=>{
 const getUserPosts = async (req,res)=>{
 console.log(req.params.id,'opidd post');
     try {
-      let posts = await Post.find({userId:req.params.id}).sort({createdAt:-1})
-      console.log(posts,'my posts');
+      let posts = await Post.find({userId:req.params.id,status:'active'}).sort({createdAt:-1})
       res.status(200).json(posts)
     } catch (error) {
-        
+        res.status(500).json(error)
     }
 }
 
-module.exports = {postUpload,getTimelinePost,putLikePost,putPostComment,getViewComments,getUserPosts}
+/* ----------------------- VIEW ARCHIEVE BLOCKED POST ----------------------- */
+
+const getPostArchieves =async (req,res)=>{
+    console.log(req.params.id,'archieve opidd post');
+    try {
+      let posts = await Post.find({userId:req.params.id,status:'inactive'}).sort({createdAt:-1})
+      res.status(200).json(posts)
+    } catch (error) {
+        res.status(500).json(error)
+    }
+}
+
+
+/* ---------------------------- Delete User Post ---------------------------- */
+
+const deletePost = async (req,res)=>{
+    try {
+        let result1 =await Post.findByIdAndDelete(req.params.id)
+        let result2 = await Comment.deleteMany({postId:req.params.id})
+        res.status(200).json({message:'Post deleted successfully'})
+    } catch (error) {
+        console.log(error);
+        res.status(500).json(error)
+    }
+}
+
+/* ----------------------------- Report USER POST ---------------------------- */
+
+
+const reportPost=async(req,res)=>{
+    console.log('eeeeeevvvvvvvvvvvvvvvvv');
+    const postId = req.params.id;
+    const {userId,reason} = req.body
+    const data = new Report({postId:postId,userId:userId,reason:reason})
+    console.log(data,'save dataaaa');
+
+    try {
+       let post = await Post.findById(postId)
+       if(!post?.reports?.includes(userId)){
+        console.log('in');
+       await post.updateOne({$push:{reports:userId}}) 
+       await data.save()
+       }
+       res.status(200).json({message:'post Reported Successfully!'})
+    } catch (error) {
+        console.log(error);
+        res.status(500).json(error)
+    }
+}
+
+
+/* --------------------------- GET REPORTED POSTS --------------------------- */
+
+const getReportedPosts = async (req,res)=>{
+    console.log('in report post find');
+
+    try {
+        const posts =await Post.find()
+        console.log(posts,'allposts');
+      const result =  posts.filter((post)=>{
+            if(post?.reports?.length != 0)
+            return(post)
+        })
+        console.log(result,'filterallposts');
+        res.status(200).json(result)
+    } catch (error) {
+        res.status(500).json(error)
+    }
+}
+
+/* ------------------------------- BLOCK POST ------------------------------- */
+
+const blockPost =async (req,res)=>{
+    console.log(req.params.id,'pojhgfdfg');
+
+    try {
+        const result = await Post.findByIdAndUpdate(req.params.id,
+            {
+                $set:{status:'inactive'}
+            })
+            res.status(200).json({message:'post Blocked!'})
+    } catch (error) {
+        res.status(500).json(error)
+    }
+}
+
+
+/* ------------------------------- UnBLOCK POST ------------------------------- */
+
+const unBlockPost =async (req,res)=>{
+    console.log(req.params.id,'pojhgfdfg');
+
+    try {
+        const result = await Post.findByIdAndUpdate(req.params.id,
+            {
+                $set:{status:'active'}
+            })
+            res.status(200).json({message:'post Unblocked!'})
+    } catch (error) {
+        res.status(500).json(error)
+    }
+}
+
+
+/* -------------------------- GET POST REPORT DATA -------------------------- */
+
+const getReportData = async(req,res)=>{
+    console.log(req.params.id,'params report data');
+
+    try {
+       const result = await Report.find({postId:req.params.id}).populate('userId','userName')
+       res.status(200).json(result)
+       console.log(result,'ijnb');
+    } catch (error) {
+        res.status(500).json(error)
+    }
+}
+
+module.exports = {postUpload,getTimelinePost,putLikePost,putPostComment,getViewComments,getPostArchieves,
+                  getUserPosts,deletePost,reportPost,getReportedPosts,blockPost,unBlockPost,getReportData}

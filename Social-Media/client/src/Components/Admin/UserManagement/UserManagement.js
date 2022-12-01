@@ -138,7 +138,7 @@ function UserManagement() {
                   </thead>
                   <tbody>
                      {users?.map((user, i) => {
-                        user.created_date = moment(user.created_date).format("DD-MM-YYYY")
+                        user.created_date = moment(user.created_date).format("YYYY-MM-DD")
                         return (
                            <tr key={i} class='bg-white border-b dark:bg-gray-800 dark:border-gray-700'>
                               <th

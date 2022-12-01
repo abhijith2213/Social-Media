@@ -1,27 +1,31 @@
 import React, { useState, useEffect, useRef } from "react"
-import axios from "../../../Axios/axios"
-import { format } from "timeago.js"
+import { Link } from "react-router-dom"
 import { useSelector } from "react-redux"
+import { format } from "timeago.js"
+import { confirmAlert } from "react-confirm-alert"
 import { ToastContainer, toast } from "react-toastify" //Toast
 import "react-toastify/dist/ReactToastify.css" //Toast Css
+import axios from "../../../Axios/axios"
 
 import profile from "../../../assets/images/download.png"
-
+import './Post.css'
 /* ------------------------------ ICONS IMPORT ------------------------------ */
 
-import { BsThreeDotsVertical } from "react-icons/bs"
+import { BsThreeDotsVertical, BsFlagFill } from "react-icons/bs"
 import { FaRegHeart, FaRegComment, FaRegPaperPlane, FaRegStar } from "react-icons/fa"
 import { FcLike } from "react-icons/fc"
+import { reportUserPost, deleteUserPost } from "../../../Apis/PostRequest"
 
-function Post({ post }) {
+function Post({ post , setBlock}) {
    const effectRan = useRef(false)
 
+   const PF = process.env.REACT_APP_PUBLIC_FOLDER
    const userData = useSelector((state) => state.user)
    const userId = userData._id
 
-   const PF = process.env.REACT_APP_PUBLIC_FOLDER
    const [user, setUser] = useState({})
    const [showDrop, setShowDrop]= useState(false)
+   const [showModal,setShowModal] = useState(false)
 
 
 
@@ -29,8 +33,6 @@ function Post({ post }) {
       if (effectRan.current === false) {
          const fetchPostUser = async () => {
             const res = await axios.get(`/postDetails/users?userId=${post.userId}`)
-            console.log(res, "post res 12")
-
             setUser(res.data)
          }
          fetchPostUser()
@@ -75,6 +77,8 @@ function Post({ post }) {
       else setComment(e.target.value)
    }
 
+   // ADD COMMENT 
+
    const handleComment = async (e) => {
       e.preventDefault()
       const data = {
@@ -105,16 +109,16 @@ function Post({ post }) {
    const [allComments, setAllComments] = useState([])
 
    useEffect(() => {
-      if (effectRan.current === false) {
-         const fetchComments = async () => {
-            let res = await axios.get(`/post/viewComments/${post._id}`)
-            setAllComments(res.data)
-            console.log("update on effect cccoommmeennt")
-         }
-         fetchComments()
-         return () => (effectRan.current = true)
+      
+      const fetchComments = async () => {
+         let res = await axios.get(`/post/viewComments/${post._id}`)
+         console.log(res.data,'commen');
+         setAllComments(res.data)
       }
+      fetchComments()
    }, [viewComment, commentUpdate])
+
+   // VIEW COMMENT 
 
    const handleViewComment = async (e) => {
       e.preventDefault()
@@ -122,16 +126,56 @@ function Post({ post }) {
       effectRan.current = false
    }
 
+   // DELETE POST 
+
+   const deletePost = async ()=>{
+
+      try {
+         const {data} = await deleteUserPost(post._id) 
+         setBlock(Date.now())
+         toast.warn(data.message, {
+            position: "top-right",
+            autoClose: 2000,
+            hideProgressBar: true,
+            theme: "dark",
+         })
+      } catch (error) {
+         console.log(error);
+      }
+   }
+
+   // BLOCK POST 
+   const [reason,setReason] = useState('')
+
+   const handleBlock =async()=>{
+      console.log('blockkk');
+      try {
+         const {data} = await reportUserPost(reason,post._id,userId) 
+         setReason('')
+         console.log(data,'block response');
+         setBlock(Date.now())
+         toast.warn(data.message, {
+            position: "top-right",
+            autoClose: 2000,
+            hideProgressBar: true,
+            theme: "dark",
+         })
+         } catch (error) {
+            console.log(error);
+         }
+   }
+
    return (
-      <div>
-         <div className='flex pt-8 justify-center'>
+<>
+   <div>
+    <div className='flex pt-8 justify-center'>
             {/* FEEDS AREA  */}
 
             <div className=' w-screen flex justify-center'>
                <div className='bg-[#FFFFFF] w-[470px] rounded-lg shadow-md border mb-4'>
                   <div className='flex justify-between items-center'>
                      {/* NAME AND PROFILE PIC  */}
-
+                     <Link to={userData.userName === user.userName?'/myprofile':`/profile/${user.userName}`}>
                      <div className='h-16  flex items-center'>
                         <img className=' rounded-full w-10 mx-3' src={profile} alt='profile-pic' />
                         <div className='pr-4 '>
@@ -141,25 +185,34 @@ function Post({ post }) {
                               <span className='text-gray-400 text-xs'>{format(post.createdAt)}</span>
                            </div>
                         </div>
-                     </div>
+                     </div></Link>
 
                      {/* NAME AND PROFILE PIC  END*/}
 
                      {/* SIDE DOT START  */}
 
-                     <div className='pr-3'>
-                        {/* <div>{React.createElement(BsThreeDotsVertical, { size: 20 })}</div>*/}
+                     <div className='pr-3 relative'>
                         <div>
-                           <span onClick={()=>setShowDrop(!showDrop)}>
+                           <span onClick={()=>setShowDrop(!showDrop)} className='cursor-pointer'>
                               <BsThreeDotsVertical />
                            </span>
-                         {showDrop &&  <ul 
-                              class='cursor-pointer dropdown-menu min-w-max absolute bg-white text-base z-50 float-left py-2 list-none
-                                       text-left rounded-lg shadow-lg mt-1 m-0 bg-clip-padding border-none'>
+                         {showDrop &&  
+                         <ul class='cursor-pointer dropdown-menu min-w-max absolute right-0 bg-white text-base z-50 float-left py-2 list-none
+                               text-left rounded-lg shadow-lg mt-1 m-0 bg-clip-padding border-none'>
+                                 {post.userId === userId ?
+                                 <>
                               <li>
-                                 <span class='dropdown-item text-sm py-2 px-4 font-normal block w-full whitespace-nowrap
-                                  bg-transparent text-gray-700 hover:bg-gray-100'>
-                                    Block
+                              <span class='dropdown-item text-sm py-2 px-4 font-normal block w-full whitespace-nowrap
+                                  bg-transparent text-gray-700 hover:bg-gray-100' onClick={deletePost}>
+                                    Delete
+                              </span>
+                              </li>
+                              </> :
+                              <>
+                              <li>
+                                 <span class='dropdown-item text-sm inline-flex items-center text-red-600 py-2 px-4 font-normal  w-full whitespace-nowrap
+                                  bg-transparent  hover:bg-gray-100' onClick={()=>setShowModal(true)} >
+                                    <BsFlagFill className="mr-2"/> Report
                                  </span>
                               </li>
                               <li>
@@ -168,6 +221,8 @@ function Post({ post }) {
                                     Unfollow
                               </span>
                               </li>
+                              </>
+                                    }
                               <li>
                               <span class='dropdown-item text-sm py-2 px-4 font-normal block w-full whitespace-nowrap
                                   bg-transparent text-gray-700 hover:bg-gray-100' onClick={()=>setShowDrop(!showDrop)}>
@@ -193,9 +248,9 @@ function Post({ post }) {
                   </div>
                   {/* POST AREA */}
 
-                  <div className='bg-slate-200  w-full h-[470px] flex justify-center'>
+                 {post.image && <div className='bg-slate-200  w-full h-[400px] flex justify-center'>
                      <img className='object-fill' src={PF + post.image} alt='post' />
-                  </div>
+                  </div>}
                   {/* POST AREA END*/}
 
                   <div className='flex flex-col'>
@@ -232,11 +287,11 @@ function Post({ post }) {
                   </div>
 
                   <hr />
-                  <div className=' px-6 py-2'>
+                  <div className=' px-6 py-2 max-h-[180px] overflow-y-auto no-scrollbar'>
                      {viewComment ? (
-                        allComments.map((comment, i) => {
+                        allComments?.map((comment, i) => {
                            return (
-                              <div className='flex gap-3 my-2 items-center'>
+                              <div className='flex gap-3 my-2 items-center '>
                                  <div>
                                     <img className='w-8 rounded-full' src={profile} alt='profile' />
                                  </div>
@@ -266,8 +321,7 @@ function Post({ post }) {
                                  <button
                                     disabled={!comment}
                                     className='text-blue-500 disabled:opacity-50'
-                                    onClick={handleComment}
-                                 >
+                                    onClick={handleComment}>
                                     Post
                                  </button>
                               </div>
@@ -282,6 +336,72 @@ function Post({ post }) {
          </div>
          <ToastContainer />
       </div>
+      {showModal ? (
+  <>
+    <div
+      className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50  outline-none focus:outline-none"
+    >
+      <div className="relative w-auto my-6 mx-auto max-w-sm">
+        {/*content*/}
+        <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
+          {/*header*/}
+          <div className="flex gap-3  justify-between items-center p-5 border-b border-solid border-slate-200 rounded-t">
+            <h3 className="text-md text-black font-semibold inline">
+               Why are you reporting this post?
+            </h3>
+            <button
+              className="p-1 ml-auto bg-transparent border-0 text-black opacity-5 float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
+              onClick={() => setShowModal(false)}
+            >
+              <span className="bg-transparent text-black opacity-5 h-6 w-6 text-2xl block outline-none focus:outline-none">
+                ×
+              </span>
+            </button>
+          </div>
+          {/*body*/}
+            
+              <div className='flex flex-col m-2 justify-center  gap-3 max-h-50 overflow-y-auto no-scrollbar'>
+                  <div className="px-3">
+                  <input type="radio" required className="mr-2" value="It's spam" name="reason" onChange={(e)=>setReason(e.target.value)} />
+                  <label htmlFor="reason">It's spam</label> 
+                  </div>
+                  <div className="px-3">
+                  <input type="radio" className="mr-2" name="reason" value="I just don't like it"  onChange={(e)=>setReason(e.target.value)}/>
+                  <label htmlFor="reason">I just don't like it</label>     
+                  </div>
+                  <div className="px-3">
+                  <input type="radio" className="mr-2" name="reason" value='false Information'  onChange={(e)=>setReason(e.target.value)}/>
+                  <label htmlFor="reason">false Information</label>    
+                  </div>  
+                  <div className="px-3">
+                  <input type="radio" className="mr-2" name="reason" value='Scam or Fraud'  onChange={(e)=>setReason(e.target.value)}/>
+                  <label htmlFor="reason">Scam or Fraud</label>  
+                  </div>   
+                  <div className="px-3">
+                  <input type="radio" className="mr-2" name="reason" value='Hate speech or symbols'  onChange={(e)=>setReason(e.target.value)}/>
+                  <label htmlFor="reason">Hate speech or symbols</label>  
+                  </div>   
+              </div>
+          {/*footer*/}
+          <div className="flex items-center justify-end p-3 border-t border-solid border-slate-200 rounded-b">
+            <button
+              className="text-gray-500 background-transparent font-bold uppercase px-6  text-sm outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+              type="button"
+              onClick={() => setShowModal(false)}>
+              Close
+            </button>
+            <button class="bg-cyan-600 hover:bg-red-400 text-white font-bold py-1 px-4 rounded inline-flex items-center disabled:bg-cyan-100"
+             onClick={handleBlock} disabled={!reason}>
+            <span>Submit</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
+  </>
+) : null}
+</>
    )
 }
 

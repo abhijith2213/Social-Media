@@ -52,7 +52,7 @@ function ChatInterface() {
       try {
         const {data} = await userChats(user._id)
         setChats(data)
-        console.log(data);
+        console.log(data,'current user chat');
       } catch (error) {
         console.log(error);
       }
@@ -68,7 +68,7 @@ const checkOnlineStatus = (chat)=>{
 }
 
   return (
-    <div className="lg:ml-20 mt-20 md:mt-0   w-full md:w-11/12 lg:w-3/4 ">
+    <div className="lg:ml-20 mt-20 md:mt-0 bg-[#FFFFFF] shadow-md  w-full md:w-11/12 lg:w-3/4 ">
     <div class="container mx-auto">
       <div class="min-w-full border rounded md:grid md:grid-cols-3 h-screen">
         <div class="border-r border-gray-300 md:col-span-1 ">

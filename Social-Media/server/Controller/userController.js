@@ -162,10 +162,12 @@ const getPostUser =async (req,res)=>{
     }
 }
 
-/* ---------------------------- GET USER DETAILS ---------------------------- */
+/* ---------------------------- GET USER DETAILS BY Id---------------------------- */
 
 const getUserDetails = async (req,res)=>{
+
     const {userId} = req.params
+    
     console.log(userId,'vvvvvvvvv');
     try {
         const user = await User.findById(userId)
@@ -178,5 +180,70 @@ const getUserDetails = async (req,res)=>{
 
 }
 
+/* --------------------- GET USER DETAILS WITH USERNAME --------------------- */
 
-module.exports ={postCreateAccount, postSignIn, getSuggestions,putFollowUser,getPostUser, putUnfollowUser,getUserDetails}
+const getUserData = async (req,res)=>{
+    console.log(`i'm here bro`);
+const username = req.query.username
+    console.log(username,'unamed');
+    try {
+        const user = await User.findOne({userName:username})
+        console.log(user,'lllvzxx');
+        const {phone,password,...details} = user._doc
+        res.status(200).json(details)
+        console.log(details,'EEEEkkoopp');
+    } catch (error) {
+        console.log('error heree ');
+        res.status(500).json(error)
+    }
+}
+
+/* ---------------------------- GET MY FOLLOWERS ---------------------------- */
+
+const getMyFollowers =async(req,res)=>{
+    console.log(req.params.id,'my followers');
+
+    try {
+        const user = await User.findById(req.params.id)
+        if(user){
+            const followers = await Promise.all(user?.followers?.map((id)=>{
+                return User.findOne({_id:id},{fullName:1,userName:1,accountType:1})
+            }))
+            console.log(followers,'mmyyyyyyvv');
+            res.status(200).json(followers)
+        }else{
+            console.log('no user');
+            res.status(402).json('Please try again')
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(500).json(error)
+    }
+}
+
+/* ---------------------------- GET MY FOLLOWING ---------------------------- */
+
+const getMyFollowings =async (req,res)=>{
+    console.log(req.params.id,'my following');
+
+    try {
+        const user = await User.findById(req.params.id)
+        if(user){
+            const following = await Promise.all(user?.following?.map((id)=>{
+                return User.findOne({_id:id},{fullName:1,userName:1,accountType:1})
+            }))
+            console.log(following,'mmyyyyyyinggg');
+            res.status(200).json(following)
+        }else{
+            console.log('no user');
+            res.status(402).json('Please try again')
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(500).json(error)
+    }
+}
+
+
+module.exports ={postCreateAccount, postSignIn, getSuggestions,putFollowUser,getPostUser,
+                 putUnfollowUser,getUserDetails,getUserData,getMyFollowers,getMyFollowings}

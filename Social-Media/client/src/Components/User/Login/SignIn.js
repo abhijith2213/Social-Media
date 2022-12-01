@@ -81,7 +81,7 @@ function SignIn() {
               <form onSubmit={handleSubmit} className="flex flex-col gap-4">
               <div className="relative">
                 <input
-                  className="peer p-2  rounded-xl border w-full placeholder-transparent text-gray-500"
+                  className="peer p-2  rounded-xl border w-full placeholder-transparent text-gray-500 focus:outline-none"
                   type="email"
                   name="email"
                   value={formValues.email}
@@ -90,7 +90,7 @@ function SignIn() {
                 />
                 <label
                   htmlFor="email"
-                  className="absolute left-4 -top-3 bg-white text-gray-500 transition-all  
+                  className="absolute left-4 -top-3  text-gray-500 transition-all   
                   peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500 peer-placeholder-shown:top-2
                   peer-focus:-top-3 peer-focus:text-gray-500 "  
                 >
@@ -99,7 +99,8 @@ function SignIn() {
                 </div>
                 <div className="relative">
                   <input
-                    className="peer p-2 rounded-xl border w-full placeholder-transparent text-gray-500"
+                    className="peer p-2 rounded-xl border  w-full placeholder-transparent text-gray-500 focus:outline-none"
+                    autoComplete="off"
                     type="password"
                     name="password"
                     value={formValues.password}
@@ -107,7 +108,7 @@ function SignIn() {
                     placeholder="Password"
                   />
                    <label htmlFor="password"
-                  className="absolute -top-3 left-4 bg-white text-gray-500 transition-all  
+                  className="absolute -top-3 left-4  text-gray-500 transition-all  
                   peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500 peer-placeholder-shown:top-2
                   peer-focus:-top-3 peer-focus:text-gray-500 "  
                 >Password</label>

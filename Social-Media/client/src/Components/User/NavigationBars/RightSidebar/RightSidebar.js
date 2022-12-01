@@ -56,7 +56,7 @@ const handleUnFollow = (Id)=>{
 
 
    return (
-      <div className='bg-white m-12 rounded-md p-8 fixed right-0 top-0 hidden lg:block'>
+      <div className='bg-white m-12 shadow-md rounded-md p-8 fixed right-0 top-0 hidden lg:block'>
          <p className='mb-6'>Suggested</p>
 
 
