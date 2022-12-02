@@ -1,19 +1,97 @@
 import React, { useState } from "react";
-import {useSelector } from "react-redux"
+import {useDispatch, useSelector } from "react-redux"
 import {Link} from 'react-router-dom'
+import profile from "../../../assets/images/download.png"
+
+import { ToastContainer, toast } from 'react-toastify';  //Toast
+import 'react-toastify/dist/ReactToastify.css';  //Toast Css
+
+import { setProfilePicture, updateUserProfile } from "../../../Apis/userRequests";
+import { update, setProfilePic } from "../../../Redux/User/userSlice";
 
 function EditProfile() {
 
+  const PF = process.env.REACT_APP_PUBLIC_FOLDER
+
+    const dispatch = useDispatch();
     const userData = useSelector(state =>state.user)
+
     const [showModal,setShowModal] = useState(false)
 
-    /* ----------------------- UPLOAD NEW PROFILE PICTURE ----------------------- */
+    /* ------------------------------ EDIT DETAILS ------------------------------ */
 
-    const [newProfile, setNewProfile] = useState('')
+    const initialValues ={...userData}
+    const [newProfile, setNewProfile] = useState(initialValues)
+    
+    const handleChange =(e)=>{
+      const {name,value}= e.target;
+      setNewProfile({...newProfile,[name]:value})
+    }
 
-    const handleNewProfilePic = () =>{
+    const handleSubmit =async (e)=>{
+      e.preventDefault()
+      try {
+        const {data} = await updateUserProfile(userData._id,newProfile)
+        console.log(data);
+        if(data){
+          dispatch(update(newProfile))
+          localStorage.setItem("user",JSON.stringify(newProfile))
+          toast.success(data.message, {
+            position: "top-right",
+            autoClose: 2000,
+            hideProgressBar: true,
+            theme: "dark",
+         })
+        }
+      } catch (error) {
+        alert(error.message)
+        console.log(error);
+      }
 
     }
+    /* ----------------------- UPLOAD NEW PROFILE PICTURE ----------------------- */
+
+    const [profilePic, setProPic] = useState('')
+    const [showImage,setShowImage] = useState('')
+    const [modal,setModal]=useState(false)
+
+    console.log(profilePic,'lllll');
+
+    const handleImage =(e)=>{
+      setShowImage(URL.createObjectURL(e.target.files[0]))
+      setProPic(e.target.files[0])
+      setModal(true)
+   }
+
+    const handleNewProfilePic =async (e) =>{
+      let datas
+      if(profilePic){
+                datas = new FormData()
+                datas.append('file',profilePic)
+                datas.append('userId',userData._id)
+                try {
+                  console.log(datas,'kmnbvc');
+                  const {data} = await setProfilePicture(datas)
+                  console.log(data,'myyyyyyttrreewqq');
+                    if(data.message){
+                    console.log(data,'knvcxza');
+                    localStorage.setItem("profilePic",JSON.stringify(data.image))
+                    dispatch(setProfilePic({profilePic:data.image}))
+                    toast.success(data.message, {
+                    position: "top-right",
+                    autoClose: 2000,
+                    hideProgressBar: true,
+                    theme: "dark",
+                 })
+                 setModal(false)
+                 setShowModal(false)
+                }
+                } catch (error) {
+                  console.log(error);
+                }
+              }
+      }
+
 
   return (
     <>
@@ -33,7 +111,7 @@ function EditProfile() {
      <div class="rounded  shadow p-6">
        <div class="pb-6">
         <div className="flex items-center gap-6 mb-2">
-        <img id="showImage" class="max-w-xs w-24 h-24 items-center border rounded-full" src="https://images.unsplash.com/photo-1477118476589-bff2c5c4cfbb?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=200&q=200" alt=""/>
+        <img id="showImage" class="max-w-xs w-24 h-24 items-center border rounded-full" src={userData?.profilePic? PF+userData.profilePic : profile} alt=""/>
         <div className="block">
         <label for="name" class="font-semibold text-gray-700 block pb-1 text-xl">{userData.userName}</label>
         <label for="name" class="font-semibold text-blue-400 block pb-1" onClick={(e)=>setShowModal(true)}>Change Profile Photo</label>
@@ -41,24 +119,33 @@ function EditProfile() {
         </div>
          <div class="mb-2">
             <label for="fullName" class="font-semibold text-gray-700 block pb-1">Full Name</label>
-           <input  name="fullName" class="border rounded focus:outline-none rounded-r px-4 py-2 w-full" type="text" value={userData?.fullName} />
+           <input  name="fullName" 
+           class="border rounded focus:outline-none rounded-r px-4 py-2 w-full" type="text"
+            value={newProfile?.fullName} onChange={handleChange} />
          </div>
          <div class="mb-2">
             <label for="userName" class="font-semibold text-gray-700 block pb-1">user Name</label>
-           <input  name="userName" class="border rounded focus:outline-none rounded-r px-4 py-2 w-full" type="text"  value={userData?.userName}/>
+           <input  name="userName" 
+           class="border rounded focus:outline-none rounded-r px-4 py-2 w-full" type="text"
+             value={newProfile?.userName}  onChange={handleChange} />
          </div>
          <div class="mb-2">
            <label for="bio" class="font-semibold text-gray-700 block pb-1">About You</label>
-           <textarea  name="bio" class="border rounded focus:outline-none rounded-r px-4 py-2 w-full" type="text"  value={userData?.bio}/>
+           <textarea  name="about"
+           class="border rounded focus:outline-none rounded-r px-4 py-2 w-full" type="text"
+             value={newProfile?.about}  onChange={handleChange} />
          </div>
        </div>
-       <button type="button" class="text-white bg-blue-600  hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 ">Submit</button>
+       <button type="button" 
+       class="text-white bg-blue-600  hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 "
+       onClick={handleSubmit}>Submit</button>
      </div>
    </div>
 
  </div>
 
 </div>
+<ToastContainer/>
   </div>
   {showModal ?  <>
     <div
@@ -82,7 +169,7 @@ function EditProfile() {
          <label htmlFor="img-upload" className="cursor-pointer">
                  <p className='font-medium text-sm' >Upload New Photo</p>
           </label>  
-                 <input type="file" name="profile" id="img-upload" onChange={(e)=>setNewProfile(e.target.files[0])}  className="hidden"/>
+                 <input type="file" name="profile" id="img-upload" onChange={handleImage}  className="hidden"/>
             </div>
           <div className="flex cursor-pointer  items-center justify-center p-3 border-t border-solid border-slate-200 rounded-b">
             <button className="text-gray-700 text-center background-transparent font-medium  px-6  text-sm outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
@@ -96,6 +183,57 @@ function EditProfile() {
     </div>
     <div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
   </> : null}
+
+
+          {modal ? <>
+          <div
+            className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none"
+              >
+            <div className="relative w-auto my-6 mx-auto max-w-lg">
+              {/*content*/}
+              <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
+                {/*header*/}
+                <div className="flex items-start justify-between p-5 border-b border-solid border-slate-200 rounded-t">
+                  <h3 className="text-3xl font-semibold">
+                    Update Profile Picture
+                  </h3>
+                  <button
+                    className="p-1 ml-auto bg-transparent border-0 text-black opacity-5 float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
+                    onClick={() => setModal(false)}>
+                    <span className="bg-transparent text-black opacity-5 h-6 w-6 text-2xl block outline-none focus:outline-none">
+                      ×
+                    </span>
+                  </button>
+                </div>
+                {/*body*/}
+                <div className="relative px-6 flex gap-2 items-center justify-center p-6">
+                    <img className="rounded-full w-20 h-20" src={showImage} alt="" />
+                    <div>
+                    <p className="text-xl">{userData.fullName}</p>
+                    <p className="text-lg text-gray-400 ml-2 ">{userData.userName}</p>
+                    </div>
+                </div>
+                {/*footer*/}
+                <div className="flex items-center justify-end px-6 py-2 border-t border-solid border-slate-200 rounded-b">
+                  <button
+                    className="text-blue-500 background-transparent font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+                    type="button"
+                    onClick={() => setModal(false)}
+                  >
+                    Close
+                  </button>
+                  <button
+                    className="bg-green-500 text-white active:bg-green-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+                    type="button"
+                    onClick={ handleNewProfilePic}>
+                    Save change
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
+        </>:null}
   </>
   )
 }

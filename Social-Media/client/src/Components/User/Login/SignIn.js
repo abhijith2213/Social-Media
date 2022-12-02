@@ -2,14 +2,13 @@ import React,{useState} from "react";
 import axios from "../../../Axios/axios"
 import {Link,useNavigate} from 'react-router-dom'
 import loginImg from "../../../assets/images/4204968.jpg";
-import { useDispatch, useSelector } from "react-redux";
-import { update } from "../../../Redux/User/userSlice";
+import { useDispatch } from "react-redux";
+import { update , setProfilePic} from "../../../Redux/User/userSlice";
 
 function SignIn() {
 
   // reducer 
   const dispatch  = useDispatch()
-  const user = useSelector((state)=> state.user)
 
   const navigate = useNavigate()
 
@@ -38,12 +37,16 @@ function SignIn() {
           setFormError('Password must be in between 6 to 15 characters')
         }else{
           axios.post('/signin',{...formValues}).then((res)=>{
-              console.log(res,'its signin res');
-              console.log(res.data.details,'its signin res');
+              console.log(res,'its signin re1s');
+              console.log(res.data,'its signin re1s');
+              console.log(res.data.token,'its signin re1s');
+              console.log(res.data.profilePic,'its signin resuu');
               if(res.data.auth){
-                localStorage.setItem("userToken", res.data.userToken)
-                localStorage.setItem("user",JSON.stringify(res.data.details))
-                dispatch(update(res.data.details))
+                localStorage.setItem("userToken", res?.data?.userToken)
+                localStorage.setItem("user",JSON.stringify(res?.data?.details))
+                localStorage.setItem("profilePic",JSON.stringify(res?.data?.profilePic))
+                dispatch(update(res?.data?.details))
+                dispatch(setProfilePic({profilePic:res?.data?.profilePic}))
                 navigate('/home')
               }else{
                 console.log('error with login');

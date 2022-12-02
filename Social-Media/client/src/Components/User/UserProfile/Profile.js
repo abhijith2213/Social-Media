@@ -3,10 +3,8 @@ import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
 import "./Profile.css";
 import cover from "../../../assets/images/bgImg.avif"
-import profile from '../../../assets/images/antony.png'
-import profile2 from "../../../assets/images/download.png"
+import profile from "../../../assets/images/download.png"
 
-import {BsGrid1X2} from 'react-icons/bs'
 import {MdOutlinePhotoCameraBack, MdArchive,MdDynamicFeed} from 'react-icons/md'
 import axios from "../../../Axios/axios";
 import {useSelector} from 'react-redux'
@@ -37,9 +35,6 @@ function Profile() {
 
  
     useEffect(() => {
-      console.log('username call');
-      console.log(userData,'kkkkkkkkkkkkkkkkkkkk');
-      // if(userName){
       const getUserData = async ()=>{
           try {
           const {data}= await getUserByUsername(userName)
@@ -155,10 +150,17 @@ const showFollowing =async ()=>{
      <div className='w-full mt-10 sm:mt-16 sm:mx-4 md:mt-0 md:w-5/6  lg:w-3/4 lg:flex lg:justify-end bg-white overflow-y-auto no-scrollbar'>
 
      <div className="ProfileCard lg:container mt-5 ">
+     {userName !== userData.userName ? 
       <div className="ProfileImages">
         <img className="w-full h-40 object-cover object-center" src={cover} alt="CoverImage" />
-        <img src={profile} alt="ProfileImage"/>
+        <img src={user?.profilePic? PF+user.profilePic : profile} alt="ProfileImage"/>
       </div>
+      :
+      <div className="ProfileImages">
+            <img className="w-full h-40 object-cover object-center" src={cover} alt="CoverImage" />
+            <img src={userData?.profilePic? PF+userData.profilePic : profile} alt="ProfileImage"/>
+      </div>
+      }
       <div className="flex justify-end pr-4">
         {userName !== userData.userName ? <>{!user?.followers?.includes(userId)?
          <button type="button" className="text-white flex justify-center bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:outline-none  font-medium rounded-lg text-sm px-4 py-2 text-center mr-2 mb-2 w-20"  onClick={(e)=>handleFollow(user._id)}>follow</button>
@@ -176,22 +178,23 @@ const showFollowing =async ()=>{
 
        { !userName ? <>
        <span>{userData?.fullName}</span>
-        <span> {userData?.accountType}</span></>
+        <span> {userData?.accountType}</span>
+        <span>{userData?.about}</span>
+        </>
         :<>
         <span>{user?.fullName}</span>
         <span> {user?.accountType}</span> 
+        <span>{user?.about}</span>
         </>
         }
+
       </div>
 
       <div className="followStatus">
         <hr/>
         <div>
           <div className="follow cursor-pointer" onClick={showFollowers}>
-            {userName ?
               <span className="text-xl font-semibold">{user?.followers?.length}</span>
-              :<span className="text-xl font-semibold">{userData?.followers?.length}</span>
-            }
             <span className="font-medium">followers</span>
           </div>
           <div className="follow">
@@ -201,9 +204,7 @@ const showFollowing =async ()=>{
 
           {/* for profilepage */}         
               <div className="follow cursor-pointer" onClick={showFollowing}>
-                {userName ?
                 <span className="text-xl font-semibold">{user?.following?.length}</span>
-              : <span className="text-xl font-semibold">{userData?.following?.length}</span>}
                 <span className="font-medium">following</span>
               </div>    
         </div>
@@ -275,7 +276,7 @@ const showFollowing =async ()=>{
           {myFollowers?.map((follower)=>{
             return(
               <div className='flex m-2 justify-between items-center  gap-3 max-h-20 overflow-y-auto no-scrollbar'>
-              <img className='rounded-full w-10 h-10 ' src={profile2} alt='pic'/>
+              <img className='rounded-full w-10 h-10 ' src={follower?.profilePic? PF+follower.profilePic : profile} alt='pic'/>
               <div className='flex flex-col justify-center items-center ml-3'>
                  <p className='font-medium text-sm'>{follower?.userName}</p>
                  <p className='font-normal text-xs'>{follower?.accountType}</p>

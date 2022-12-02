@@ -15,9 +15,12 @@ import Post from "../Posts/Post";
 
 function Home() {
 
+   const PF = process.env.REACT_APP_PUBLIC_FOLDER
+
+
    const userData = useSelector(state =>state.user)
 
-
+   console.log(userData,'lllllbvcxxxxgggbb');
    /* ------------------------------ADD POST HANDLING ----------------------------- */
 
    // POST States
@@ -112,7 +115,7 @@ useEffect(() => {
                   <form onSubmit={handleSubmit}>
                   <div className='flex justify-between items-center'>
                      <div className='h-16  flex items-center'>
-                        <img className=' rounded-full w-10 mx-3' src={profile} alt='profile-pic' />
+                        <img className=' rounded-full w-10 h-10 mx-3' src={userData?.profilePic? PF+userData.profilePic : profile} alt='profile-pic' />
                         <div className='pr-4 '>
                            <p className='font-medium text-sm '>{userData.fullName }</p>
                            <div className='flex gap-4 items-center'>

@@ -7,6 +7,8 @@ import { Link } from "react-router-dom"
 
 function RightSidebar() {
 
+  const PF = process.env.REACT_APP_PUBLIC_FOLDER
+
   const userData = useSelector(state =>state.user)
   console.log(userData,'oooopp');
 
@@ -69,7 +71,7 @@ const handleUnFollow = (Id)=>{
                 <div className='flex justify-between items-center mb-5 gap-11' key={index}>
                   <Link to={`/profile/${user.userName}`}>
                    <div className='flex'>
-                      <img className='rounded-full w-14 h-14 ' src={profile2} alt='pic' />
+                      <img className='rounded-full w-14 h-14 ' src={user?.profilePic? PF+user.profilePic : profile2} alt='pic' />
                       <div className='flex flex-col justify-center items-center ml-3'>
                          <p className='font-medium text-sm'>{user.userName}</p>
                          <p className='font-normal text-xs'>{user.accountType}</p>

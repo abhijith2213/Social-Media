@@ -65,9 +65,10 @@ const postSignIn = async (req,res)=>{
             if(pass){
                 if(user.status === "active"){
                     const id = user._id
-                    const {phone,email,password,...details} = user._doc
+                    const {phone,email,password,followers,following,profilePic,...details} = user._doc
+
                     const token = jwt.sign({id},process.env.JWT_SECRET,{expiresIn:300})
-                    res.status(200).json({userToken:token,details,auth:true})
+                    res.status(200).json({userToken:token,details,profilePic:profilePic,auth:true})
                 }else{
                     res.status(409).json({message:'Your account is blocked'})
                 }
@@ -244,6 +245,44 @@ const getMyFollowings =async (req,res)=>{
     }
 }
 
+/* --------------------------- UPDATE USER PROFILE -------------------------- */
 
-module.exports ={postCreateAccount, postSignIn, getSuggestions,putFollowUser,getPostUser,
-                 putUnfollowUser,getUserDetails,getUserData,getMyFollowers,getMyFollowings}
+const updateUserProfile = async (req,res)=>{
+
+    console.log(req.body,'opbody');
+    console.log(req.params.id,'plmkio');
+    const {fullName,userName,about,_id} = req.body
+    try {
+        const user = await User.find({userName:userName})
+        console.log(user,'llmmnnbbvv');
+        if(user.length === 0 || user._id === _id){
+            await User.findByIdAndUpdate(req.params.id,
+                {$set:{fullName,userName,about}})
+                res.status(200).json({message:'profile updated successfully'})
+        }else{
+            res.status(409).json({message:'userName not available!'})
+        }
+    } catch (error) {
+        res.status(500).json(error)
+    }
+}
+/* --------------------------- UPDATE PROFILE PIC --------------------------- */
+
+const updateProfilePic = async(req,res)=>{
+    let image = req?.file?.filename
+    const {userId} = req.body
+    console.log(image);
+    console.log(req.body,'proimg');
+    try {
+        await User.findByIdAndUpdate(userId,
+            {$set:{profilePic:image}})
+            res.status(200).json({image:image,message:'profile picture updated'})
+    } catch (error) {
+        res.status(500).json(error)
+
+    }
+}
+
+
+module.exports ={postCreateAccount, postSignIn, getSuggestions,putFollowUser,getPostUser,updateProfilePic,
+                 putUnfollowUser,getUserDetails,getUserData,getMyFollowers,getMyFollowings,updateUserProfile}

@@ -1,11 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit'
 
-
-
 const defaultUser = JSON.parse(localStorage.getItem('user'))
-console.log(defaultUser,'defaultUser');
+const profilePic = JSON.parse(localStorage.getItem('profilePic'))
+
 if(defaultUser){
-    var {fullName,userName,accountType,_id,followers,following} = defaultUser
+    var {fullName,userName,accountType,_id,about} = defaultUser
 }else{
 
 }
@@ -17,9 +16,9 @@ const userSlice = createSlice({
         _id,
         fullName,
         userName,
-        followers,
-        following,
         accountType,
+        about,
+        profilePic
     },
     reducers:{
         update:(state,action)=>{
@@ -27,13 +26,18 @@ const userSlice = createSlice({
             state.fullName = action.payload.fullName
             state.userName = action.payload.userName
             state.accountType = action.payload.accountType
-            state.followers = action.payload.followers
-            state.following = action.payload.following
+            state.about = action.payload.about
         }, 
+        setProfilePic:(state,action)=>{
+            state.profilePic = action.payload.profilePic
+        },
         remove:(state) => {state ={} }
     },
 });
 
 
-export const {update, remove} = userSlice.actions;
+export const {update, remove, setProfilePic} = userSlice.actions;
+
+// export const allUserData = (state)=>state.user;
+
 export default userSlice.reducer;

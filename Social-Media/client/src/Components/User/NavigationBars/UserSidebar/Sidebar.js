@@ -3,7 +3,6 @@
 
 import {  HiOutlineLogout } from "react-icons/hi";
 import { MdNotificationsNone , MdWorkOutline} from "react-icons/md";
-import { RiSettings4Line } from "react-icons/ri";
 import { FiMessageSquare} from "react-icons/fi";
 import { BiHome, BiMessageSquareAdd} from "react-icons/bi";
 import { CgProfile} from "react-icons/cg";

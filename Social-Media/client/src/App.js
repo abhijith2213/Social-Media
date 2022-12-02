@@ -64,7 +64,7 @@ function App() {
 
         <Routes>
           <Route path='/admin_login' element={<AdminLoginPage/>}></Route>
-          <Route path='' element={<AdminStructure/>}>
+          <Route path='/admin' element={<AdminStructure/>}>
           <Route path='/admin/admin_panel' element={<AdminDashboard/>}></Route>
           <Route path='/admin/user_management' element={<UserManagement/>}></Route>
           <Route path='/admin/post_management' element={<PostManagement/>}></Route>

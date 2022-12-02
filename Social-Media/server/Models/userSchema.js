@@ -16,6 +16,9 @@ const userSchema = mongoose.Schema({
         required:[true,'Username is required'],
         unique:true
     },
+    about:{
+        type:String
+    },
     email:{
         type:String,
         validate:[validateEmail,'please add a valid email'],
@@ -45,6 +48,9 @@ const userSchema = mongoose.Schema({
     status:{
         type:String,
         default:"active"
+    },
+    profilePic:{
+        type:String
     },
     followers:{
         type:Array,

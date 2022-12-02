@@ -5,7 +5,7 @@ const upload = require('../config/multerConfig')
 
 //************* */ USER CONTROLLER 
 const {postCreateAccount, postSignIn, getSuggestions,putFollowUser, getPostUser,
-       putUnfollowUser,getUserDetails,getUserData,getMyFollowers,getMyFollowings} = require('../Controller/userController')
+       putUnfollowUser,getUserDetails,getUserData,getMyFollowers,getMyFollowings,updateUserProfile,updateProfilePic} = require('../Controller/userController')
 
 //************** */ POST CONTROLLER 
 const {postUpload,getTimelinePost,putLikePost,putPostComment,getViewComments,
@@ -68,5 +68,10 @@ router.get('/user/myFollowing/:id',getMyFollowings)
 
 router.get('/admin/post/reportDetails/:id',getReportData)
 
+
+router.put('/user/updateProfile/:id',updateUserProfile)
+
+
+router.put('/user/update/profilePic',upload.single('file'),updateProfilePic)
 
 module.exports = router
