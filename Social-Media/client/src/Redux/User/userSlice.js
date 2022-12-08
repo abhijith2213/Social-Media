@@ -1,12 +1,16 @@
 import { createSlice } from '@reduxjs/toolkit'
 
-const defaultUser = JSON.parse(localStorage.getItem('user'))
-const profilePic = JSON.parse(localStorage.getItem('profilePic'))
+    let profilePic = localStorage.getItem('profilePic')
+
+   const defaultUser = JSON.parse(localStorage.getItem('user'))
+
+if( typeof(profilePic) !== 'undefiened'){
+
+    profilePic = JSON.parse(localStorage.getItem('profilePic'))
+}
 
 if(defaultUser){
     var {fullName,userName,accountType,_id,about} = defaultUser
-}else{
-
 }
 
 

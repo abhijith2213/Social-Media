@@ -1,11 +1,14 @@
 const express = require('express')
 const router = express.Router()
 const upload = require('../config/multerConfig')
+const verifyJWT = require('../Middlewares/verifyJWT')
 
 
 //************* */ USER CONTROLLER 
 const {postCreateAccount, postSignIn, getSuggestions,putFollowUser, getPostUser,
-       putUnfollowUser,getUserDetails,getUserData,getMyFollowers,getMyFollowings,updateUserProfile,updateProfilePic} = require('../Controller/userController')
+       putUnfollowUser,getUserDetails,getUserData,getMyFollowers,getMyFollowings,
+       updateUserProfile,updateProfilePic,searchUsers,updateCoverPic,getNotifications,
+       verifyOtp,sendUserOtp,changeUserPassword} = require('../Controller/userController')
 
 //************** */ POST CONTROLLER 
 const {postUpload,getTimelinePost,putLikePost,putPostComment,getViewComments,
@@ -23,13 +26,13 @@ router.post('/signin',postSignIn)
 router.post('/uploadPost',upload.single('file'),postUpload)
 
 
-router.get('/post/timeline_post/:id',getTimelinePost)
+router.get('/post/timeline_post/:id',verifyJWT,getTimelinePost)
 
 
 router.get('/postDetails/:id',getPostUser)
 
 
-router.get('/suggestions/:id',getSuggestions)
+router.get('/suggestions/:id',verifyJWT,getSuggestions)
 
 
 router.put('/:id/follow',putFollowUser)
@@ -73,5 +76,20 @@ router.put('/user/updateProfile/:id',updateUserProfile)
 
 
 router.put('/user/update/profilePic',upload.single('file'),updateProfilePic)
+
+
+router.get('/user/search/:id',searchUsers)
+
+
+router.put(`/user/update/coverPic`,upload.single('file'),updateCoverPic)
+
+
+router.get('/user/notification/:id',getNotifications)
+
+router.post('/signup/sendOtp',sendUserOtp)
+
+router.post('/singnUp/otp/verify',verifyOtp)
+
+router.put('/user/editProfile/changePassword/:id',changeUserPassword)
 
 module.exports = router

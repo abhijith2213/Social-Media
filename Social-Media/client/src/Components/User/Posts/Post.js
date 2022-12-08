@@ -84,6 +84,7 @@ function Post({ post , setBlock}) {
       const data = {
          userId: userId,
          comment: comment,
+         postUser:post.userId
       }
 
       try {
@@ -177,7 +178,7 @@ function Post({ post , setBlock}) {
                      {/* NAME AND PROFILE PIC  */}
                      <Link to={userData.userName === user.userName?'/myprofile':`/profile/${user.userName}`}>
                      <div className='h-16  flex items-center'>
-                        <img className=' rounded-full w-10 mx-3' src={profile} alt='profile-pic' />
+                        <img className=' rounded-full w-10 mx-3' src={PF+user.profilePic} alt='profile-pic' />
                         <div className='pr-4 '>
                            <p className='font-medium text-sm '>{user.fullName}</p>
                            <div className='flex gap-4 items-center'>
@@ -215,12 +216,6 @@ function Post({ post , setBlock}) {
                                     <BsFlagFill className="mr-2"/> Report
                                  </span>
                               </li>
-                              <li>
-                              <span class='dropdown-item text-sm py-2 px-4 font-normal block w-full whitespace-nowrap
-                                  bg-transparent text-gray-700 hover:bg-gray-100'>
-                                    Unfollow
-                              </span>
-                              </li>
                               </>
                                     }
                               <li>
@@ -256,8 +251,8 @@ function Post({ post , setBlock}) {
                   <div className='flex flex-col'>
                      {/* LIKE AND COMMENT  */}
 
-                     <div className='flex justify-center'>
-                        <div className='flex justify-between w-3/4 m-4'>
+                     <div className='flex '>
+                        <div className='flex justify-start gap-6 w-3/4 m-4'>
                            <div className='flex items-center gap-1'>
                               <span title='like' className=' text-gray-600 cursor-pointer' onClick={handleLike}>
                                  {likeState ? <FcLike className='text-lg ' /> : <FaRegHeart className='text-lg' />}
@@ -272,12 +267,12 @@ function Post({ post , setBlock}) {
                               <span>{allComments.length}</span>
                            </div>
 
-                           <span title='Share' className='text-gray-600'>
+                           {/* <span title='Share' className='text-gray-600'>
                               {React.createElement(FaRegPaperPlane, { size: 18 })}
                            </span>
                            <span title='Connect' className='text-gray-600'>
                               {React.createElement(FaRegStar, { size: 18 })}
-                           </span>
+                           </span> */}
                         </div>
                      </div>
 

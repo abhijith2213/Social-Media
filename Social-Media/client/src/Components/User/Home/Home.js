@@ -1,6 +1,7 @@
 import React, {  useState, useEffect } from "react"
+import { useNavigate } from "react-router";
 import axios from '../../../Axios/axios'
-
+import userInstance from "../../../Axios/userAuth";
 import { ToastContainer, toast } from 'react-toastify';  //Toast
 import 'react-toastify/dist/ReactToastify.css';  //Toast Css
 
@@ -17,10 +18,40 @@ function Home() {
 
    const PF = process.env.REACT_APP_PUBLIC_FOLDER
 
+   const navigate = useNavigate()
+
 
    const userData = useSelector(state =>state.user)
 
-   console.log(userData,'lllllbvcxxxxgggbb');
+
+   const [effect,setEffect] = useState(false)
+
+   /* ----------------------------- FEED DISPLAYING FUNCTION---------------------------- */
+const[block, setBlock] = useState('')
+const [feedPosts, setFeedPosts] = useState([])
+
+useEffect(() => {
+   const userId = userData._id   
+   const fetchPost = async()=>{
+      try {       
+         const res = await userInstance.get(`/post/timeline_post/${userId}`)
+         setFeedPosts(
+            res.data.sort((pst1,pst2)=>{
+               return new Date(pst2.createdAt) - new Date(pst1.createdAt)
+            })
+         )
+      } catch (error) {
+         console.log(error);
+         if(!error?.auth){
+            navigate('/signin')
+         }
+      }
+   }
+   fetchPost()
+}, [block,effect]);
+
+/* ----------------------------- FEED DISPLAYING FUNCTION END ---------------------------- */
+
    /* ------------------------------ADD POST HANDLING ----------------------------- */
 
    // POST States
@@ -49,7 +80,8 @@ const removeImage=(e)=>{
    e.preventDefault()
    
    let data;
-
+   console.log(postImage,'ooimagee ');
+   console.log('jhgfdsadfghj');
       if(postImage){
           data = new FormData()
          const fileName = postImage.name
@@ -62,42 +94,23 @@ const removeImage=(e)=>{
             description:description
          }
       }
-
       try {
       axios.post('/uploadPost',data).then((res)=>{
          console.log(res,'its res post');
-         window.location.reload()
+         setEffect(!effect)
+         removeImage()
+         setDescription('')
       }).catch((err)=>{
          console.log(err,'its err');
       })   
    } catch (error) {
       alert(error)
+      if(!error?.auth){
+         navigate('/signin')
+      }
    }
-  
-
 }
 /* ---------------------------ADD POST HANDLING ENDS --------------------------- */
-
-
-
-/* ----------------------------- FEED DISPLAYING FUNCTION---------------------------- */
-const[block, setBlock] = useState('')
-const [feedPosts, setFeedPosts] = useState([])
-
-useEffect(() => {
-   const userId = userData._id   
-   const fetchPost = async()=>{
-      const res = await axios.get(`/post/timeline_post/${userId}`)
-      setFeedPosts(
-         res.data.sort((pst1,pst2)=>{
-            return new Date(pst2.createdAt) - new Date(pst1.createdAt)
-         })
-      )
-   }
-   fetchPost()
-}, [block]);
-
-/* ----------------------------- FEED DISPLAYING FUNCTION END ---------------------------- */
 
 
 // ****** FUNCTION ENDS *******//
@@ -124,7 +137,7 @@ useEffect(() => {
                         </div>
                      </div>
                   </div>
-                  <div className='w-full px-8 pt-2'>
+                  <div className='w-full px-8 pt-2 relative'>
                      <textarea
                         className='w-full outline-none'
                         name='post_description'
@@ -136,8 +149,8 @@ useEffect(() => {
                         onChange={(e)=>{setDescription(e.target.value)}}
                      ></textarea>
                   {showImage ?  <span>
-                    <span className="absolute" onClick={removeImage}> <AiOutlineCloseCircle/></span>
-                     <img src={showImage} alt="" className="relative"/>
+                    <span className="absolute top-24 right-10" onClick={removeImage}> <AiOutlineCloseCircle/></span>
+                     <img src={showImage} alt="" className="relative h-[360px]"/>
                      </span> : null}
 
                   </div>
@@ -146,7 +159,7 @@ useEffect(() => {
                      <label htmlFor="img-upload" className="cursor-pointer">
                      <BiImage className='text-2xl text-blue-600'/>
                      </label>
-                     <input type="file" name="file" id="img-upload"  onChange={handleImage} className="hidden"/>
+                     <input type="file" name="file" id="img-upload" accept="image/*"  onChange={handleImage} className="hidden"/>
                      <button
                         disabled={!description}
                         type='submit'                      

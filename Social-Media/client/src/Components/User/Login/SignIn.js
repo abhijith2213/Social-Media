@@ -4,6 +4,7 @@ import {Link,useNavigate} from 'react-router-dom'
 import loginImg from "../../../assets/images/4204968.jpg";
 import { useDispatch } from "react-redux";
 import { update , setProfilePic} from "../../../Redux/User/userSlice";
+import logo from '../../../assets/images/talentF-c.png'
 
 function SignIn() {
 
@@ -37,10 +38,6 @@ function SignIn() {
           setFormError('Password must be in between 6 to 15 characters')
         }else{
           axios.post('/signin',{...formValues}).then((res)=>{
-              console.log(res,'its signin re1s');
-              console.log(res.data,'its signin re1s');
-              console.log(res.data.token,'its signin re1s');
-              console.log(res.data.profilePic,'its signin resuu');
               if(res.data.auth){
                 localStorage.setItem("userToken", res?.data?.userToken)
                 localStorage.setItem("user",JSON.stringify(res?.data?.details))
@@ -53,7 +50,6 @@ function SignIn() {
               }
           }).catch((error)=>{
             console.log(error);
-            alert(error.response.data.message)
             setFormError(error.response.data.message)
             navigate('/signin')
           })
@@ -72,10 +68,16 @@ function SignIn() {
         <section className="bg-white-50 min-h-screen flex items-center justify-center">
           <div className="bg-white-100 flex rounded-2xl shadow-lg max-w-3xl p-5 items-center">
             <div class="md:block hidden w-1/2">
+            <div className="flex justify-center ">
+            <img src={logo} className='w-40' alt="logo"/>
+            </div>
               <img class="rounded-2xl" src={loginImg} />
             </div>
 
             <div className="md:w-1/2 px-8 md:px-16">
+            <div className="w-full mb-4 flex justify-center">
+              <img src={logo} className='w-36 md:hidden ' alt="logo"/>
+            </div>
               <h2 className="font-bold text-2xl text-[#002D74]">Login</h2>
               <p className="text-xs mt-4 mb-4 text-[#002D74]">
                 If you are already a member, easily log in

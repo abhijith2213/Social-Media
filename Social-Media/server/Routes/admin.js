@@ -3,6 +3,7 @@ const router = express.Router()
 
 
 const {postAdminLogin, getUserManagement, blockUser, unblockUser} = require('../Controller/adminController')
+const { fetchReportedJobs,ReportedJobDetails ,blockJOb} = require('../Controller/jobController')
 const {getReportedPosts,blockPost,unBlockPost} = require('../Controller/postController')
 const verifyJWT = require('../Middlewares/verifyJWT')
 
@@ -24,7 +25,11 @@ router.put('/post/block/:id',blockPost)
 
 router.put('/post/unblock/:id',unBlockPost)
 
+router.get(`/reportedWorks`,fetchReportedJobs)
+
+router.get(`/reportedJobs/details/:id`,ReportedJobDetails)
 
 
+router.put('/jobs/block/:id',blockJOb)
 
 module.exports = router

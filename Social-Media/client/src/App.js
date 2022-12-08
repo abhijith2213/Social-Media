@@ -21,6 +21,9 @@ import HomePage from './Pages/User/Home/HomePage';
 import ChatPage from './Pages/User/ChatPage/ChatPage';
 import UserProfilePage from './Pages/User/UserProfile/UserProfilePage';
 import EditProfilePage from './Pages/User/EditProfilePage/EditProfilePage';
+import ChangePasswordPage from './Pages/User/EditProfilePage/ChangePasswordPage';
+import NotificationPage from './Pages/User/NotificationPage/NotificationPage';
+import JobsPage from './Pages/User/JobsPage/JobsPage';
 
 
 // ADMIN 
@@ -30,8 +33,7 @@ import AdminDashboard from './Components/Admin/AdminDashboard/AdminDashboard';
 import UserManagement from './Components/Admin/UserManagement/UserManagement';
 import AdminStructure from './Pages/Admin/AdminStructure/AdminStructure';
 import PostManagement from './Components/Admin/PostManagement/PostManagement';
-import ChangePasswordPage from './Pages/User/EditProfilePage/ChangePasswordPage';
-import JobsPage from './Pages/User/JobsPage/JobsPage';
+import JobManagement from './Components/Admin/Job Management/JobManagement';
 
 
 
@@ -54,6 +56,7 @@ function App() {
           <Route path='/profile/:userName' element={<UserProfilePage/>}></Route>
           <Route path='/myprofile' element={<UserProfilePage/>}></Route>
           <Route path='/message' element={<ChatPage/>}></Route>
+          <Route path='/notifications' element={<NotificationPage/>}></Route>
           <Route path='/works' element={<JobsPage/>}></Route>
           <Route path='/account/editProfile' element={<EditProfilePage/>}></Route>
           <Route path='/account/changePassword' element={<ChangePasswordPage/>}></Route>
@@ -68,6 +71,7 @@ function App() {
           <Route path='/admin/admin_panel' element={<AdminDashboard/>}></Route>
           <Route path='/admin/user_management' element={<UserManagement/>}></Route>
           <Route path='/admin/post_management' element={<PostManagement/>}></Route>
+          <Route path='/admin/job_management' element={<JobManagement/>}></Route>
           </Route>
         </Routes>
 

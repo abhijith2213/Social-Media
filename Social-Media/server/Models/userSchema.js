@@ -50,7 +50,12 @@ const userSchema = mongoose.Schema({
         default:"active"
     },
     profilePic:{
-        type:String
+        type:String,
+        default:'download.png'
+    },
+    coverPic:{
+        type:String,
+        default :null
     },
     followers:{
         type:Array,

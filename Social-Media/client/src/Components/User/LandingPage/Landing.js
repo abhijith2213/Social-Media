@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-
+import logo from '../../../assets/images/talentF-c.png'
 
 /* ------------------------------ IMAGES IMPORT ----------------------------- */
 
@@ -14,7 +14,8 @@ function Landing() {
     <>
       
       <div className="flex justify-between  border">
-        <h2 className="m-6 font-bold text-2xl md:text-4xl text-blue-400">My Brand</h2>
+        {/* <h2 className="m-6 font-bold text-2xl md:text-4xl text-blue-400">{logo}</h2> */}
+        <img src={logo} className='w-32 h-8 md:w-40 md:h-10 m-4' alt="logo" />
         <Link to={'/signin'}>
         <button type="button"
             class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium m-5

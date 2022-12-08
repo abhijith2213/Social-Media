@@ -3,11 +3,8 @@ import { useNavigate } from "react-router-dom";
 import {confirmAlert} from 'react-confirm-alert'
 
 import { HiMenuAlt3, HiOutlineLogout } from "react-icons/hi";
-import { MdOutlineDashboard } from "react-icons/md";
-import { RiSettings4Line } from "react-icons/ri";
-import { TbReportAnalytics } from "react-icons/tb";
+import { MdOutlineDashboard,MdOutlineWorkOutline,MdPhotoCameraBack } from "react-icons/md";
 import { AiOutlineUser} from "react-icons/ai";
-import { FiMessageSquare, FiFolder} from "react-icons/fi";
 
 import { Link, Outlet } from "react-router-dom";
 
@@ -42,10 +39,9 @@ function AdminSideBar() {
     const menus = [
         { name: "dashboard", link: "/admin/admin_panel", icon: MdOutlineDashboard },
         { name: "User Management", link: "/admin/user_management", icon: AiOutlineUser },
-        { name: "Post Management", link: "/admin/post_management", icon: FiFolder },
-        // { name: "messages", link: "/admin/admin_panel", icon: FiMessageSquare , margin: true},
-        // { name: "analytics", link: "/admin/admin_panel", icon: TbReportAnalytics },
-        // { name: "Setting", link: "/admin/admin_panel", icon: RiSettings4Line },
+        { name: "Post Management", link: "/admin/post_management", icon: MdPhotoCameraBack },
+        { name: "Job Management", link: "/admin/job_management", icon: MdOutlineWorkOutline },
+
         { name: "Logout", link: "/admin_login", icon: HiOutlineLogout, margin: true },
       ];
       const [open, setOpen] = useState(true);

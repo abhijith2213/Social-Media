@@ -2,22 +2,26 @@ const Post = require('../Models/postSchema');
 const Comment = require('../Models/commentSchema')
 const User = require('../Models/userSchema');
 const Report = require('../Models/reportsSchema');
-
+const NotificationModel = require('../Models/notificationSchema');
 
 
 
 /* ------------------------------  UPLOAD NEW POST------------------------------ */
 
 const postUpload=(req,res)=>{
+
+    console.log(req.body,'post add body');
         let{userId,description}= req.body
         let image = req?.file?.filename
+        console.log(image,'mmmmmmmmok');
         Post.create({userId,description,image}).then((response)=>{
             res.status(200).json({message:'Post added successfully'})
         }).catch((err)=>{
+            console.log(err);
             res.status(500).json({message:'Post Add failed'})
         })
-    }
-
+    
+}
 
 /* -------------------------------- GET TIMELINE POSTS ------------------------------- */
 
@@ -42,27 +46,44 @@ const getTimelinePost =async (req,res)=>{
 /* -------------------------- POST LIKE MANAGEMENT -------------------------- */
 
 const putLikePost = async (req,res)=>{
-    const post = await Post.findById(req.params.id)
-    if(!post?.likes?.includes(req.body.userId)){
-        await post.updateOne({$push:{likes:req.body.userId}})
-        res.status(200).json({message:'post Liked'})
-    }else{
-        await post.updateOne({$pull:{likes:req.body.userId}})
-        res.status(200).json({message:'post disliked!'})
+    const details ={
+        user:req.body.userId,
+        desc:'Liked your post'
     }
+    try {
+        const post = await Post.findById(req.params.id)
+        if(!post?.likes?.includes(req.body.userId)){
+            await post.updateOne({$push:{likes:req.body.userId}})
+            if(post.userId !== req.body.userId){
+                await NotificationModel.updateOne({userId:post.userId},{$push:{Notifications:details}})
+            }
+            res.status(200).json({message:'post Liked'})
+        }else{
+            await post.updateOne({$pull:{likes:req.body.userId}})
+            res.status(200).json({message:'post disliked!'})
+        }
+    } catch (error) {
+        console.log(error,'ooooo');
+        res.status(500).json(error)
+    }
+
 }
 
 /* ------------------------- POST COMMENT MANAGEMENT ------------------------ */
 
 const putPostComment = async (req,res)=>{
-
     console.log('reached comment');
     console.log(req.body,'body');
     console.log(req.params.id,'params id');
+    const {userId,comment,postUser} = req.body
+    const postId = req.params.id
+    const details ={
+        user:userId,
+        desc:'Commented your post'
+    }
     try {
-        const {userId,comment} = req.body
-        const postId = req.params.id
-          let response =  await  Comment.create({userId,comment,postId:postId})
+        await  Comment.create({userId,comment,postId:postId})
+        await NotificationModel.updateOne({userId:postUser},{$push:{Notifications:details}})
           console.log(res,'opl');
           res.status(200).json({message:'comment added successfully'})
     } catch (error) {
@@ -214,6 +235,9 @@ const getReportData = async(req,res)=>{
         res.status(500).json(error)
     }
 }
+
+
+
 
 module.exports = {postUpload,getTimelinePost,putLikePost,putPostComment,getViewComments,getPostArchieves,
                   getUserPosts,deletePost,reportPost,getReportedPosts,blockPost,unBlockPost,getReportData}

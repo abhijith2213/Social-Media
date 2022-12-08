@@ -35,6 +35,10 @@ const jobSchema = mongoose.Schema({
         type:Array,
         ref:'users',
         default:[]
+    },
+    reports:{
+        type:Array,
+        default:[]
     }
 },{timestamps:true})
 

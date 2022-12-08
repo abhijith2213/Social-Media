@@ -1,4 +1,6 @@
 import axios from "../../../Axios/axios"
+import adminInstance from "../../../Axios/adminAuth"
+
 import React, { useState, useEffect } from "react"
 import moment from "moment"
 import { useNavigate } from "react-router-dom"
@@ -17,7 +19,8 @@ function UserManagement() {
    const [status, setStatus] = useState(true)
 
    useEffect(() => {
-      axios.get("/admin/user_management",{headers:{"x-access-token":localStorage.getItem("adminToken")}}).then((response) => {
+      console.log('uuu');
+            adminInstance.get("/user_management").then((response) => {
             setUsers(response.data)
          })
          .catch((error) => {
@@ -42,7 +45,7 @@ function UserManagement() {
         {
           label: 'Yes',
           onClick: () => 
-          axios.put("/admin/user_management/block_user",{userId}).then((res)=>{
+          adminInstance.put("/user_management/block_user",{userId}).then((res)=>{
             if(res.data.update){
              toast.warn("User blocked successfully!",{
                 position: "top-center",
@@ -79,7 +82,7 @@ function UserManagement() {
              {
                label: 'Yes',
                onClick: () => 
-               axios.put('/admin/user_management/unblock_user',{userId}).then((res)=>{
+               adminInstance.put('/user_management/unblock_user',{userId}).then((res)=>{
                   console.log(res);
                   if(res.data.update){
                     toast.warn("User unblocked successfully!",{

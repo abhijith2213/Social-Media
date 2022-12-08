@@ -7,7 +7,7 @@ import "react-toastify/dist/ReactToastify.css" //Toast Css
 // Assets
 import { GrAdd } from "react-icons/gr"
 import { MdOutlineWorkOff } from "react-icons/md"
-import { addNewJob, findAllPosts, findAssignedPosts, findMyPosts, reportJob } from "../../../Apis/JobRequests"
+import { addNewJob, findAllPosts, findAssignedPosts, findMyPosts, findWorksToMe} from "../../../Apis/JobRequests"
 import Client from "./Client"
 import Freelancer from "./Freelancer"
 
@@ -83,6 +83,7 @@ function Jobs() {
             }
          }
       } else {
+         if(selected){
          try {
             const findAllJobs = async () => {
                const { data } = await findAllPosts(userId)
@@ -93,30 +94,44 @@ function Jobs() {
          } catch (error) {
             console.log(error)
          }
+      }else{
+         console.log('in else');
+         try {
+            const findMyJobs = async () => {
+               const { data } = await findWorksToMe(userId)
+               console.log(data, "my postss work")
+               setAllJobs(data)
+            }
+
+            findMyJobs()
+         } catch (error) {
+            console.log(error)
+         }
+      }
       }
    }, [userId, effect, selected])
 
    /* ------------------------------- REPORT JOBS ------------------------------ */
       // BLOCK POST 
-      const [reason,setReason] = useState('')
+      // const [reason,setReason] = useState('')
 
-      const handleBlock =async(postId)=>{
-         console.log('blockkk');
-         try {
-            const {data} = await reportJob(reason,postId,userId) 
-            setReason('')
-            console.log(data,'block response');
-            setEffect(Date.now())
-            toast.warn(data.message, {
-               position: "top-right",
-               autoClose: 2000,
-               hideProgressBar: true,
-               theme: "dark",
-            })
-            } catch (error) {
-               console.log(error);
-            }
-      }
+      // const handleBlock =async(postId)=>{
+      //    console.log('blockkk');
+      //    try {
+      //       const {data} = await reportJobPost(reason,postId,userId) 
+      //       setReason('')
+      //       console.log(data,'block response');
+      //       setEffect(Date.now())
+      //       toast.warn(data.message, {
+      //          position: "top-right",
+      //          autoClose: 2000,
+      //          hideProgressBar: true,
+      //          theme: "dark",
+      //       })
+      //       } catch (error) {
+      //          console.log(error);
+      //       }
+      // }
 
    return (
       <>
@@ -160,11 +175,21 @@ function Jobs() {
             }
           </div>
             : 
-            <div className="overflow-x-hidden">
+            <div className="overflow-x-hidden mt-12">
+            <div className="flex gap-4 justify-center w-3/4 pl-6 ">
+            <p disabled={selected} className={selected ?"border rounded-md px-2 bg-blue-400 text-white disabled:cursor-not-allowed":"px-2 cursor-pointer"}
+            onClick={()=>setSelected(true)}
+            >Open</p>
+            <p disabled={!selected} className={!selected ?"border rounded-md px-2 bg-blue-400 text-white disabled:cursor-not-allowed":"px-2 cursor-pointer"}
+            onClick={()=>setSelected(false)}>Accepted</p>
+          </div>
                {allJobs.length !== 0 ? allJobs?.map((job,i)=>(
-
-               <Freelancer key={i} job={job} setShowReport={setShowReport} setEffect={setEffect}/>
-
+                  <>
+                  {job?.reports?.includes(userData._id)  ?
+                     null
+                     :
+                     <Freelancer key={i} job={job}  setEffect={setEffect}/>}
+                  </>
                )):
                <div className=' w-screen flex justify-center h-screen'>
                <div className="flex flex-col items-center justify-center  ">
@@ -183,8 +208,7 @@ function Jobs() {
 
          {showModal && (
             <>
-               <div
-                  className='py-6 bg-gray-700 transition duration-150 ease-in-out z-10 absolute top-0 right-0 bottom-0 left-0'
+               <div className='py-6  bg-opacity-50 bg-white transition duration-150 ease-in-out z-10 absolute top-0 right-0 bottom-0 left-0'
                   id='modal'>
                   <div role='alert' className='container mx-auto w-11/12 md:w-2/3 max-w-lg'>
                      <div className='relative py-8 px-5 md:px-10 bg-white shadow-md rounded border border-gray-400'>
@@ -230,7 +254,7 @@ function Jobs() {
                               onChange={handleNewJob}
                               className='text-gray-600 focus:outline-none focus:border focus:border-indigo-700 font-normal w-full h-10 flex items-center  text-sm border-gray-300 rounded border'
                               id='workType' required>
-                              <option value='' disabled hidden>Choose Work Type..</option>
+                              <option value='' disabled selected hidden>Choose Work Type..</option>
                               <option value='Full Time'>Full Time</option>
                               <option value='Part Time'>Part Time</option>
                            </select>
@@ -290,71 +314,7 @@ function Jobs() {
                </div>
             </>
          )}
-         {showReport ?
-            <>
-              <div
-                className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50  outline-none focus:outline-none"
-              >
-                <div className="relative w-auto my-6 mx-auto max-w-sm">
-                  {/*content*/}
-                  <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
-                    {/*header*/}
-                    <div className="flex gap-3  justify-between items-center p-5 border-b border-solid border-slate-200 rounded-t">
-                      <h3 className="text-md text-black font-semibold inline">
-                         Why are you reporting this post?
-                      </h3>
-                      <button
-                        className="p-1 ml-auto bg-transparent border-0 text-black opacity-5 float-right text-3xl leading-none font-semibold outline-none focus:outline-none"
-                        onClick={() => setShowReport(false)}
-                      >
-                        <span className="bg-transparent text-black opacity-5 h-6 w-6 text-2xl block outline-none focus:outline-none">
-                          ×
-                        </span>
-                      </button>
-                    </div>
-                    {/*body*/}
-                      
-                        <div className='flex flex-col m-2 justify-center  gap-3 max-h-50 overflow-y-auto no-scrollbar'>
-                            <div className="px-3">
-                            <input type="radio" required className="mr-2" value="It's spam" name="reason" onChange={(e)=>setReason(e.target.value)} />
-                            <label htmlFor="reason">It's spam</label> 
-                            </div>
-                            <div className="px-3">
-                            <input type="radio" className="mr-2" name="reason" value="I just don't like it"  onChange={(e)=>setReason(e.target.value)}/>
-                            <label htmlFor="reason">I just don't like it</label>     
-                            </div>
-                            <div className="px-3">
-                            <input type="radio" className="mr-2" name="reason" value='false Information'  onChange={(e)=>setReason(e.target.value)}/>
-                            <label htmlFor="reason">false Information</label>    
-                            </div>  
-                            <div className="px-3">
-                            <input type="radio" className="mr-2" name="reason" value='Scam or Fraud'  onChange={(e)=>setReason(e.target.value)}/>
-                            <label htmlFor="reason">Scam or Fraud</label>  
-                            </div>   
-                            <div className="px-3">
-                            <input type="radio" className="mr-2" name="reason" value='Hate speech or symbols'  onChange={(e)=>setReason(e.target.value)}/>
-                            <label htmlFor="reason">Hate speech or symbols</label>  
-                            </div>   
-                        </div>
-                    {/*footer*/}
-                    <div className="flex items-center justify-end p-3 border-t border-solid border-slate-200 rounded-b">
-                      <button
-                        className="text-gray-500 background-transparent font-bold uppercase px-6  text-sm outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
-                        type="button"
-                        onClick={() => setShowReport(false)}>
-                        Close
-                      </button>
-                      <button class="bg-cyan-600 hover:bg-red-400 text-white font-bold py-1 px-4 rounded inline-flex items-center disabled:bg-gray-400"
-                       onClick={handleBlock()} disabled={!reason}>
-                      <span>Submit</span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
-            </>
-           : null}
+
          <ToastContainer />
       </>
    )

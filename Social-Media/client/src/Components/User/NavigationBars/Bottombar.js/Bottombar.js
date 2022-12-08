@@ -4,13 +4,12 @@ import { FiMessageSquare} from "react-icons/fi";
 import { BiHome, BiMessageSquareAdd} from "react-icons/bi";
 import { CgProfile} from "react-icons/cg";
 
-import logo from '../../../../assets/images/logo6.png'
 import log from '../../../../assets/images/talentF-c.png'
-
-
 import { Link } from "react-router-dom";
 
+
 function Bottombar() {
+
 
     const menus = [
         { name: "Home", link: "/home", icon: BiHome },
@@ -50,7 +49,7 @@ function Bottombar() {
 
       <div className="flex justify-between items-center relative p-3 ">
         <div className="flex items-center justify-between">
-          <img className="w-20 h-auto sm:w-10" src={log} alt="" />
+          <img className="w-10 h-auto sm:w-20" src={log} alt="" />
         </div>
         {/* <div>
             Search

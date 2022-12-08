@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react"
 import axios from '../../../../Axios/axios'
 
-import profile2 from "../../../../assets/images/profile11.jpg"
+import profile2 from "../../../../assets/images/download.png"
 import { useSelector } from "react-redux"
 import { Link } from "react-router-dom"
+import userInstance from "../../../../Axios/userAuth"
 
 function RightSidebar() {
 
@@ -21,7 +22,7 @@ function RightSidebar() {
 useEffect(() => {
 
     
-    axios.get('/suggestions/'+userId).then((res)=>{
+    userInstance.get(`/suggestions/${userId}`).then((res)=>{
     setSuggestions(res.data)
 
 }).catch((error)=>{
@@ -59,19 +60,16 @@ const handleUnFollow = (Id)=>{
 
    return (
       <div className='bg-white m-12 shadow-md rounded-md p-8 fixed right-0 top-0 hidden lg:block'>
-         <p className='mb-6'>Suggested</p>
+         <p className='mb-6 text-blue-400 font-medium'>Suggested</p>
 
 
          {suggestions?.map((user,index)=>{
           if(user._id != userId ){
-            
-
-              return   (
-             
+              return   (           
                 <div className='flex justify-between items-center mb-5 gap-11' key={index}>
                   <Link to={`/profile/${user.userName}`}>
                    <div className='flex'>
-                      <img className='rounded-full w-14 h-14 ' src={user?.profilePic? PF+user.profilePic : profile2} alt='pic' />
+                      <img className='rounded-full w-12 h-12 ' src={user?.profilePic? PF+user.profilePic : profile2} alt='pic' />
                       <div className='flex flex-col justify-center items-center ml-3'>
                          <p className='font-medium text-sm'>{user.userName}</p>
                          <p className='font-normal text-xs'>{user.accountType}</p>

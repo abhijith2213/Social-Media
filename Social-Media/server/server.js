@@ -11,7 +11,8 @@ const bodyParser = require('body-parser')
 const cors = require('cors')
 const path = require('path')
 const port = process.env.PORT
-const {connectDb} = require('./config/connections')
+const {connectDb} = require('./config/connections');
+const verifyJWT = require("./Middlewares/verifyJWT");
 
 
 server.use(express.json())

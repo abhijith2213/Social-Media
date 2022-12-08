@@ -1,15 +1,21 @@
 import React,{useState,useEffect} from "react";
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
+import axios from "../../../Axios/axios";
+import {useSelector} from 'react-redux'
+import {useParams} from 'react-router'
+
+import { ToastContainer, toast } from 'react-toastify';  //Toast
+import 'react-toastify/dist/ReactToastify.css';  //Toast Css
+
 import "./Profile.css";
 import cover from "../../../assets/images/bgImg.avif"
 import profile from "../../../assets/images/download.png"
 
-import {MdOutlinePhotoCameraBack, MdArchive,MdDynamicFeed} from 'react-icons/md'
-import axios from "../../../Axios/axios";
-import {useSelector} from 'react-redux'
-import {useParams} from 'react-router'
-import { getUserByUsername, getUserFollowers, getUserFollowing } from "../../../Apis/userRequests";
+import {MdOutlinePhotoCameraBack, MdArchive,MdDynamicFeed,MdModeEditOutline} from 'react-icons/md'
+import { BiDownload, BiImage } from "react-icons/bi"
+
+import { getUserByUsername, getUserFollowers, getUserFollowing, updateCoverPic } from "../../../Apis/userRequests";
 import { newUserChat } from "../../../Apis/chatRequests";
 
 function Profile() {
@@ -140,9 +146,47 @@ const showFollowing =async ()=>{
   }
 }
 
-/* ------------------------------ EDIT PROFILE ------------------------------ */
+/* ------------------------------ EDIT PROFILE Cover ------------------------------ */
+const [coverPicEdit,setCoverPicEdit] = useState(false)
+const [coverPic,setCoverPic] = useState('')
+const [showImage,setShowImage] = useState('')
 
+const handleImage =(e)=>{
+  setShowImage(URL.createObjectURL(e.target.files[0]))
+  setCoverPic(e.target.files[0])
+}
 
+const handleClose = ()=>{
+  setCoverPic('')
+  setShowImage('')
+  setCoverPicEdit(false)
+}
+const handleCoverPic = async ()=>{
+  let datas
+  if(coverPic){
+        datas = new FormData()
+        datas.append('file',coverPic)
+        datas.append('userId',userData._id)
+
+        try {
+          const {data} = await updateCoverPic(datas)
+          if(data.message){
+            console.log(data);
+            toast.success(data.message, {
+              position: "top-right",
+              autoClose: 2000,
+              hideProgressBar: true,
+              theme: "dark",
+           })
+           setCoverPic('')
+           setShowImage('')
+           setCoverPicEdit(false)
+          }
+        } catch (error) {
+          console.log(error);
+        }
+    }
+  }
 
   return (
 
@@ -152,13 +196,17 @@ const showFollowing =async ()=>{
      <div className="ProfileCard lg:container mt-5 ">
      {userName !== userData.userName ? 
       <div className="ProfileImages">
-        <img className="w-full h-40 object-cover object-center" src={cover} alt="CoverImage" />
-        <img src={user?.profilePic? PF+user.profilePic : profile} alt="ProfileImage"/>
+        <img className="coverPic w-full h-40 object-cover object-center " src={user?.coverPic? PF+user?.coverPic:cover} alt="CoverImage" />
+        <img className="profilePic w-20 h-28 rounded-full" src={ PF+user?.profilePic} alt="ProfileImage"/>
       </div>
       :
       <div className="ProfileImages">
-            <img className="w-full h-40 object-cover object-center" src={cover} alt="CoverImage" />
-            <img src={userData?.profilePic? PF+userData.profilePic : profile} alt="ProfileImage"/>
+        <div className="relative w-full">
+              <MdModeEditOutline className="absolute text-gray-800 text-xl cursor-pointer right-5 bottom-5  rounded-full"
+               onClick={()=>setCoverPicEdit(true)}/>
+            <img className="coverPic w-full h-40 object-cover " src={user?.coverPic? PF+user?.coverPic:cover} alt="CoverImage"/>
+        </div>
+            <img className="profilePic w-20 h-28 rounded-full" src={PF+user?.profilePic} alt="ProfileImage"/>
       </div>
       }
       <div className="flex justify-end pr-4">
@@ -248,7 +296,7 @@ const showFollowing =async ()=>{
     </div>
 
 </div>
-
+<ToastContainer/>
 <>
 {showModal.status ? (
   <>
@@ -276,7 +324,7 @@ const showFollowing =async ()=>{
           {myFollowers?.map((follower)=>{
             return(
               <div className='flex m-2 justify-between items-center  gap-3 max-h-20 overflow-y-auto no-scrollbar'>
-              <img className='rounded-full w-10 h-10 ' src={follower?.profilePic? PF+follower.profilePic : profile} alt='pic'/>
+              <img className='rounded-full w-10 h-10 ' src={PF+follower.profilePic} alt='pic'/>
               <div className='flex flex-col justify-center items-center ml-3'>
                  <p className='font-medium text-sm'>{follower?.userName}</p>
                  <p className='font-normal text-xs'>{follower?.accountType}</p>
@@ -306,7 +354,47 @@ const showFollowing =async ()=>{
   </>
 ) : null}
 </>
+            {/* COVER PIC MODAL  */}
 
+{ coverPicEdit ?
+               <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50  outline-none focus:outline-none">
+               <div className="relative w-auto my-6 mx-auto max-w-sm">
+           <div className=' pt-16 flex justify-center  '>
+              <div className="w-screen flex justify-center">
+                 <div className='bg-[#FFFFFF] w-[470px] rounded-lg shadow-md border mb-4 pt-2'>
+                  <div className="flex gap-2 pl-4">
+                       {!showImage && <BiImage className='text-2xl text-blue-600'/>}
+                       <label htmlFor="img-upload" className="cursor-pointer pl-3 font-medium">
+                        Select Cover Image
+                       </label>
+                       <input type="file" name="file" id="img-upload"  onChange={handleImage} className="hidden"/>
+                  </div>
+                    <div className='w-full px-8 pt-2'>
+                    {showImage ?  <span>
+                       <img src={showImage} alt="" className="relative h-40 w-full rounded-md object-fill object-center"/>
+                       </span> : null}
+  
+                    </div>
+                    <hr />
+                    <div className='w-full p-4'>   
+                      <div className="flex gap-2 justify-end">
+                       <button className="px-2 py-1 text-sm text-white bg-red-400 rounded-lg text-center mr-2 mb-2 "
+                       onClick={handleClose}>close</button>
+                       <button type='submit'
+                       onClick={handleCoverPic} 
+                       disabled={!coverPic}                     
+                      class='text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 dark:shadow-blue-800/80 font-medium rounded-xl text-sm px-5 py-1 text-center mr-2 mb-2 disabled:opacity-50'>
+                        Update
+                       </button>
+                          </div>
+                    </div>
+                 </div>
+                 {/* </div> */}
+                 </div>
+           </div>
+           </div>
+           </div>:null
+}
   </>
   )
 }

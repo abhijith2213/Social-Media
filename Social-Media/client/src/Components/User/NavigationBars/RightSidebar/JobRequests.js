@@ -18,6 +18,9 @@ import { assignWork, fetchJobRequests, getRequestUsers } from "../../../../Apis/
 
 
 function JobRequests() {
+
+   const PF = process.env.REACT_APP_PUBLIC_FOLDER
+
 const userData = useSelector((state) => state.user)
 const userId = userData?._id
 
@@ -114,7 +117,7 @@ console.log(users,'urs');
             <div className='flex justify-between items-center gap-3 m-2 '>
             <Link to={`/profile/${user?.userName}`}>
                <div className='flex items-center'>
-                  <img className='rounded-full w-10 h-10 ' src={profile2} alt='pic' />
+                  <img className='rounded-full w-10 h-10 ' src={PF+user?.profilePic} alt='pic' />
                   <div className='flex flex-col justify-center ml-3'>
                      <p className=' text-sm'>{user?.fullName}</p>
                      <p className=' text-xs'>@{user?.userName}</p>

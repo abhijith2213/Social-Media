@@ -1,15 +1,20 @@
 import React,{useEffect, useState, useRef} from "react";
 import {useSelector} from 'react-redux'
+import { Link } from "react-router-dom";
 import { userChats } from "../../../Apis/chatRequests";
 import ChatBox from "./ChatBox";
 import Conversation from "./Conversation";
 import {io} from 'socket.io-client'
+import { findSearch } from "../../../Apis/userRequests";
 
+import profile from "../../../assets/images/download.png"
 
 
 function ChatInterface() {
 
   const user = useSelector(state =>state.user)
+  const PF = process.env.REACT_APP_PUBLIC_FOLDER
+
   console.log(user,'message user');
 
 
@@ -67,6 +72,24 @@ const checkOnlineStatus = (chat)=>{
   return online ? true : false
 }
 
+/* ------------------------------ SEARCH USERS ------------------------------ */
+
+const [serachUser,setSearchUser] = useState([])
+
+const handleSearch=async (e)=>{
+  const val = e.target.value
+  if(val == ''){
+    setSearchUser([])
+  }
+  try {
+    const {data} = await findSearch(val)
+    console.log(data,'jjjjjj');
+    setSearchUser(data)
+  } catch (error) {
+    console.log(error);
+  }
+}
+
   return (
     <div className="lg:ml-20 mt-20 md:mt-0 bg-[#FFFFFF] shadow-md  w-full md:w-11/12 lg:w-3/4 ">
     <div class="container mx-auto">
@@ -80,9 +103,27 @@ const checkOnlineStatus = (chat)=>{
                   <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                 </svg>
               </span>
-              <input type="search" class="block w-full py-2 pl-10 bg-gray-100 rounded outline-none" name="search"
-                placeholder="Search" required />
+              <input type="search" onChange={handleSearch} class="block w-full py-2 pl-10 bg-gray-100 rounded outline-none" name="search"
+                placeholder="Search...." required />
             </div>
+            {serachUser.length !==0 ?
+             serachUser.map((user)=>(
+              <div>
+                <Link to={`/profile/${user.userName}`}>
+              <a class="flex items-center px-3 py-2 text-sm transition duration-150  ease-in-out border-b border-gray-300 cursor-pointer hover:bg-gray-100 focus:outline-none">     
+                <img class="object-cover w-10 h-10 rounded-full"
+                  src={user?.profilePic? PF+user.profilePic :profile} alt="username" />
+                <div class="w-full pb-2">
+                  <div class="flex justify-between">
+                    <span class="block ml-2 font-semibold text-gray-600">{user.userName}</span>
+                  </div>
+                 <span class="block ml-2 text-sm text-gray-400">{user.accountType}</span>
+                </div>
+              </a></Link>
+
+              </div>
+             ))
+               :null}
           </div>
 
           <ul class="overflow-auto h-[32rem]">

@@ -1,6 +1,7 @@
+const JobReport = require("../Models/jobReportSchema");
 const Job = require("../Models/jobSchema");
+const NotificationModel = require("../Models/notificationSchema");
 const User = require("../Models/userSchema");
-
 /* ------------------------------ ADD NEW WORK ------------------------------ */
 
 const PostAddWork = async (req,res)=>{
@@ -45,17 +46,18 @@ const getAssignedPosts = async (req,res)=>{
 
 const getAllPosts = async (req,res)=>{
     console.log(req.params.id);
+    let ab=[]
     try {
         const user = await User.findById(req.params.id)
-        const posts = await Promise.all(user?.following?.map(async(id)=>{
-            return  Job.find({userId:id,work:'open'}).populate('userId','userName fullName')
+        const posts = await Promise.all(user?.following?.map((id)=>{
+            return  Job.find({userId:id,work:'open',status:'active',reports:{$ne:req.params.id}}).sort({createdAt:-1}).populate('userId','userName fullName')
            
         }))
         const result = posts?.filter((post)=>{
             return post.length != 0
         })
-        console.log(result,'nnnpostsss');
-        res.status(200).json(...result)
+        console.log(ab.concat(...result),'nnnpostsss');
+        res.status(200).json(ab.concat(...result))
     } catch (error) {
        console.log(error);
        res.status(500).json(error) 
@@ -78,9 +80,14 @@ try {
 const sendJobRequest = async (req,res)=>{
     console.log(req.params.id);
     console.log(req.body);
+    const details ={
+        user:req.body.userId,
+        desc:'Send a Connect Request'
+    }
     try {
         const job = await Job.findByIdAndUpdate(req.params.id,
             {$push:{requests:req.body.userId}})
+            await NotificationModel.updateOne({userId:job.userId},{$push:{Notifications:details}})
             console.log(job,'oo');
             res.status(200).json({message:'Request Send Successfully'})
 
@@ -109,8 +116,8 @@ const getRequests = async (req,res)=>{
 const getRequestUsers =async(req,res)=>{
     console.log(req.params.id);
     try {
-        const data = await Job.findById(req.params.id).populate('requests','userName fullName')
-        console.log(data,'dataaa');
+        const data = await Job.findById(req.params.id).populate('requests','userName fullName profilePic')
+        console.log(data,'jooooooooooooooodataaa');
         res.status(200).json(data.requests)
     } catch (error) {
         console.log(error);
@@ -124,9 +131,13 @@ const assignWork =async (req,res)=>{
     const {userId} = req.body;
     console.log(userId,'lll');
     console.log(req.params.id);
+    const details ={
+        user:userId,
+        desc:'Accepted your connect request'
+    }
 
     try {
-        await Job.findByIdAndUpdate(req.params.id,
+      const job =  await Job.findByIdAndUpdate(req.params.id,
             {$set:{work:userId,requests:[]}})
             res.status(200).json({message:'Work assigned Successfully'})
     } catch (error) {
@@ -136,5 +147,81 @@ const assignWork =async (req,res)=>{
     }
 }
 
+/* ------------------------------- REPORT JOBS ------------------------------ */
+
+const reportJob = async (req,res)=>{
+    const workId = req.params.id;
+    const {userId,reason} = req.body
+    const data = new JobReport({workId,userId,reason})
+    console.log(data,'save dataaaa');
+
+    try {
+        let job = await Job.findById(workId)
+        if(!job?.reports?.includes(userId)){
+         console.log('in');
+        await job.updateOne({$push:{reports:userId}}) 
+        await data.save()
+        }
+        res.status(200).json({message:'post Reported Successfully!'})
+     } catch (error) {
+         console.log(error);
+         res.status(500).json(error)
+     }
+}
+
+/* --------------------------- FETCH REPORTED JOBS -------------------------- */
+
+const fetchReportedJobs = async (req,res)=>{
+    console.log('heeerererererrere');
+    try {
+        const posts =await Job.find({reports:{$exists:true,$ne:[]}}).populate('userId','userName')
+        console.log(posts,'allposts');
+        res.status(200).json(posts) 
+    } catch (error) {
+        res.status(500).json(error)
+    }
+}
+
+/* ------------------------ FETCH REPORTED JOB DATAS ------------------------ */
+
+const ReportedJobDetails = async (req,res)=>{
+    console.log(req.params.id);
+    try {
+        const result = await JobReport.find({workId:req.params.id}).populate('userId','userName')
+        res.status(200).json(result)
+        console.log(result,'ijnnnnnnb');
+     } catch (error) {
+         res.status(500).json(error)
+     }
+}
+
+/* ------------------------------- BLOCK JOBS ------------------------------- */
+
+const blockJOb =async(req,res)=>{
+
+    try {
+        const result = await Job.findByIdAndUpdate(req.params.id,
+            {
+                $set:{status:'inactive'}
+            })
+            res.status(200).json({message:'post Blocked!'})
+    } catch (error) {
+        res.status(500).json(error)
+    }
+}
+
+/* -------------------------- GET MY ASSIGNED WORKS ------------------------- */
+
+const assignedWorksToMe = async(req,res)=>{
+
+    try {
+        const work = await Job.find({work:req.params.id}).populate('userId', 'userName fullName profilePic')
+        console.log(work,'pllllwork');
+        res.status(200).json(work)
+    } catch (error) {
+        res.status(500).json(error)
+    }
+}
+
 module.exports = {PostAddWork, getMyPosts,getAssignedPosts,getAllPosts,deleteJob,sendJobRequest,getRequests,
-                  getRequestUsers,assignWork}
+                  getRequestUsers,assignWork,reportJob,fetchReportedJobs,ReportedJobDetails,blockJOb,assignedWorksToMe}

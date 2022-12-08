@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import {useDispatch, useSelector } from "react-redux"
-import {Link} from 'react-router-dom'
 import profile from "../../../assets/images/download.png"
 
 import { ToastContainer, toast } from 'react-toastify';  //Toast
 import 'react-toastify/dist/ReactToastify.css';  //Toast Css
 
-import { setProfilePicture, updateUserProfile } from "../../../Apis/userRequests";
+
+import {HiOutlineEye, HiOutlineEyeOff} from 'react-icons/hi'
+
+import { changePassword, setProfilePicture, updateUserProfile } from "../../../Apis/userRequests";
 import { update, setProfilePic } from "../../../Redux/User/userSlice";
 
 function EditProfile() {
@@ -15,6 +17,8 @@ function EditProfile() {
 
     const dispatch = useDispatch();
     const userData = useSelector(state =>state.user)
+
+    const [Select, setSelect ]= useState(true)
 
     const [showModal,setShowModal] = useState(false)
 
@@ -57,11 +61,15 @@ function EditProfile() {
 
     console.log(profilePic,'lllll');
 
+    // HANDLE IMAGE CHANGE 
+
     const handleImage =(e)=>{
       setShowImage(URL.createObjectURL(e.target.files[0]))
       setProPic(e.target.files[0])
       setModal(true)
    }
+
+  //  MAKE CHANGES 
 
     const handleNewProfilePic =async (e) =>{
       let datas
@@ -92,6 +100,60 @@ function EditProfile() {
               }
       }
 
+      /* ----------------------------- CHANGE PASSWORD ---------------------------- */
+      const passRegex ='/^(?=.*[a-zA-Z]).{8,12}$/'
+      const initial = {oldPass:'',newPass:'',confirmNewPass:''}
+      const [password,setPassword] = useState(initial)
+      const [passError, setPassError] = useState('')
+      console.log(password,'kkkkk');
+      
+      const handlePassChange =(e)=>{
+        const {name,value} = e.target
+        setPassword({...password, [name]:value})
+      }
+      
+      const handleSubmitPassword =async (e)=>{
+        e.preventDefault()
+        console.log('reacgeddddddd pass change');
+        if(password.newPass.length < 8 ||password.newPass.length > 12){
+          setPassError('password must be 8-12 characters!')
+        }else if(password.newPass !== password.confirmNewPass){
+          setPassError('new password and confirmpassword not match!')
+        }else{
+          setPassError('')
+          try {
+            const {data} = await changePassword(userData._id,password)
+            setPassword(initial)
+            toast.success(data.message, {
+              position: "top-right",
+              autoClose: 2000,
+              hideProgressBar: true,
+              theme: "dark",
+            })
+            console.log(data,'pass change data');
+          } catch (error) {
+            if(error.response.status === 401){
+              setPassError(error.response.data.message)
+            }
+            console.log(error);
+          }
+        }
+      }
+      
+      /* ------------------------- CHANGE PASS INPUT TYPE ------------------------- */
+      const [inputType,setInputType] = useState('password')
+      
+      const handleInputType =(e)=>{
+        console.log('hiiiiiiii');
+        if(inputType==="password")
+        {
+          setInputType("text")
+         return;
+        }
+        setInputType("password")
+      }
+      
+
 
   return (
     <>
@@ -102,11 +164,12 @@ function EditProfile() {
    <div class="w-full md:w-1/4 p-4 sm:p-6 lg:p-8 bg-white shadow-md">
         <h2 className="text-xl mb-4 font-medium text-blue-500">EDIT PROFILE</h2>
      <div className="flex flex-col gap-4">
-       <Link to={'/account/editProfile'}> <h2 className="cursor-pointer text-lg">Edit Details</h2></Link>
-        <Link to={'/account/changePassword'}><h2 className="cursor-pointer text-lg">Change password</h2></Link>
+       <h2 className={Select?'bg-blue-400 text-white px-2 rounded-md cursor-pointer text-lg':"cursor-pointer text-lg"} onClick={()=>setSelect(true)}>Edit Details</h2>
+          <h2 className={!Select?'bg-blue-400 text-white px-2 rounded-md cursor-pointer text-lg':"cursor-pointer text-lg"} onClick={()=>setSelect(false)}>Change password</h2>
      </div>
    </div>
    
+  {Select ? 
    <div class="w-full md:w-3/4 p-8 bg-white lg:ml-4 shadow-md">
      <div class="rounded  shadow p-6">
        <div class="pb-6">
@@ -135,18 +198,57 @@ function EditProfile() {
            class="border rounded focus:outline-none rounded-r px-4 py-2 w-full" type="text"
              value={newProfile?.about}  onChange={handleChange} />
          </div>
-       </div>
        <button type="button" 
        class="text-white bg-blue-600  hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 "
        onClick={handleSubmit}>Submit</button>
+       </div>
      </div>
    </div>
+   :
+   <div class="w-full md:w-3/4 p-8 bg-white lg:ml-4 shadow-md ">
+   <div class="rounded  shadow p-6">
+     <div class="pb-6">
+      <div className="flex items-center gap-6 mb-2">
+      <img id="showImage" class="max-w-xs w-24 h-24 items-center border rounded-full" src={ PF+userData?.profilePic } alt=""/>
+      <div className="block">
+      <label for="name" class="font-semibold text-gray-700 block pb-1 text-2xl">{userData?.userName}</label>
+      </div>                                  
+      </div>
+          <label for="oldPassword" class="font-semibold text-gray-700 block pb-1">Old Password</label>
+       <div class="mb-2 flex relative  items-center">
+         <input  name="oldPass" class="border rounded focus:outline-none rounded-r px-4 py-2 w-full" 
+         type={inputType} value={password.oldPass} onChange={handlePassChange}/>
+          <button className="absolute right-4" onClick={handleInputType}>
+          { inputType==="password"?<HiOutlineEyeOff/>:<HiOutlineEye/>}
+          </button>
+       </div>
+       <div class="mb-2">
+          <label for="userName" class="font-semibold text-gray-700 block pb-1">New Password</label>
+         <input  name="newPass" class="border rounded focus:outline-none rounded-r px-4 py-2 w-full"
+          type="password" pattern="/^(?=.*[a-zA-Z]).{8,12}$/"  value={password.newPass} onChange={handlePassChange}/>
+       </div>
+       <div class="">
+          <label for="userName" class="font-semibold text-gray-700 block pb-1">Confirm New Password</label>
+         <input  name="confirmNewPass" class="border rounded focus:outline-none rounded-r px-4 py-2 w-full" 
+         type='password' value={password.confirmNewPass} onChange={handlePassChange} />
+
+       </div>
+     </div>
+     {passError && <p className="text-red-600 mb-2">{passError}</p>}
+     <button type="button" 
+     class="text-white bg-blue-500  hover:bg-blue-600 focus:ring-4 block focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 "
+     onClick={handleSubmitPassword}>Change Password</button>
+     <span className="text-blue-400 cursor-pointer">Forgotten your Password?</span>
+   </div>
+ </div>
+}
 
  </div>
 
 </div>
 <ToastContainer/>
   </div>
+  {/* change profile pic modal  */}
   {showModal ?  <>
     <div
       className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50  outline-none focus:outline-none"
@@ -163,7 +265,7 @@ function EditProfile() {
           {/*body*/}
 
           <div className="flex cursor-pointer  items-center justify-center p-3 border-t border-solid border-slate-200 rounded-b">
-                 <p className='font-medium text-sm text-red-500'>Remove Current Profile Pic</p>
+                 {/* <p className='font-medium text-sm text-red-500' onClick={removeProfilePic}>Remove Current Profile Pic</p> */}
          </div>
          <div className="flex cursor-pointer  items-center justify-center p-3 border-t border-solid border-slate-200 rounded-b" onClick={handleNewProfilePic}>
          <label htmlFor="img-upload" className="cursor-pointer">

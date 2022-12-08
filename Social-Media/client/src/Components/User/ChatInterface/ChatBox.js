@@ -4,8 +4,12 @@ import { getUser } from "../../../Apis/userRequests"
 import {format} from 'timeago.js'
 import InputEmoji from 'react-input-emoji'
 
+import profile from "../../../assets/images/download.png"
+
 
 function ChatBox({ chat, currentUser, setSendMessage, recieveMessage }) {
+
+    const PF = process.env.REACT_APP_PUBLIC_FOLDER
 
     const [userData, setUserData] = useState(null)
     const [messages, setMessages] = useState([])
@@ -102,7 +106,7 @@ function ChatBox({ chat, currentUser, setSendMessage, recieveMessage }) {
             <div class='relative flex items-center p-3 border-b border-gray-300'>
                <img
                   class='object-cover w-10 h-10 rounded-full'
-                  src='https://cdn.pixabay.com/photo/2018/09/12/12/14/man-3672010__340.jpg'
+                  src={userData?.profilePic? PF+userData.profilePic : profile}
                   alt='username'
                />
                <span class='block ml-2 font-bold text-gray-600'>{userData?.userName}</span>

@@ -14,7 +14,7 @@ import log from '../../../../assets/images/talentF-c.png'
 
 import React from "react";
 import { useNavigate, Link } from "react-router-dom";
-import {confirmAlert} from 'react-confirm-alert'
+import {confirmAlert} from 'react-confirm-alert';
 import { useDispatch } from "react-redux";
 import { remove } from "../../../../Redux/User/userSlice";
 
@@ -51,7 +51,7 @@ function Sidebar() {
     const menus = [
         { name: "Home", link: "/home", icon: BiHome },
         { name: "messages", link: "/message", icon: FiMessageSquare },
-        { name: "Notifications", link: "/home", icon: MdNotificationsNone },
+        { name: "Notifications", link: "/notifications", icon: MdNotificationsNone },
         { name: "Create", link: "/home", icon: BiMessageSquareAdd },
         { name: "Works", link: "/works", icon: MdWorkOutline },
         { name: "My Profile", link: "/myprofile", icon: CgProfile ,bottom:true},   
@@ -65,10 +65,8 @@ function Sidebar() {
         
         <div hidden className="text-center mt-8 mb-9 lg:block flex justify-center ">
         
-          {/* <img className="md:w-1/2 lg:w-1/3 inline" src={logo} alt="" /> */}
           <img  className="md:w-1/2 lg:w-3/4  mt-2" src={log} alt="" />
             
-          {/* <h2 hidden className="font-bold text-xl lg:block">LOGO</h2> */}
         </div>
         <div className=" flex flex-col gap-6 justify-start relative md:items-center lg:items-start">
           {menus?.map((menu, i) => (
