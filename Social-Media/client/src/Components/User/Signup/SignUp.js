@@ -70,7 +70,6 @@ function SignUp() {
 
    const handleSignUp = async (e) => {
       e.preventDefault()
-      console.log(otp.length,'kkk');
 
       if (otp.length < 6) {
          setOtpError("Provide a 6 digit OTP")
@@ -114,11 +113,7 @@ function SignUp() {
 
    const resendOtp = async () => {
       setOtp('')
-      // const details ={
-      //    email:formvalues.email,
-      //    userName:formvalues.userName,
-      //    resend:true
-      // }
+
       try {
          const { data } = await resendOtpCall(formvalues.email)
          console.log(data);

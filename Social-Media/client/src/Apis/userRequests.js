@@ -35,4 +35,11 @@ export const validateOtp = (otp) => axios.post(`/singnUp/otp/verify`,otp)
 
 export const resendOtpCall = (data)=>axios.post(`/signup/otp/resend`,{email:data})
 
+
 export const changePassword =(userId,data) =>axios.put(`/user/editProfile/changePassword/${userId}`,data)
+
+
+export const handleNotCount = (userId) => axios.put(`/user/notification/read/${userId}`)
+
+
+export const fetchNoCounts = (userId) => axios.get(`/user/notifications/getCount/${userId}`)

@@ -35,7 +35,7 @@ const getTimelinePost =async (req,res)=>{
         })
       )
         console.log(feedPosts);
-      res.status(200).json(myPost.concat(...feedPosts) )
+      res.status(200).json(myPost.concat(...feedPosts))
     } catch (error) {
         console.log(error);
         res.status(500).json('Something went wrong!')
@@ -62,6 +62,7 @@ const putLikePost = async (req,res)=>{
             res.status(200).json({message:'post Liked'})
         }else{
             await post.updateOne({$pull:{likes:req.body.userId}})
+            await NotificationModel.updateOne({userId:post.userId},{$pull:{Notifications:details}})
             res.status(200).json({message:'post disliked!'})
         }
     } catch (error) {

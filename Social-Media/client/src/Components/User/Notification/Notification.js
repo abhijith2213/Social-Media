@@ -16,8 +16,9 @@ function Notification() {
 
    const [notifications, setNotifications] = useState([])
    const [notCount,setNotCount] = useState([])
-   console.log(notCount,'notcount');
    
+   console.log(notCount,'notcount');
+
    localStorage.setItem('count', 0);
 
 

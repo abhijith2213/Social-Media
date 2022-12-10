@@ -18,6 +18,7 @@ import {confirmAlert} from 'react-confirm-alert';
 import { useDispatch ,useSelector} from "react-redux";
 import { remove } from "../../../../Redux/User/userSlice";
 import { SocketContext } from "../../../../Context/socketContext";
+import { fetchNoCounts, handleNotCount } from "../../../../Apis/userRequests";
 
 
 function Sidebar() {
@@ -25,27 +26,38 @@ function Sidebar() {
   const navigate = useNavigate()
   const dispatch = useDispatch()
 
+  const socket = useContext(SocketContext)
   const userData = useSelector((state) => state.user)
 
-  const [notifications, setNotifications] = useState(0)
+  const [notifications, setNotifications] = useState('')
 
-  const socket = useContext(SocketContext)
+  const fetchnotificationCount=async()=>{
+    try {
+      const {data} = await fetchNoCounts(userData._id)
+      console.log(data,'kkmmbbffrr444');
+      setNotifications(data)
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   useEffect(() => {
     if(userData){
       socket.emit("new-user-add", userData._id)
     }
-    setNotifications(JSON.parse(localStorage.getItem('count')));
+
+    fetchnotificationCount()
   }, []);
 
   useEffect(()=>{
     socket.on("getNotification",data =>{
-      setNotifications(notifications+1)
+      fetchnotificationCount()
     })
-    localStorage.setItem('count', notifications);
+
   },[socket,notifications])
   
 
+  /* ------------------------------ HANDLE LOGOUT ----------------------------- */
 
   const handleLogout = () => {
     console.log('in logout');
@@ -71,11 +83,24 @@ function Sidebar() {
  
   }
 
+  /* ------------------------ HANDLE NOTIFICATION COUNT ----------------------- */
+
+  const handleNotiView =async()=>{
+      console.log('hi action');
+      try {
+        const {data} = await handleNotCount(userData._id)
+        console.log(data,'pppoooyyttrre');
+      } catch (error) {
+        console.log(error);
+      }
+  }
+
+  /* --------------------------------- OPTIONS -------------------------------- */
 
     const menus = [
         { name: "Home", link: "/home", icon: BiHome },
         { name: "messages", link: "/message", icon: FiMessageSquare },
-        { name: "Notifications", link: "/notifications", icon: MdNotificationsNone ,notifications:true },
+        { name: "Notifications", link: "/notifications", icon: MdNotificationsNone ,notifications:true ,action:handleNotiView},
         { name: "Create", link: "/home", icon: BiMessageSquareAdd },
         { name: "Works", link: "/works", icon: MdWorkOutline },
         { name: "My Profile", link: "/myprofile", icon: CgProfile },   
@@ -97,6 +122,7 @@ function Sidebar() {
             <Link
               to={menu?.link}
               key={i}
+              onClick={menu.action}
               className={` ${menu?.notifications && ""
               } group flex items-center text-sm  gap-3.5 font-medium p-2 hover:bg-gray-300 rounded-md`}>
              {menu.name == 'Logout'? <div className="text-2xl" onClick={handleLogout}>{React.createElement(menu?.icon, )}</div> :<div className="text-2xl">{React.createElement(menu?.icon, )}</div> }

@@ -10,6 +10,7 @@ import { SocketContext } from "../../../../Context/socketContext";
 import { useSelector, useDispatch} from "react-redux";
 import {confirmAlert} from 'react-confirm-alert';
 import { remove } from "../../../../Redux/User/userSlice";
+import { fetchNoCounts } from "../../../../Apis/userRequests";
 
 
 function Bottombar() {
@@ -17,30 +18,42 @@ function Bottombar() {
   const userData = useSelector((state) => state.user)
 
   const socket = useContext(SocketContext)
+  
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+  
+  const [open,setOpen] = useState(false)
+  const [notifications, setNotifications] = useState('')
 
-  const initial =   JSON.parse(window.localStorage.getItem('count'));
-  const [notifications, setNotifications] = useState(initial)
+  /* ------------------------- NOTIFICATION MANAGEMENT ------------------------ */
 
-console.log(notifications,'jjjjjjjjjjxxssadda0000000000000');
+
+  const fetchnotificationCount=async()=>{
+    try {
+      const {data} = await fetchNoCounts(userData._id)
+      setNotifications(data)
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
 
   useEffect(() => {
     if(userData){
       socket.emit("new-user-add", userData._id)
+      fetchnotificationCount()
+
     }
   }, []);
 
   useEffect(()=>{
-    console.log('called get notiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii');
     socket.on("getNotification",data =>{
-      setNotifications(notifications+1)
+      fetchnotificationCount()
    })
-   localStorage.setItem('count', notifications);
   },[socket,notifications])
 
-  const [open,setOpen] = useState(false)
+  /* --------------------------------- LOGOUT --------------------------------- */
 
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
 
   const handleLogout = () => {
     confirmAlert({
@@ -64,6 +77,8 @@ console.log(notifications,'jjjjjjjjjjxxssadda0000000000000');
     });
  
   }
+
+  /* ---------------------------------- MENUS --------------------------------- */
 
     const menus = [
       { name: "works", link: "/works", icon: MdWorkOutline },

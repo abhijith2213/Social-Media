@@ -15,6 +15,10 @@ const NotificationSchema = new mongoose.Schema({
         },
         time:{
             type:Date,
+        },
+        unRead:{
+            type:String,
+            default:'true'
         }
         }]
 })

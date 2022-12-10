@@ -437,6 +437,41 @@ const getNotifications = async (req, res) => {
    }
 }
 
+/* ------------------------ MANAGE NOTIFICATION STATUS ----------------------- */
+
+const manageNotificationCount = async (req,res)=>{
+
+   try {
+      await NotificationModel.updateOne({userId:req.params.id},
+         {$set:{'Notifications.$[].unRead':'false'}})
+         res.status(200).json('updated')
+   } catch (error) {
+      console.log(error);
+      res.status(500).json(error)
+   }
+}
+
+/* ---------------------- GET UNREAD NOTIFICATION COUNT --------------------- */
+
+const getNotifCount =async(req,res)=>{
+   console.log(req.params.id,'sssssssssssssuuuuuuuuuuuuuuuuuiiiiiiiii');
+   try {
+      const result = await NotificationModel.findOne({userId:req.params.id})
+      const unread =  result?.Notifications?.filter((data)=>{
+         if(data?.unRead === 'true'){
+            return data
+         }
+      })
+      console.log(unread.length,'counttttttt99999999900000000');
+      res.status(200).json(unread?.length)
+   } catch (error) {
+      res.status(500).json(error)
+   }
+}
+
+
+
+
 /* -------------------------- CHANGE USER PASSWORD -------------------------- */
 
 const changeUserPassword = async (req,res)=>{
@@ -479,5 +514,7 @@ module.exports = {
    verifyOtp,
    sendUserOtp,
    resendOtp,
-   changeUserPassword
+   changeUserPassword,
+   manageNotificationCount,
+   getNotifCount
 }
