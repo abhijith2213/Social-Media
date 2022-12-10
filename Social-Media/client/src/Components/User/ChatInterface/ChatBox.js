@@ -101,7 +101,7 @@ function ChatBox({ chat, currentUser, setSendMessage, recieveMessage }) {
    return (
         <>
         {chat?
-      <div class='hidden md:col-span-2 md:block  relative '>
+      <div class={`md:col-span-2 md:block  relative `}>
          <div class='w-full'>
             <div class='relative flex items-center p-3 border-b border-gray-300'>
                <img

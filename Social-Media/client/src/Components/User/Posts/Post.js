@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useRef } from "react"
+import React, { useState, useEffect, useContext,useRef } from "react"
 import { Link } from "react-router-dom"
 import { useSelector } from "react-redux"
 import { format } from "timeago.js"
-import { confirmAlert } from "react-confirm-alert"
 import { ToastContainer, toast } from "react-toastify" //Toast
 import "react-toastify/dist/ReactToastify.css" //Toast Css
 import axios from "../../../Axios/axios"
@@ -12,21 +11,24 @@ import './Post.css'
 /* ------------------------------ ICONS IMPORT ------------------------------ */
 
 import { BsThreeDotsVertical, BsFlagFill } from "react-icons/bs"
-import { FaRegHeart, FaRegComment, FaRegPaperPlane, FaRegStar } from "react-icons/fa"
+import { FaRegHeart, FaRegComment, } from "react-icons/fa"
 import { FcLike } from "react-icons/fc"
 import { reportUserPost, deleteUserPost } from "../../../Apis/PostRequest"
+import { SocketContext } from "../../../Context/socketContext"
+
+
 
 function Post({ post , setBlock}) {
+
    const effectRan = useRef(false)
 
    const PF = process.env.REACT_APP_PUBLIC_FOLDER
    const userData = useSelector((state) => state.user)
    const userId = userData._id
-
+   const socket = useContext(SocketContext)
    const [user, setUser] = useState({})
    const [showDrop, setShowDrop]= useState(false)
    const [showModal,setShowModal] = useState(false)
-
 
 
    useEffect(() => {
@@ -42,6 +44,7 @@ function Post({ post , setBlock}) {
 
    /* ---------------------------- HANDLE POST LIKES --------------------------- */
 
+
    const [likeState, setLikeState] = useState(false)
 
    const [like, setLike] = useState(post?.likes?.length)
@@ -51,10 +54,16 @@ function Post({ post , setBlock}) {
       console.log(post._id, "piddd")
 
       let res = await axios.put(`/post/like/${post._id}`, { userId: userId })
-
       setLikeState(!likeState)
       setLike(likeState ? like - 1 : like + 1)
 
+      if(post.userId !== userId){
+         socket.emit('send-notification',{
+            senderId:userId,
+            recieverId:post.userId,
+            type:'liked your post'
+         })
+      }
       console.log(res, "like res")
    }
 
@@ -92,6 +101,14 @@ function Post({ post , setBlock}) {
          setComment("")
          effectRan.current = false
          setCommentUpdate(!commentUpdate)
+
+         if(post.userId !== userId){
+         socket.emit('send-notification',{
+            senderId:userId,
+            recieverId:post.userId,
+            type:'Commented on your post'
+         })
+      }
          toast.success(res.data.message, {
             position: "top-right",
             autoClose: 2000,
@@ -178,7 +195,7 @@ function Post({ post , setBlock}) {
                      {/* NAME AND PROFILE PIC  */}
                      <Link to={userData.userName === user.userName?'/myprofile':`/profile/${user.userName}`}>
                      <div className='h-16  flex items-center'>
-                        <img className=' rounded-full w-10 mx-3' src={PF+user.profilePic} alt='profile-pic' />
+                        <img className=' rounded-full w-10 h-10 mx-3' src={PF+user.profilePic} alt='profile-pic' />
                         <div className='pr-4 '>
                            <p className='font-medium text-sm '>{user.fullName}</p>
                            <div className='flex gap-4 items-center'>

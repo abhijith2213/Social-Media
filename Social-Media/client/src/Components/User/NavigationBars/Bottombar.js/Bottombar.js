@@ -1,19 +1,73 @@
-import React from "react";
-import { MdNotificationsNone } from "react-icons/md";
+import React,{useEffect, useContext, useState} from "react";
+import { MdNotificationsNone,MdWorkOutline } from "react-icons/md";
 import { FiMessageSquare} from "react-icons/fi";
 import { BiHome, BiMessageSquareAdd} from "react-icons/bi";
 import { CgProfile} from "react-icons/cg";
 
 import log from '../../../../assets/images/talentF-c.png'
-import { Link } from "react-router-dom";
+import { Link ,useNavigate} from "react-router-dom";
+import { SocketContext } from "../../../../Context/socketContext";
+import { useSelector, useDispatch} from "react-redux";
+import {confirmAlert} from 'react-confirm-alert';
+import { remove } from "../../../../Redux/User/userSlice";
 
 
 function Bottombar() {
 
+  const userData = useSelector((state) => state.user)
+
+  const socket = useContext(SocketContext)
+
+  const initial =   JSON.parse(window.localStorage.getItem('count'));
+  const [notifications, setNotifications] = useState(initial)
+
+console.log(notifications,'jjjjjjjjjjxxssadda0000000000000');
+
+  useEffect(() => {
+    if(userData){
+      socket.emit("new-user-add", userData._id)
+    }
+  }, []);
+
+  useEffect(()=>{
+    console.log('called get notiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii');
+    socket.on("getNotification",data =>{
+      setNotifications(notifications+1)
+   })
+   localStorage.setItem('count', notifications);
+  },[socket,notifications])
+
+  const [open,setOpen] = useState(false)
+
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+
+  const handleLogout = () => {
+    confirmAlert({
+      title: 'Logout!',
+      message: 'Are you sure to Logout .',
+      buttons: [
+        {
+          label: 'Yes',
+          onClick: () => {
+            localStorage.removeItem('userToken')
+            localStorage.removeItem('user')
+            dispatch(remove())
+            navigate('/signin');
+    }
+  },
+  {
+    label: 'No',
+   
+  }
+]
+    });
+ 
+  }
 
     const menus = [
+      { name: "works", link: "/works", icon: MdWorkOutline },
         { name: "Home", link: "/home", icon: BiHome },
-        { name: "Create", link: "/home", icon: BiMessageSquareAdd },
         { name: "Messages", link: "/message", icon: FiMessageSquare ,bottom:true},
       ];
 
@@ -30,7 +84,7 @@ function Bottombar() {
               className={` ${
                 menu?.bottom && ""
               } group flex items-center text-sm  gap-3.5 font-medium p-2 hover:bg-gray-300 rounded-md`}>
-              <div className="text-2xl sm:text-4xl">{React.createElement(menu?.icon, )}</div>
+              <div className="text-2xl sm:text-3xl">{React.createElement(menu?.icon, )}</div>
               <h2 
                 style={{
                   transitionDelay: `${i + 3}00ms`,
@@ -49,18 +103,25 @@ function Bottombar() {
 
       <div className="flex justify-between items-center relative p-3 ">
         <div className="flex items-center justify-between">
-          <img className="w-10 h-auto sm:w-20" src={log} alt="" />
+          <img className="w-20 h-auto " src={log} alt="" />
         </div>
-        {/* <div>
-            Search
-        </div> */}
-        <div className="flex gap-5 text-2xl sm:text-3xl">
-        <Link>{React.createElement(MdNotificationsNone, )}</Link>
-        <Link to={'/myprofile'}>{React.createElement(CgProfile, )}</Link>
-        </div>
-        </div>
-      </div>
 
+        <div className="flex gap-5 text-2xl ">
+          <div>
+            {notifications !== 0 ?  <p className="px-1 text-xs absolute text-white bg-red-500 rounded-full">{notifications}</p> :null}
+            <Link to={'/notifications'}>{React.createElement(MdNotificationsNone, )}</Link>
+
+          </div>
+        <CgProfile onClick={()=>setOpen(!open)}/>
+        </div>
+        </div>
+      {open ?
+        <div className="bg-gray-200 rounded-md absolute right-2 p-4">
+          <Link to={'/myprofile'}><p className="cursor-pointer">my profile</p></Link>
+          <p className="cursor-pointer" onClick={handleLogout}>Logout</p>
+        </div>
+      :null}
+      </div>
   </>
   )
 }

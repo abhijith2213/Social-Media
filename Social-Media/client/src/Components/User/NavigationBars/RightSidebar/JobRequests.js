@@ -6,7 +6,6 @@ import { ToastContainer, toast } from "react-toastify" //Toast
 import "react-toastify/dist/ReactToastify.css" //Toast Css
 
 // ASSETS
-import profile2 from "../../../../assets/images/profile11.jpg"
 import { RiCheckboxCircleLine } from "react-icons/ri"
 import { MdOutlineWork, MdOutlineArrowDropDownCircle } from "react-icons/md"
 
@@ -49,7 +48,7 @@ const userId = userData?._id
    /* -------------------------- FETCH REQUESTED USERS ------------------------- */
    const [clickedWork,setClickedWork] = useState('')
    const [users,setUsers] = useState([])
-console.log(users,'urs');
+
    const handleShowRequesters = async(postId)=>{ 
       setClickedWork(postId)  
       try {
@@ -70,6 +69,7 @@ console.log(users,'urs');
          const {data} = await assignWork(Id,clickedWork)
          console.log(data);
          setEffect(!effect)
+         setShowRequests(!showRequests)
          toast.success(data.message, {
             position: "top-center",
             autoClose: 2000,

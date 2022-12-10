@@ -3,6 +3,7 @@ const Comment = require('../Models/commentSchema')
 const User = require('../Models/userSchema');
 const Report = require('../Models/reportsSchema');
 const NotificationModel = require('../Models/notificationSchema');
+const { findById } = require('../Models/userSchema');
 
 
 
@@ -48,7 +49,8 @@ const getTimelinePost =async (req,res)=>{
 const putLikePost = async (req,res)=>{
     const details ={
         user:req.body.userId,
-        desc:'Liked your post'
+        desc:'Liked your post',
+        time:Date.now()
     }
     try {
         const post = await Post.findById(req.params.id)
@@ -79,7 +81,8 @@ const putPostComment = async (req,res)=>{
     const postId = req.params.id
     const details ={
         user:userId,
-        desc:'Commented your post'
+        desc:'Commented your post',
+        time:Date.now()
     }
     try {
         await  Comment.create({userId,comment,postId:postId})
@@ -192,12 +195,15 @@ const getReportedPosts = async (req,res)=>{
 
 const blockPost =async (req,res)=>{
     console.log(req.params.id,'pojhgfdfg');
-
     try {
-        const result = await Post.findByIdAndUpdate(req.params.id,
-            {
-                $set:{status:'inactive'}
-            })
+        const post = await findById(req.params.id)
+        post.updateOne({$set:{status:'inactive'}})
+        const details ={
+            user:post.userId,
+            desc:'Post has been Blocked',
+            time:Date.now()
+        }    
+            await NotificationModel.updateOne({userId:post.userId},{$push:{Notifications:details}})
             res.status(200).json({message:'post Blocked!'})
     } catch (error) {
         res.status(500).json(error)

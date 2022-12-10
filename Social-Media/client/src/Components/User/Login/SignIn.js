@@ -45,6 +45,7 @@ function SignIn() {
                 dispatch(update(res?.data?.details))
                 dispatch(setProfilePic({profilePic:res?.data?.profilePic}))
                 navigate('/home')
+                localStorage.setItem('count', 0);
               }else{
                 console.log('error with login');
               }
@@ -131,7 +132,7 @@ function SignIn() {
                 <hr className="border-gray-400" />
               </div>
 
-              <button className="bg-white border py-2 w-full rounded-xl mt-5 flex justify-center items-center text-sm hover:scale-105 duration-300 text-[#002D74]">
+              {/* <button className="bg-white border py-2 w-full rounded-xl mt-5 flex justify-center items-center text-sm hover:scale-105 duration-300 text-[#002D74]">
                 <svg
                   className="mr-3"
                   xmlns="http://www.w3.org/2000/svg"
@@ -155,11 +156,11 @@ function SignIn() {
                   />
                 </svg>
                 Login with Google
-              </button>
+              </button> */}
 
-              <div className="mt-5 text-xs border-b border-[#002D74] py-4 text-[#002D74]">
+              {/* <div className="mt-5 text-xs border-b border-[#002D74] py-4 text-[#002D74]">
                 <a href="">Forgot your password?</a>
-              </div>
+              </div> */}
 
               <div className="mt-3 text-xs flex justify-between items-center text-[#002D74]">
                 <p>Don't have an account?</p>

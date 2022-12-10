@@ -1,17 +1,32 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState, useContext } from "react"
 import { useSelector } from "react-redux"
 import { getAllNotifications } from "../../../Apis/userRequests"
 import profile from "../../../assets/images/download.png"
 import { format } from "timeago.js"
+import { SocketContext } from "../../../Context/socketContext"
 
 
 function Notification() {
 
    const PF = process.env.REACT_APP_PUBLIC_FOLDER
 
+   const socket = useContext(SocketContext)
+
    const userData = useSelector((state) => state.user)
 
-   const [notifications, setNotifications] = useState({})
+   const [notifications, setNotifications] = useState([])
+   const [notCount,setNotCount] = useState([])
+   console.log(notCount,'notcount');
+   
+   localStorage.setItem('count', 0);
+
+
+   useEffect(()=>{
+      console.log('effect called');
+      socket.on("getNotification",data =>{
+         setNotCount((prev)=>[...prev,data])
+      })
+   },[socket])
 
    useEffect(() => {
       try {
@@ -24,7 +39,7 @@ function Notification() {
       } catch (error) {
          console.log(error)
       }
-   }, [])
+   }, [socket,notCount])
 
    return (
       <>
@@ -37,11 +52,11 @@ function Notification() {
                         <h2 className='ml-4 mt-2 font-medium text-lg'>Notifications</h2>
                      </div>
                      
-                     {notifications && notifications?.Notifications?.length !== 0? (
-                        notifications?.Notifications?.map((data)=>(
+                     {notifications && notifications?.length !== 0? (
+                        notifications?.map((data)=>(
                         <div className='flex p-6 mx-2 max-h-full overflow-y-auto'>
                            <div>
-                              <img src={data?.user?.profilePic? PF+data?.user?.profilePic :profile} className='w-10 rounded-full' alt='' />
+                              <img src={ PF+data?.user?.profilePic} className='w-10 rounded-full' alt='' />
                            </div>
                            <div className='p-2 flex items-center'>
                               <p className='font-medium pr-2'>{data.user.userName}</p>

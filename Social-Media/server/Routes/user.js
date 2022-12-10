@@ -8,7 +8,7 @@ const verifyJWT = require('../Middlewares/verifyJWT')
 const {postCreateAccount, postSignIn, getSuggestions,putFollowUser, getPostUser,
        putUnfollowUser,getUserDetails,getUserData,getMyFollowers,getMyFollowings,
        updateUserProfile,updateProfilePic,searchUsers,updateCoverPic,getNotifications,
-       verifyOtp,sendUserOtp,changeUserPassword} = require('../Controller/userController')
+       verifyOtp,sendUserOtp,resendOtp,changeUserPassword} = require('../Controller/userController')
 
 //************** */ POST CONTROLLER 
 const {postUpload,getTimelinePost,putLikePost,putPostComment,getViewComments,
@@ -87,6 +87,8 @@ router.put(`/user/update/coverPic`,upload.single('file'),updateCoverPic)
 router.get('/user/notification/:id',getNotifications)
 
 router.post('/signup/sendOtp',sendUserOtp)
+
+router.post('/signup/otp/resend',resendOtp)
 
 router.post('/singnUp/otp/verify',verifyOtp)
 

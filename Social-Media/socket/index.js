@@ -31,13 +31,28 @@ io.on("connection", (socket) =>{
         console.log('sending from socket to :', receiverId);
         console.log("Data",data);
         if(user){
-            io.to(user.socketId).emit("receive-message",data)
+            io.to(user?.socketId).emit("receive-message",data)
         }
     })
 
+    // SEND NOTIFICATION 
+    socket.on("send-notification",(data)=>{
+        console.log(data,'hii');
+        const {recieverId,senderId,type} = data
+        const reciever = activeUsers.find((user)=>user.userId === recieverId)
+        console.log(reciever,'noti reciever'); 
+        io.to(reciever?.socketId).emit("getNotification",{ 
+            senderId,
+            type,
+        }) 
+    })
+
+    // DISCONNECT 
     socket.on("disconnect", ()=> {
         activeUsers = activeUsers.filter((user) => user.socketId !== socket.id)
         console.log("user disconnected",activeUsers);
         io.emit('get-users', activeUsers)
     })
-})
+
+   
+})  

@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useContext, useState } from "react"
 import { useSelector } from "react-redux"
 import { Link, useNavigate } from "react-router-dom"
 import { format } from "timeago.js"
@@ -9,11 +9,17 @@ import "react-toastify/dist/ReactToastify.css" //Toast Css
 import profile from "../../../assets/images/download.png"
 import { BsThreeDotsVertical, BsFlagFill } from "react-icons/bs"
 import { FaRegPaperPlane } from "react-icons/fa"
+
 import { reportJobPost, sendConnect } from "../../../Apis/JobRequests"
 import { newUserChat } from "../../../Apis/chatRequests"
+import { SocketContext } from "../../../Context/socketContext"
+
+
 
 function Freelancer({ job, setEffect }) {
    const PF = process.env.REACT_APP_PUBLIC_FOLDER
+
+   const socket = useContext(SocketContext)
 
    const navigate = useNavigate()
 
@@ -26,6 +32,15 @@ function Freelancer({ job, setEffect }) {
          const { data } = await sendConnect(userId, job._id)
          console.log(data)
          setEffect(Date.now())
+
+         if(data){
+            console.log('i worked');
+            socket.emit('send-notification',{
+               senderId:userId,
+               recieverId:job.userId._id,
+               type:'Send a connect Request'
+            })
+         }
          toast.warn(data.message, {
             position: "top-right",
             autoClose: 2000,

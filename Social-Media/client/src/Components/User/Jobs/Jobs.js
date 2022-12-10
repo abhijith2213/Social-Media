@@ -95,14 +95,12 @@ function Jobs() {
             console.log(error)
          }
       }else{
-         console.log('in else');
          try {
             const findMyJobs = async () => {
                const { data } = await findWorksToMe(userId)
                console.log(data, "my postss work")
                setAllJobs(data)
             }
-
             findMyJobs()
          } catch (error) {
             console.log(error)
@@ -111,27 +109,7 @@ function Jobs() {
       }
    }, [userId, effect, selected])
 
-   /* ------------------------------- REPORT JOBS ------------------------------ */
-      // BLOCK POST 
-      // const [reason,setReason] = useState('')
 
-      // const handleBlock =async(postId)=>{
-      //    console.log('blockkk');
-      //    try {
-      //       const {data} = await reportJobPost(reason,postId,userId) 
-      //       setReason('')
-      //       console.log(data,'block response');
-      //       setEffect(Date.now())
-      //       toast.warn(data.message, {
-      //          position: "top-right",
-      //          autoClose: 2000,
-      //          hideProgressBar: true,
-      //          theme: "dark",
-      //       })
-      //       } catch (error) {
-      //          console.log(error);
-      //       }
-      // }
 
    return (
       <>

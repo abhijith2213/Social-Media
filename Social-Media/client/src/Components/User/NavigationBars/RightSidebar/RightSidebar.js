@@ -1,31 +1,32 @@
 import React, { useEffect, useState } from "react"
 import axios from '../../../../Axios/axios'
 
-import profile2 from "../../../../assets/images/download.png"
+import connect from "../../../../assets/images/network.png"
 import { useSelector } from "react-redux"
-import { Link } from "react-router-dom"
+import { Link ,useNavigate} from "react-router-dom"
 import userInstance from "../../../../Axios/userAuth"
 
 function RightSidebar() {
 
+  const navigate = useNavigate()
   const PF = process.env.REACT_APP_PUBLIC_FOLDER
 
   const userData = useSelector(state =>state.user)
-  console.log(userData,'oooopp');
 
 
   const [suggestions,setSuggestions] = useState([])
   const [state, setState] = useState(false)
-
+console.log(suggestions,'suggestions');
   const userId = userData._id
 
 useEffect(() => {
-
-    
     userInstance.get(`/suggestions/${userId}`).then((res)=>{
     setSuggestions(res.data)
 
 }).catch((error)=>{
+  if(!error?.auth){
+    navigate('/signin')
+ }
   console.log(error,'error com');
 })
 }, [state]);
@@ -34,8 +35,6 @@ useEffect(() => {
 // HANDLE FOLLOW 
 
 const handleFollow= (Id)=>{
-
-  console.log(userId,'opuserid');
   axios.put(`/${userId}/follow`,{Id}).then((res)=>{
     setState(!state)
   }).catch((err)=>{
@@ -47,7 +46,6 @@ const handleFollow= (Id)=>{
 // HANDLE UN FOLLOW 
 
 const handleUnFollow = (Id)=>{
-  console.log(userId,'pppoid');
   axios.put(`/${userId}/unfollow`,{Id}).then((res)=>{
     setState(!state)
   }).catch((err)=>{
@@ -60,16 +58,16 @@ const handleUnFollow = (Id)=>{
 
    return (
       <div className='bg-white m-12 shadow-md rounded-md p-8 fixed right-0 top-0 hidden lg:block'>
-         <p className='mb-6 text-blue-400 font-medium'>Suggested</p>
+         <p className='mb-6 text-blue-500 font-medium'>Suggestions For You</p>
 
 
-         {suggestions?.map((user,index)=>{
+         {suggestions.length !==0? suggestions?.map((user,index)=>{
           if(user._id != userId ){
               return   (           
                 <div className='flex justify-between items-center mb-5 gap-11' key={index}>
                   <Link to={`/profile/${user.userName}`}>
                    <div className='flex'>
-                      <img className='rounded-full w-12 h-12 ' src={user?.profilePic? PF+user.profilePic : profile2} alt='pic' />
+                      <img className='rounded-full w-12 h-12 ' src={ PF+user.profilePic } alt='pic' />
                       <div className='flex flex-col justify-center items-center ml-3'>
                          <p className='font-medium text-sm'>{user.userName}</p>
                          <p className='font-normal text-xs'>{user.accountType}</p>
@@ -84,7 +82,11 @@ const handleUnFollow = (Id)=>{
             
         
           }
-      }) }
+      }) :<div className="flex flex-col items-center gap-2">
+             <p>Connect with more People.</p> 
+             <img className="w-20 opacity-60" src={connect}></img>
+             <p className="text-xs">No suggestions available ....</p>   
+          </div>}
 
 
 

@@ -1,4 +1,4 @@
-import React, {  useState, useEffect } from "react"
+import React, {  useState, useEffect , useContext} from "react"
 import { useNavigate } from "react-router";
 import axios from '../../../Axios/axios'
 import userInstance from "../../../Axios/userAuth";
@@ -13,15 +13,16 @@ import { BiImage } from "react-icons/bi"
 import { FiCamera } from "react-icons/fi"
 import {useSelector } from "react-redux"
 import Post from "../Posts/Post";
+import { SocketContext } from "../../../Context/socketContext";
 
 function Home() {
 
    const PF = process.env.REACT_APP_PUBLIC_FOLDER
 
    const navigate = useNavigate()
-
-
+   const socket = useContext(SocketContext)
    const userData = useSelector(state =>state.user)
+
 
 
    const [effect,setEffect] = useState(false)

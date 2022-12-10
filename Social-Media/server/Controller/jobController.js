@@ -117,7 +117,6 @@ const getRequestUsers =async(req,res)=>{
     console.log(req.params.id);
     try {
         const data = await Job.findById(req.params.id).populate('requests','userName fullName profilePic')
-        console.log(data,'jooooooooooooooodataaa');
         res.status(200).json(data.requests)
     } catch (error) {
         console.log(error);
@@ -131,14 +130,19 @@ const assignWork =async (req,res)=>{
     const {userId} = req.body;
     console.log(userId,'lll');
     console.log(req.params.id);
-    const details ={
-        user:userId,
-        desc:'Accepted your connect request'
-    }
-
+    
     try {
-      const job =  await Job.findByIdAndUpdate(req.params.id,
+        const job =  await Job.findByIdAndUpdate(req.params.id,
             {$set:{work:userId,requests:[]}})
+            console.log(job,'asign work job hehe');
+
+           const details ={
+           user:job.userId,
+            desc:' Assigned New work to you',
+            time:Date.now()
+            }
+            
+            await NotificationModel.updateOne({userId:userId},{$push:{Notifications:details}})
             res.status(200).json({message:'Work assigned Successfully'})
     } catch (error) {
         console.log(error);

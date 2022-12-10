@@ -7,7 +7,7 @@ import Countdown from "react-countdown"
 import axios from "../../../Axios/axios"
 import loginImg from "../../../assets/images/4204968.jpg"
 import logo from "../../../assets/images/talentF-c.png"
-import {  sendOtp, validateOtp } from "../../../Apis/userRequests"
+import {  resendOtpCall, sendOtp, validateOtp } from "../../../Apis/userRequests"
 
 import { ToastContainer, toast } from "react-toastify" //Toast
 import "react-toastify/dist/ReactToastify.css" //Toast Css
@@ -35,11 +35,11 @@ function SignUp() {
    const onSubmit = async (formData) => {
       console.log(formData, "forrrrmmmmdatataa")
       setFormValues(formData)
-      setOtpModal(true)
       try {
-         const { data } = await sendOtp(formData.email)
+         const { data } = await sendOtp(formData)
          console.log(data)
          if(data.status){
+            setOtpModal(true)
             toast.success(data.message)
             setTimeout(() => {
                console.log("Otp send in");
@@ -50,6 +50,7 @@ function SignUp() {
          }
       } catch (error) {
          console.log(error, "send otp error")
+         setFormError(error.response.data.message)
       }
       // try {
       //    axios
@@ -113,8 +114,13 @@ function SignUp() {
 
    const resendOtp = async () => {
       setOtp('')
+      // const details ={
+      //    email:formvalues.email,
+      //    userName:formvalues.userName,
+      //    resend:true
+      // }
       try {
-         const { data } = await sendOtp(formvalues.email)
+         const { data } = await resendOtpCall(formvalues.email)
          console.log(data);
          if(data.status){
             toast.success(data.message)

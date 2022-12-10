@@ -1,12 +1,14 @@
 import './App.css';
-import {BrowserRouter as Router, Route, Routes} from 'react-router-dom'
+import {BrowserRouter as Router, Navigate, Route, Routes } from 'react-router-dom'
 import {Provider } from 'react-redux'
+
 /* ------------------------------ PAGE IMPORTS ------------------------------ */
 
 // Redux components 
 import store from './Redux/User/Store'
 
-
+// SOCKET CONTEXT 
+import { SocketContext,socket } from './Context/socketContext';
 
 // ERROR PAGE 
 import ErrorPage from './Pages/ErrorPage/ErrorPage';
@@ -39,6 +41,18 @@ import JobManagement from './Components/Admin/Job Management/JobManagement';
 
 
 function App() {
+
+  const currentUser = localStorage.getItem('userToken')
+
+  const ProtectedRoute = ({children}) =>{
+    if(!currentUser){
+      return <Navigate to='/signin'/>
+    }
+    return children
+  }
+
+
+
   return (
     <div className='App'>
       <Router>
@@ -48,21 +62,21 @@ function App() {
           <Route path='/' element={<LandingPage/>}></Route>
           <Route path='/create_account' element={<SignupPage/>}></Route>
         </Routes>
-
+        <SocketContext.Provider value={socket}>
           <Provider store={store}>
         <Routes>        
           <Route path='/signin' element={<SigninPage/>}></Route>
           <Route path='/home' element={<HomePage/>}></Route>
-          <Route path='/profile/:userName' element={<UserProfilePage/>}></Route>
-          <Route path='/myprofile' element={<UserProfilePage/>}></Route>
+          <Route path='/profile/:userName' element={<ProtectedRoute><UserProfilePage/></ProtectedRoute>}></Route>
+          <Route path='/myprofile' element={<ProtectedRoute><UserProfilePage/></ProtectedRoute>}></Route>
           <Route path='/message' element={<ChatPage/>}></Route>
-          <Route path='/notifications' element={<NotificationPage/>}></Route>
-          <Route path='/works' element={<JobsPage/>}></Route>
-          <Route path='/account/editProfile' element={<EditProfilePage/>}></Route>
-          <Route path='/account/changePassword' element={<ChangePasswordPage/>}></Route>
+          <Route path='/notifications' element={<ProtectedRoute><NotificationPage/></ProtectedRoute>}></Route>
+          <Route path='/works' element={<ProtectedRoute><JobsPage/></ProtectedRoute>}></Route>
+          <Route path='/account/editProfile' element={<ProtectedRoute><EditProfilePage/></ProtectedRoute>}></Route>
+          <Route path='/account/changePassword' element={<ProtectedRoute><ChangePasswordPage/></ProtectedRoute>}></Route>
         </Routes>
           </Provider>
-
+          </SocketContext.Provider>
         {/* ADMIN */}
 
         <Routes>

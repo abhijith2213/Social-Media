@@ -1,6 +1,7 @@
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
 const nodemailer = require("nodemailer")
+
 const User = require("../Models/userSchema")
 const NotificationModel = require("../Models/notificationSchema")
 const userVerification = require("../Models/userVerificationSchema")
@@ -10,17 +11,6 @@ const userVerification = require("../Models/userVerificationSchema")
 const postCreateAccount = async (req, res) => {
    try {
       let { fullName, userName, email, phone, password, accountType } = req.body
-
-      const usedData = await User.findOne({ $or: [{ email }, { userName }, { phone }] })
-      if (usedData) {
-         if (usedData.email === email) {
-            res.status(409).json("Email already Registered, Please Login")
-         } else if (usedData.userName === userName) {
-            res.status(409).json("userName not Available")
-         } else if (usedData.phone === phone) {
-            res.status(409).json("Phone number already registered, please Login!")
-         }
-      } else {
          password = await bcrypt.hash(password, 10)
          User.create({
             fullName,
@@ -37,14 +27,46 @@ const postCreateAccount = async (req, res) => {
             .catch((error) => {
                res.status(503).json("Something went wrong")
             })
-      }
+      // }
    } catch (error) {
     console.log(error,'signup error');
       res.status(503).json("Something went wrong")
    }
 }
 
-/* ----------------------------- OTP GENERATION ----------------------------- */
+/* ----------------------------- SiGN UP OTP SEND----------------------------- */
+
+
+
+const sendUserOtp = async (req, res) => {
+
+console.log(req.body, "otp resultsssssssssssssssss")
+const {email,userName} =req.body
+
+
+   try {    
+      const usedData = await User.findOne({ $or: [{ email }, { userName }] })
+      if (usedData) {
+         console.log('1');
+         if (usedData.userName === userName) {
+            console.log('2');
+            res.status(409).json({message:"userName not Available"})
+         } else if (usedData.email === email){
+            console.log('3');
+            res.status(409).json({message:"Email already Registered, Please Login"})
+         }
+      }else{
+         otpGenerate(email,res).then((response)=>{
+            console.log(response,'i');
+         })
+      } 
+   } catch (error) {
+      res.status(500).json(error)
+   }
+
+}
+
+/* ------------------------- OTP GENERATE  FUNCTION ------------------------- */
 
 // Nodemailer configuration
 
@@ -56,9 +78,7 @@ let transporter = nodemailer.createTransport({
    },
 })
 
-const sendUserOtp = async (req, res) => {
-   console.log(req.body, "otp result")
-const {email} =req.body
+const otpGenerate =async(email,res)=>{
    try {
       const OTP = await Math.floor(100000 + Math.random() * 900000).toString()
       console.log(OTP)
@@ -101,6 +121,17 @@ const {email} =req.body
     res.status(500).json(error)
    }
 }
+
+/* ------------------------------- RESEND OTP ------------------------------- */
+
+const resendOtp =(req,res)=>{
+   console.log(req.body,'jjkkkbodtyyyy');
+   otpGenerate(req.body.email,res).then((response)=>{
+      console.log(response,'its me ');
+   })
+}
+
+
 /* ---------------------------- OTP VERIFICATION ---------------------------- */
 
 const verifyOtp = async (req, res) => {
@@ -157,7 +188,7 @@ const postSignIn = async (req, res) => {
 
 const getSuggestions = async (req, res) => {
    try {
-      User.find({followers:{$nin:req.params.id}}).limit(5)  
+      User.find({followers:{$nin:req.params.id},_id:{$ne:req.params.id}}).limit(5)  
          .then((response) => {
             console.log(response,'user suggest');
             res.status(200).json(response)
@@ -173,12 +204,19 @@ const getSuggestions = async (req, res) => {
 /* ------------------------------- FOLLOW USER ------------------------------ */
 
 const putFollowUser = async (req, res) => {
+   const details ={
+      user:req.params.id,
+      desc:'started following you',
+      time:Date.now()
+  }
    try {
       const user = await User.findById({ _id: req.params.id })
       const userToFollow = await User.findById({ _id: req.body.Id })
       if (!user.following.includes(req.body.Id)) {
          await user.updateOne({ $push: { following: req.body.Id } })
          await userToFollow.updateOne({ $push: { followers: req.params.id } })
+         await NotificationModel.updateOne({userId:req.body.Id},{$push:{Notifications:details}})
+
          res.status(200).json("Followed")
       } else {
          res.status(403).json("You already follows this user")
@@ -193,12 +231,17 @@ const putFollowUser = async (req, res) => {
 const putUnfollowUser = async (req, res) => {
    console.log(req.body, "pp")
    console.log(req.params.id, "eeepp")
+   const details ={
+      user:req.params.id,
+      desc:'started following you',
+  }
    try {
       const user = await User.findById({ _id: req.params.id })
       const userToUnfollow = await User.findById({ _id: req.body.Id })
       if (user.following.includes(req.body.Id)) {
          await user.updateOne({ $pull: { following: req.body.Id } })
          await userToUnfollow.updateOne({ $pull: { followers: req.params.id } })
+         await NotificationModel.updateOne({userId:req.body.Id},{$pull:{Notifications:details}})
          res.status(200).json("UnFollowed")
       } else {
          res.status(403).json("You already unfollowed this user")
@@ -384,9 +427,10 @@ const getNotifications = async (req, res) => {
       const notifications = await NotificationModel.findOne(
          { userId: req.params.id },
          { _id: 0, Notifications: 1 }
-      ).populate("Notifications.user", "userName profilePic")
-      console.log(notifications, "kkk")
-      res.status(200).json(notifications)
+      ).sort({_id:-1}).populate("Notifications.user", "userName profilePic")
+      const notification = notifications.Notifications.reverse()
+      console.log(notification, "kkk")
+      res.status(200).json(notification)
    } catch (error) {
       console.log(error)
       res.status(500).json(error)
@@ -434,5 +478,6 @@ module.exports = {
    getNotifications,
    verifyOtp,
    sendUserOtp,
+   resendOtp,
    changeUserPassword
 }

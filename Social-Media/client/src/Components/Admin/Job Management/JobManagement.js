@@ -89,7 +89,6 @@ function JobManagement() {
              </thead>
              <tbody>
                     {jobs?.map((post)=>{
-                    //    let date = moment(post?.createdAt).format("YYYY-MM-DD")
                 return(
 
                       <tr  class='bg-white border-b dark:bg-gray-800 dark:border-gray-700'>
@@ -147,10 +146,10 @@ function JobManagement() {
           {/*body*/}
           <div className="relative px-6 flex-auto">
             <p className="my-2 text-slate-500 text-md leading-relaxed">
-             Description: {modalData.jobRole}
+             Job Role: {modalData.jobRole}
             </p>
             <p className="my-2 text-slate-500 text-md leading-relaxed">
-             Description: {modalData.workType}
+             Work Type: {modalData.workType}
             </p>
             <p className="my-2 text-slate-500 text-md leading-relaxed">
             <span>Description:</span> <span> {modalData.description}</span>
@@ -203,7 +202,7 @@ function JobManagement() {
               type="button"
             //   onClick={() => handleUnblockPost(modalData._id)}
             >
-              Unblock Post
+              Blocked
             </button>}
           </div>
         </div>

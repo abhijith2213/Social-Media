@@ -28,7 +28,7 @@ export const updateCoverPic = (data)=> axios.put(`/user/update/coverPic`,data)
 export const getAllNotifications = (userId) => axios.get(`/user/notification/${userId}`)
 
 
-export const sendOtp = (data) =>axios.post(`/signup/sendOtp`,{email:data})
+export const sendOtp = (data) =>axios.post(`/signup/sendOtp`,data)
 
 
 export const validateOtp = (otp) => axios.post(`/singnUp/otp/verify`,otp)

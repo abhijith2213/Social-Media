@@ -197,7 +197,7 @@ const handleCoverPic = async ()=>{
      {userName !== userData.userName ? 
       <div className="ProfileImages">
         <img className="coverPic w-full h-40 object-cover object-center " src={user?.coverPic? PF+user?.coverPic:cover} alt="CoverImage" />
-        <img className="profilePic w-20 h-28 rounded-full" src={ PF+user?.profilePic} alt="ProfileImage"/>
+        <img className="profilePic w-16 h-28 rounded-full" src={ PF+user?.profilePic} alt="ProfileImage"/>
       </div>
       :
       <div className="ProfileImages">
@@ -206,7 +206,7 @@ const handleCoverPic = async ()=>{
                onClick={()=>setCoverPicEdit(true)}/>
             <img className="coverPic w-full h-40 object-cover " src={user?.coverPic? PF+user?.coverPic:cover} alt="CoverImage"/>
         </div>
-            <img className="profilePic w-20 h-28 rounded-full" src={PF+user?.profilePic} alt="ProfileImage"/>
+            <img className="profilePic w-16 h-28 rounded-full" src={PF+user?.profilePic} alt="ProfileImage"/>
       </div>
       }
       <div className="flex justify-end pr-4">
