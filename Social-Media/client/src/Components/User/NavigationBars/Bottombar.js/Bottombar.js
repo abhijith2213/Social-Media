@@ -5,19 +5,19 @@ import { BiHome, BiMessageSquareAdd} from "react-icons/bi";
 import { CgProfile} from "react-icons/cg";
 
 import log from '../../../../assets/images/talentF-c.png'
-import { Link ,useNavigate} from "react-router-dom";
-import { SocketContext } from "../../../../Context/socketContext";
+import { Link ,NavLink,useNavigate} from "react-router-dom";
 import { useSelector, useDispatch} from "react-redux";
 import {confirmAlert} from 'react-confirm-alert';
 import { remove } from "../../../../Redux/User/userSlice";
 import { fetchNoCounts } from "../../../../Apis/userRequests";
+import { socket } from "../../../../Context/socketContext";
 
 
 function Bottombar() {
 
   const userData = useSelector((state) => state.user)
 
-  const socket = useContext(SocketContext)
+  // const socket = useContext(SocketContext)
   
   const dispatch = useDispatch()
   const navigate = useNavigate()
@@ -113,7 +113,7 @@ function Bottombar() {
           ))}
         </div>
       </div>
-{/* TOP BAR  */}
+    {/* TOP BAR  */}
       <div  className="border shadow-md  bg-white fixed top-0 w-full md:hidden">
 
       <div className="flex justify-between items-center relative p-3 ">

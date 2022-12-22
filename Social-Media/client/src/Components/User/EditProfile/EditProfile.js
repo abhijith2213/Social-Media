@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import {useDispatch, useSelector } from "react-redux"
 import profile from "../../../assets/images/download.png"
+import { Link } from "react-router-dom";
 
 import { ToastContainer, toast } from 'react-toastify';  //Toast
 import 'react-toastify/dist/ReactToastify.css';  //Toast Css
@@ -22,11 +23,16 @@ function EditProfile() {
 
     const [showModal,setShowModal] = useState(false)
 
-    /* ------------------------------ EDIT DETAILS ------------------------------ */
-
+    
     const initialValues ={...userData}
     const [newProfile, setNewProfile] = useState(initialValues)
     
+    const [profilePic, setProPic] = useState('')
+    const [showImage,setShowImage] = useState('')
+    const [modal,setModal]=useState(false)
+    
+    /* ------------------------------ EDIT DETAILS ------------------------------ */
+
     const handleChange =(e)=>{
       const {name,value}= e.target;
       setNewProfile({...newProfile,[name]:value})
@@ -40,12 +46,7 @@ function EditProfile() {
         if(data){
           dispatch(update(newProfile))
           localStorage.setItem("user",JSON.stringify(newProfile))
-          toast.success(data.message, {
-            position: "top-right",
-            autoClose: 2000,
-            hideProgressBar: true,
-            theme: "dark",
-         })
+          toast.success(data.message)
         }
       } catch (error) {
         alert(error.message)
@@ -55,11 +56,7 @@ function EditProfile() {
     }
     /* ----------------------- UPLOAD NEW PROFILE PICTURE ----------------------- */
 
-    const [profilePic, setProPic] = useState('')
-    const [showImage,setShowImage] = useState('')
-    const [modal,setModal]=useState(false)
 
-    console.log(profilePic,'lllll');
 
     // HANDLE IMAGE CHANGE 
 
@@ -85,12 +82,7 @@ function EditProfile() {
                     console.log(data,'knvcxza');
                     localStorage.setItem("profilePic",JSON.stringify(data.image))
                     dispatch(setProfilePic({profilePic:data.image}))
-                    toast.success(data.message, {
-                    position: "top-right",
-                    autoClose: 2000,
-                    hideProgressBar: true,
-                    theme: "dark",
-                 })
+                    toast.success(data.message)
                  setModal(false)
                  setShowModal(false)
                 }
@@ -124,12 +116,7 @@ function EditProfile() {
           try {
             const {data} = await changePassword(userData._id,password)
             setPassword(initial)
-            toast.success(data.message, {
-              position: "top-right",
-              autoClose: 2000,
-              hideProgressBar: true,
-              theme: "dark",
-            })
+            toast.success(data.message)
             console.log(data,'pass change data');
           } catch (error) {
             if(error.response.status === 401){
@@ -238,7 +225,7 @@ function EditProfile() {
      <button type="button" 
      class="text-white bg-blue-500  hover:bg-blue-600 focus:ring-4 block focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 "
      onClick={handleSubmitPassword}>Change Password</button>
-     <span className="text-blue-400 cursor-pointer">Forgotten your Password?</span>
+     <Link to={'/forgotPassword'}><span className="text-blue-400 cursor-pointer">Forgotten your Password?</span></Link>
    </div>
  </div>
 }
@@ -246,7 +233,17 @@ function EditProfile() {
  </div>
 
 </div>
-<ToastContainer/>
+<ToastContainer
+position="top-center"
+autoClose={3000}
+hideProgressBar
+newestOnTop
+closeOnClick
+rtl={false}
+pauseOnFocusLoss={false}
+draggable
+pauseOnHover
+theme="dark"/>
   </div>
   {/* change profile pic modal  */}
   {showModal ?  <>

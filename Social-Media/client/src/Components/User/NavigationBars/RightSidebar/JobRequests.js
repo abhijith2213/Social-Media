@@ -70,12 +70,7 @@ const userId = userData?._id
          console.log(data);
          setEffect(!effect)
          setShowRequests(!showRequests)
-         toast.success(data.message, {
-            position: "top-center",
-            autoClose: 2000,
-            hideProgressBar: true,
-            theme: "dark",
-         }) 
+         toast.success(data.message) 
       } catch (error) {
          console.log(error);
       }
@@ -145,7 +140,17 @@ const userId = userData?._id
          <hr />
       </div>
       : null}
-      <ToastContainer/>
+      <ToastContainer
+      position="top-center"
+      autoClose={3000}
+      hideProgressBar
+      newestOnTop
+      closeOnClick
+      rtl={false}
+      pauseOnFocusLoss={false}
+      draggable
+      pauseOnHover
+      theme="dark"/>
     </>
    )
 }

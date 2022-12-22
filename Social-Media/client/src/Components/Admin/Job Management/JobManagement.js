@@ -12,13 +12,15 @@ function JobManagement() {
     const [jobs,setJobs] = useState([])
     const [showModal, setShowModal] = useState(false);
 
+    const [modalData,setModalData]=useState({})
+    const [reportData,setreportData] = useState([])
+
     useEffect(()=>{
         console.log('useeffectttt');
 
         const fetchJob =async ()=>{
             try {
                 const {data} = await fetchReportedJobss()
-                console.log(data,'fr data');
                 setJobs(data)
             } catch (error) {
                 console.log(error);
@@ -27,9 +29,6 @@ function JobManagement() {
         fetchJob()
     },[])
 
-    const [modalData,setModalData]=useState({})
-    const [reportData,setreportData] = useState([])
-    console.log(reportData);
 
     const handleView=async(post)=>{
         setModalData(post)
@@ -60,7 +59,7 @@ function JobManagement() {
 
   return (
     <>
-    <div className='w-full mr-6 '>
+    <div className='w-full mr-6 max-h-screen overflow-y-auto no-scrollbar'>
        <h2 className='text-2xl font-bold my-6'>Job Management</h2>
 
        <div class='overflow-x-auto relative'>
@@ -117,7 +116,17 @@ function JobManagement() {
           </table>
        </div>
     </div>
-    <ToastContainer />
+    <ToastContainer
+    position="top-center"
+    autoClose={3000}
+    hideProgressBar
+    newestOnTop
+    closeOnClick
+    rtl={false}
+    pauseOnFocusLoss={false}
+    draggable
+    pauseOnHover
+    theme="dark" />
 
     <>
 

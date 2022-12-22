@@ -41,13 +41,13 @@ function Freelancer({ job, setEffect }) {
                type:'Send a connect Request'
             })
          }
-         toast.warn(data.message, {
-            position: "top-right",
-            autoClose: 2000,
-            hideProgressBar: true,
-            theme: "dark",
-         })
+         toast.warn(data.message)
       } catch (error) {
+         if (!error?.response?.data?.auth && error?.response?.status === 403) {
+            localStorage.removeItem('userToken')
+            localStorage.removeItem('user')
+            navigate("/signin")
+         }
          console.log(error)
       }
    }
@@ -64,14 +64,14 @@ function Freelancer({ job, setEffect }) {
          setReason("")
          console.log(data, "block response")
          setEffect(Date.now())
-         toast.warn(data.message, {
-            position: "top-right",
-            autoClose: 2000,
-            hideProgressBar: true,
-            theme: "dark",
-         })
+         toast.warn(data.message)
          setShowModal(false)
       } catch (error) {
+         if (!error?.response?.data?.auth && error?.response?.status === 403) {
+            localStorage.removeItem('userToken')
+            localStorage.removeItem('user')
+            navigate("/signin")
+         }
          console.log(error)
       }
    }
@@ -87,6 +87,11 @@ function Freelancer({ job, setEffect }) {
          console.log(data, "chat ress")
          navigate("/message")
       } catch (error) {
+         if (!error?.response?.data?.auth && error?.response?.status === 403) {
+            localStorage.removeItem('userToken')
+            localStorage.removeItem('user')
+            navigate("/signin")
+         }
          console.log(error)
       }
    }
@@ -209,7 +214,17 @@ function Freelancer({ job, setEffect }) {
                </div>
             </div>
          </div>
-         <ToastContainer />
+         <ToastContainer 
+         position="top-center"
+         autoClose={3000}
+         hideProgressBar
+         newestOnTop
+         closeOnClick
+         rtl={false}
+         pauseOnFocusLoss={false}
+         draggable
+         pauseOnHover
+         theme="dark"/>
 
          {showModal ? (
             <>

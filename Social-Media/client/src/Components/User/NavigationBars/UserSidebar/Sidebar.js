@@ -12,13 +12,14 @@ import log from '../../../../assets/images/talentF-c.png'
 
 /* --------------------------------- ASSETS END--------------------------------- */
 
-import React,{useEffect,useContext,useState} from "react";
-import { useNavigate, Link } from "react-router-dom";
+import React,{useEffect,useState} from "react";
+import { useNavigate, Link, NavLink } from "react-router-dom";
 import {confirmAlert} from 'react-confirm-alert';
 import { useDispatch ,useSelector} from "react-redux";
 import { remove } from "../../../../Redux/User/userSlice";
-import { SocketContext } from "../../../../Context/socketContext";
+// import { SocketContext } from "../../../../Context/socketContext";
 import { fetchNoCounts, handleNotCount } from "../../../../Apis/userRequests";
+import { socket } from "../../../../Context/socketContext";
 
 
 function Sidebar() {
@@ -26,7 +27,7 @@ function Sidebar() {
   const navigate = useNavigate()
   const dispatch = useDispatch()
 
-  const socket = useContext(SocketContext)
+  // const socket = useContext(SocketContext)
   const userData = useSelector((state) => state.user)
 
   const [notifications, setNotifications] = useState('')
@@ -45,7 +46,6 @@ function Sidebar() {
     if(userData){
       socket.emit("new-user-add", userData._id)
     }
-
     fetchnotificationCount()
   }, []);
 
@@ -101,10 +101,9 @@ function Sidebar() {
         { name: "Home", link: "/home", icon: BiHome },
         { name: "messages", link: "/message", icon: FiMessageSquare },
         { name: "Notifications", link: "/notifications", icon: MdNotificationsNone ,notifications:true ,action:handleNotiView},
-        { name: "Create", link: "/home", icon: BiMessageSquareAdd },
         { name: "Works", link: "/works", icon: MdWorkOutline },
         { name: "My Profile", link: "/myprofile", icon: CgProfile },   
-        { name: "Logout", link: "/home", icon: HiOutlineLogout},
+        { name: "Logout", link:'/', icon: HiOutlineLogout},
       ];
 
 
@@ -119,7 +118,7 @@ function Sidebar() {
         </div>
         <div className=" flex flex-col gap-6 justify-start relative md:items-center lg:items-start">
           {menus?.map((menu, i) => (
-            <Link
+            <NavLink end
               to={menu?.link}
               key={i}
               onClick={menu.action}
@@ -135,7 +134,7 @@ function Sidebar() {
                 {menu?.name}
               </h2>
              {menu.notifications && notifications !== 0 ?  <p className="px-1 text-white bg-red-500 rounded-full">{notifications}</p> :null}
-            </Link>
+            </NavLink>
           ))}
         </div>
       </div>

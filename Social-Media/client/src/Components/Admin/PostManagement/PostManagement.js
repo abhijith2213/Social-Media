@@ -13,12 +13,14 @@ function PostManagement() {
     const [posts,setPosts] = useState([])
     const [showModal, setShowModal] = useState(false);
 
+    const [modalData,setModalData]=useState({})
+    const [reportData,setreportData] = useState([])
+
     useEffect(()=>{
 
         const fetchPost =async ()=>{
             try {
                 const {data} = await fetchReportedPosts()
-                console.log(data,'fr data');
                 setPosts(data)
             } catch (error) {
                 console.log(error);
@@ -29,8 +31,6 @@ function PostManagement() {
 
     // HANDLE MODAL VIEW 
 
-    const [modalData,setModalData]=useState({})
-    const [reportData,setreportData] = useState([])
     console.log(reportData);
     const handleView=async(post)=>{
         setModalData(post)
@@ -38,6 +38,7 @@ function PostManagement() {
         try {  
           const {data} = await getReportDetails(post._id) 
           setreportData(data)
+          console.log(data,'reporteddataaaa');
         } catch (error) {
           console.log(error);
         }
@@ -75,7 +76,7 @@ function PostManagement() {
 
   return (
     <>
-    <div className='w-full mr-6 '>
+    <div className='w-full mr-6 max-h-screen overflow-y-auto no-scrollbar'>
        <h2 className='text-2xl font-bold my-6'>Post Management</h2>
 
        <div class='overflow-x-auto relative'>
@@ -133,7 +134,17 @@ function PostManagement() {
           </table>
        </div>
     </div>
-    <ToastContainer />
+    <ToastContainer 
+    position="top-center"
+    autoClose={3000}
+    hideProgressBar
+    newestOnTop
+    closeOnClick
+    rtl={false}
+    pauseOnFocusLoss={false}
+    draggable
+    pauseOnHover
+    theme="dark"/>
 
     <>
 

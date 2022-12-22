@@ -5,22 +5,29 @@ const Report = require('../Models/reportsSchema');
 const NotificationModel = require('../Models/notificationSchema');
 const { findById } = require('../Models/userSchema');
 
+const multer = require('multer')
+const upload = require('../config/multerConfig')
 
 
 /* ------------------------------  UPLOAD NEW POST------------------------------ */
 
 const postUpload=(req,res)=>{
 
-    console.log(req.body,'post add body');
-        let{userId,description}= req.body
-        let image = req?.file?.filename
-        console.log(image,'mmmmmmmmok');
-        Post.create({userId,description,image}).then((response)=>{
-            res.status(200).json({message:'Post added successfully'})
-        }).catch((err)=>{
-            console.log(err);
-            res.status(500).json({message:'Post Add failed'})
-        })
+    try {      
+            let{userId,description}= req.body
+            let image = req?.file?.filename
+            console.log(image,'mmmmmmmmok');
+            Post.create({userId,description,image}).then((response)=>{
+                res.status(200).json({message:'Post added successfully'})
+            }).catch((err)=>{
+                console.log(err,'ooooerrorr');
+                res.status(500).json({message:'Post Add failed'})
+            })
+    } catch (error) {
+        console.log(error.message,'eeeeeerrrrrott');
+        res.status(500).json({message:'invalid image'})
+    }
+
     
 }
 

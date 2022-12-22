@@ -17,4 +17,4 @@ export const blockUserPost =(postId)=> adminInstance.put(`/post/block/${postId}`
 export const unblockUserPost = (postId) => adminInstance.put(`/post/unblock/${postId}`)
 
 
-export const getReportDetails = (postId) => axios.get(`/admin/post/reportDetails/${postId}`)
+export const getReportDetails = (postId) => adminInstance.get(`/post/reportDetails/${postId}`)

@@ -14,7 +14,6 @@ let adminInstance = axios.create(defaultOptions);
 // Set the AUTH token for any request
 adminInstance.interceptors.request.use(function (config) {
   const token = localStorage.getItem("adminToken");
-  console.log(token, "verifyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy");
   config.headers.accesstoken = token;
   return config;
 });

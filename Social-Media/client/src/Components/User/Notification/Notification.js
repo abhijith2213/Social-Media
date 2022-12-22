@@ -1,16 +1,17 @@
 import React, { useEffect, useState, useContext } from "react"
 import { useSelector } from "react-redux"
 import { getAllNotifications } from "../../../Apis/userRequests"
-import profile from "../../../assets/images/download.png"
 import { format } from "timeago.js"
-import { SocketContext } from "../../../Context/socketContext"
+import { Link, useNavigate } from "react-router-dom"
+import { socket } from "../../../Context/socketContext"
 
 
 function Notification() {
 
+   const navigate = useNavigate()
    const PF = process.env.REACT_APP_PUBLIC_FOLDER
 
-   const socket = useContext(SocketContext)
+   // const socket = useContext(SocketContext)
 
    const userData = useSelector((state) => state.user)
 
@@ -38,9 +39,14 @@ function Notification() {
          }
          fetchNotifications()
       } catch (error) {
-         console.log(error)
+         if (!error?.response?.data?.auth && error?.response?.status === 403) {
+            localStorage.removeItem('userToken')
+            localStorage.removeItem('user')
+            navigate("/signin")
+         }
       }
    }, [socket,notCount])
+
 
    return (
       <>
@@ -48,7 +54,7 @@ function Notification() {
             {/* FEEDS ADD  */}
             <div>
                <div className='pt-16 md:pt-10 flex justify-center h-3/4'>
-                  <div className='w-4/5 md:w-1/2 flex-col justify-center rounded-md  bg-white min-h-screen overflow-y-auto'>
+                  <div className='w-4/5 md:w-1/2 flex-col justify-center rounded-md  bg-white min-h-screen max-h-screen overflow-y-auto no-scrollbar'>
                      <div className='w-full'>
                         <h2 className='ml-4 mt-2 font-medium text-lg'>Notifications</h2>
                      </div>
@@ -57,7 +63,9 @@ function Notification() {
                         notifications?.map((data)=>(
                         <div className='flex p-6 mx-2 max-h-full overflow-y-auto'>
                            <div>
+                           <Link to={userData.userName === data.user.userName?'/myprofile':`/profile/${data.user.userName}`}>
                               <img src={ PF+data?.user?.profilePic} className='w-10 rounded-full' alt='' />
+                           </Link>
                            </div>
                            <div className='p-2 flex items-center'>
                               <p className='font-medium pr-2'>{data.user.userName}</p>

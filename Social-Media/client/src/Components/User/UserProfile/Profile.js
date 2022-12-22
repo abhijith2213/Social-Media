@@ -1,7 +1,6 @@
 import React,{useState,useEffect} from "react";
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
-import axios from "../../../Axios/axios";
 import {useSelector} from 'react-redux'
 import {useParams} from 'react-router'
 
@@ -9,14 +8,14 @@ import { ToastContainer, toast } from 'react-toastify';  //Toast
 import 'react-toastify/dist/ReactToastify.css';  //Toast Css
 
 import "./Profile.css";
-import cover from "../../../assets/images/bgImg.avif"
-import profile from "../../../assets/images/download.png"
 
 import {MdOutlinePhotoCameraBack, MdArchive,MdDynamicFeed,MdModeEditOutline} from 'react-icons/md'
-import { BiDownload, BiImage } from "react-icons/bi"
+import { BiImage } from "react-icons/bi"
 
 import { getUserByUsername, getUserFollowers, getUserFollowing, updateCoverPic } from "../../../Apis/userRequests";
 import { newUserChat } from "../../../Apis/chatRequests";
+import userInstance from "../../../Axios/userAuth";
+import { useErrorHandler } from "react-error-boundary";
 
 function Profile() {
 
@@ -26,7 +25,7 @@ function Profile() {
 
   const userData = useSelector(state =>state.user)
   let userId = userData?._id
-
+  const handleError = useErrorHandler()
 
   const [selected,setSelected] = useState(true)
 
@@ -38,8 +37,6 @@ function Profile() {
     userName = userData.userName
   }
   
-
- 
     useEffect(() => {
       const getUserData = async ()=>{
           try {
@@ -47,32 +44,44 @@ function Profile() {
            console.log(data,'usedetails data');
            setUser(data)
            if(selected){
-             axios.get(`/profile/myposts/${data._id}`).then((res)=>{
+            userInstance.get(`/profile/myposts/${data._id}`).then((res)=>{
              setMyPosts(res.data)
             })
            }else{
-            axios.get(`/profile/myposts/archieves/${userId}`).then((res)=>{
+            userInstance.get(`/profile/myposts/archieves/${userId}`).then((res)=>{
               setMyPosts(res.data)
             })
            }
         }catch (error) {
-          console.log(error);
+          if (!error?.response?.data?.auth && error?.response?.status === 403) {
+            localStorage.removeItem('userToken')
+            localStorage.removeItem('user')
+            navigate("/signin")
+         }else{
+
+           handleError(error)
+         }
         }
       }
-        getUserData()
-
-          
-    }, [userName,effectCall,selected]);
+        getUserData()   
+    },[userName,effectCall,selected]);
 
     // follow
     const handleFollow= async(Id)=>{
 
       try {      
         console.log(userId,'opuserid');
-        const res = await  axios.put(`/${userId}/follow`,{Id})
+        const res = await  userInstance.put(`/${userId}/follow`,{Id})
         setEffectCall(!effectCall)
       } catch (error) {
-        console.log(error);
+        console.log(error,'kitssssss errrrorororor');
+        if (!error?.response?.data?.auth && error?.response?.status === 403) {
+          localStorage.removeItem('userToken')
+          localStorage.removeItem('user')
+          navigate("/signin")
+       }else{
+         handleError(error)
+       }
       }   
     }
 
@@ -80,10 +89,16 @@ function Profile() {
     // HANDLE UNFOLLOW 
 
 const handleUnFollow = (Id)=>{
-  axios.put(`/${userId}/unfollow`,{Id}).then((res)=>{
+  userInstance.put(`/${userId}/unfollow`,{Id}).then((res)=>{
     setEffectCall(!effectCall)
-  }).catch((err)=>{
-    console.log(err);
+  }).catch((error)=>{
+    if (!error?.response?.data?.auth && error?.response?.status === 403) {
+      localStorage.removeItem('userToken')
+      localStorage.removeItem('user')
+      navigate("/signin")
+   }else{
+     handleError(error)
+   }
   })
 }
 
@@ -100,8 +115,8 @@ const handleMessage =async (rid)=>{
       navigate('/message')
     } catch (error) {
       console.log(error);
+      handleError(error)
     }
-
 }
 
 const [showModal,setShowModal] = useState({status:false,value:''})
@@ -124,6 +139,7 @@ const showFollowers =async () =>{
     setShowModal({status:true,value:'Followers'})
   } catch (error) {
     console.log(error);
+    handleError(error)
   }
 
 }
@@ -143,6 +159,7 @@ const showFollowing =async ()=>{
     setShowModal({status:true,value:'Following'})
   } catch (error) {
     console.log(error);
+    handleError(error)
   }
 }
 
@@ -172,18 +189,15 @@ const handleCoverPic = async ()=>{
           const {data} = await updateCoverPic(datas)
           if(data.message){
             console.log(data);
-            toast.success(data.message, {
-              position: "top-right",
-              autoClose: 2000,
-              hideProgressBar: true,
-              theme: "dark",
-           })
+            toast.success(data.message)
+           setEffectCall(!effectCall)
            setCoverPic('')
            setShowImage('')
            setCoverPicEdit(false)
           }
         } catch (error) {
           console.log(error);
+          handleError(error)
         }
     }
   }
@@ -196,7 +210,7 @@ const handleCoverPic = async ()=>{
      <div className="ProfileCard lg:container mt-5 ">
      {userName !== userData.userName ? 
       <div className="ProfileImages">
-        <img className="coverPic w-full h-40 object-cover object-center " src={user?.coverPic? PF+user?.coverPic:cover} alt="CoverImage" />
+        <img className="coverPic w-full h-40 object-cover object-center " src={ PF+user?.coverPic} alt="CoverImage" />
         <img className="profilePic w-16 h-28 rounded-full" src={ PF+user?.profilePic} alt="ProfileImage"/>
       </div>
       :
@@ -204,7 +218,7 @@ const handleCoverPic = async ()=>{
         <div className="relative w-full">
               <MdModeEditOutline className="absolute text-gray-800 text-xl cursor-pointer right-5 bottom-5  rounded-full"
                onClick={()=>setCoverPicEdit(true)}/>
-            <img className="coverPic w-full h-40 object-cover " src={user?.coverPic? PF+user?.coverPic:cover} alt="CoverImage"/>
+            <img className="coverPic w-full h-40 object-cover " src={ PF+user?.coverPic} alt="CoverImage"/>
         </div>
             <img className="profilePic w-16 h-28 rounded-full" src={PF+user?.profilePic} alt="ProfileImage"/>
       </div>
@@ -281,7 +295,7 @@ const handleCoverPic = async ()=>{
         <div className="grid grid-cols-1 mx-auto sm:grid-cols-3 px-6 pb-4 gap-4 overflow-y-auto no-scrollbar">
           { myPosts?.map((posts,i)=>{
             return(
-              <div className=" shadow-sm">
+              <div className=" shadow-sm" key={i}>
               <img className="object-fill rounded-md w-[290px] h-[290px]" src={PF+posts.image}  />
               </div>
             )
@@ -296,7 +310,17 @@ const handleCoverPic = async ()=>{
     </div>
 
 </div>
-<ToastContainer/>
+  <ToastContainer
+  position="top-center"
+  autoClose={3000}
+  hideProgressBar
+  newestOnTop
+  closeOnClick
+  rtl={false}
+  pauseOnFocusLoss={false}
+  draggable
+  pauseOnHover
+  theme="dark"/>
 <>
 {showModal.status ? (
   <>
@@ -389,7 +413,6 @@ const handleCoverPic = async ()=>{
                           </div>
                     </div>
                  </div>
-                 {/* </div> */}
                  </div>
            </div>
            </div>

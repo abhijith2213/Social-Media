@@ -8,7 +8,8 @@ const verifyJWT = require('../Middlewares/verifyJWT')
 const {postCreateAccount, postSignIn, getSuggestions,putFollowUser, getPostUser,
        putUnfollowUser,getUserDetails,getUserData,getMyFollowers,getMyFollowings,
        updateUserProfile,updateProfilePic,searchUsers,updateCoverPic,getNotifications,
-       verifyOtp,sendUserOtp,resendOtp,changeUserPassword,manageNotificationCount,getNotifCount} = require('../Controller/userController')
+       verifyOtp,sendUserOtp,resendOtp,changeUserPassword,manageNotificationCount,
+       getNotifCount,forgotPassLinkSend,updateNewPassword} = require('../Controller/userController')
 
 //************** */ POST CONTROLLER 
 const {postUpload,getTimelinePost,putLikePost,putPostComment,getViewComments,
@@ -29,62 +30,62 @@ router.post('/uploadPost',upload.single('file'),postUpload)
 router.get('/post/timeline_post/:id',verifyJWT,getTimelinePost)
 
 
-router.get('/postDetails/:id',getPostUser)
+router.get('/postDetails/:id',verifyJWT,getPostUser)
 
 
 router.get('/suggestions/:id',verifyJWT,getSuggestions)
 
 
-router.put('/:id/follow',putFollowUser)
+router.put('/:id/follow',verifyJWT,putFollowUser)
 
-router.put('/:id/unfollow',putUnfollowUser)
-
-
-router.put('/post/like/:id',putLikePost)
+router.put('/:id/unfollow',verifyJWT,putUnfollowUser)
 
 
-router.put('/post/comment/:id',putPostComment)
+router.put('/post/like/:id',verifyJWT,putLikePost)
 
 
-router.get('/post/viewComments/:id',getViewComments)
-
-router.get('/profile/myposts/:id',getUserPosts)
-
-router.get('/profile/myposts/archieves/:id',getPostArchieves)
+router.put('/post/comment/:id',verifyJWT,putPostComment)
 
 
-router.get('/users/:userId',getUserDetails)
+router.get('/post/viewComments/:id',verifyJWT,getViewComments)
+
+router.get('/profile/myposts/:id',verifyJWT,getUserPosts)
+
+router.get('/profile/myposts/archieves/:id',verifyJWT,getPostArchieves)
 
 
-router.get('/:id',getUserData)
-
-router.delete('/post/delete/:id',deletePost)
+router.get('/users/:userId',verifyJWT,getUserDetails)
 
 
-router.put('/post/report/:id',reportPost)
+router.get('/:id',verifyJWT,getUserData)
 
-router.get('/user/myFollowers/:id',getMyFollowers)
-
-
-router.get('/user/myFollowing/:id',getMyFollowings)
+router.delete('/post/delete/:id',verifyJWT,deletePost)
 
 
-router.get('/admin/post/reportDetails/:id',getReportData)
+router.put('/post/report/:id',verifyJWT,reportPost)
+
+router.get('/user/myFollowers/:id',verifyJWT,getMyFollowers)
 
 
-router.put('/user/updateProfile/:id',updateUserProfile)
+router.get('/user/myFollowing/:id',verifyJWT,getMyFollowings)
+
+
+router.get('/admin/post/reportDetails/:id',verifyJWT,getReportData)
+
+
+router.put('/user/updateProfile/:id',verifyJWT,updateUserProfile)
 
 
 router.put('/user/update/profilePic',upload.single('file'),updateProfilePic)
 
 
-router.get('/user/search/:id',searchUsers)
+router.get('/user/search/:id',verifyJWT,searchUsers)
 
 
 router.put(`/user/update/coverPic`,upload.single('file'),updateCoverPic)
 
 
-router.get('/user/notification/:id',getNotifications)
+router.get('/user/notification/:id',verifyJWT,getNotifications)
 
 router.post('/signup/sendOtp',sendUserOtp)
 
@@ -92,10 +93,14 @@ router.post('/signup/otp/resend',resendOtp)
 
 router.post('/singnUp/otp/verify',verifyOtp)
 
-router.put('/user/editProfile/changePassword/:id',changeUserPassword)
+router.put('/user/editProfile/changePassword/:id',verifyJWT,changeUserPassword)
 
-router.put('/user/notification/read/:id',manageNotificationCount)
+router.put('/user/notification/read/:id',verifyJWT,manageNotificationCount)
 
-router.get('/user/notifications/getCount/:id',getNotifCount)
+router.get('/user/notifications/getCount/:id',verifyJWT,getNotifCount)
+
+router.put('/forgotPassword/:email',forgotPassLinkSend)
+
+router.put('/resetPassword',updateNewPassword)
 
 module.exports = router

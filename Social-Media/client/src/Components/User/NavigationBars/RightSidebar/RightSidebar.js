@@ -5,11 +5,13 @@ import connect from "../../../../assets/images/network.png"
 import { useSelector } from "react-redux"
 import { Link ,useNavigate} from "react-router-dom"
 import userInstance from "../../../../Axios/userAuth"
+import { useErrorHandler } from "react-error-boundary"
 
 function RightSidebar() {
 
   const navigate = useNavigate()
   const PF = process.env.REACT_APP_PUBLIC_FOLDER
+  const handleError = useErrorHandler()
 
   const userData = useSelector(state =>state.user)
 
@@ -24,10 +26,13 @@ useEffect(() => {
     setSuggestions(res.data)
 
 }).catch((error)=>{
-  if(!error?.auth){
-    navigate('/signin')
+  if (!error?.response?.data?.auth && error?.response?.status === 403) {
+    localStorage.removeItem('userToken')
+    localStorage.removeItem('user')
+    navigate("/signin")
+ }else{
+  handleError(error)
  }
-  console.log(error,'error com');
 })
 }, [state]);
 
@@ -35,10 +40,18 @@ useEffect(() => {
 // HANDLE FOLLOW 
 
 const handleFollow= (Id)=>{
-  axios.put(`/${userId}/follow`,{Id}).then((res)=>{
+  userInstance.put(`/${userId}/follow`,{Id}).then((res)=>{
     setState(!state)
   }).catch((err)=>{
     console.log(err);
+    if (!err?.response?.data?.auth && err?.response?.status === 403) {
+      localStorage.removeItem('userToken')
+      localStorage.removeItem('user')
+      navigate("/signin")
+    }else{
+      handleError(err)
+    }
+
   })
 
 }
@@ -46,10 +59,11 @@ const handleFollow= (Id)=>{
 // HANDLE UN FOLLOW 
 
 const handleUnFollow = (Id)=>{
-  axios.put(`/${userId}/unfollow`,{Id}).then((res)=>{
+  userInstance.put(`/${userId}/unfollow`,{Id}).then((res)=>{
     setState(!state)
   }).catch((err)=>{
     console.log(err);
+    
   })
 }
 

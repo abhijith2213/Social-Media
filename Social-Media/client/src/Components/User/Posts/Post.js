@@ -1,45 +1,54 @@
-import React, { useState, useEffect, useContext,useRef } from "react"
-import { Link } from "react-router-dom"
+import React, { useState, useEffect, useContext } from "react"
+import { Link ,useNavigate} from "react-router-dom"
 import { useSelector } from "react-redux"
 import { format } from "timeago.js"
 import { ToastContainer, toast } from "react-toastify" //Toast
 import "react-toastify/dist/ReactToastify.css" //Toast Css
-import axios from "../../../Axios/axios"
+import userInstance from "../../../Axios/userAuth"
+import { useErrorHandler } from "react-error-boundary"
 
 import profile from "../../../assets/images/download.png"
 import './Post.css'
+
 /* ------------------------------ ICONS IMPORT ------------------------------ */
 
 import { BsThreeDotsVertical, BsFlagFill } from "react-icons/bs"
 import { FaRegHeart, FaRegComment, } from "react-icons/fa"
 import { FcLike } from "react-icons/fc"
 import { reportUserPost, deleteUserPost } from "../../../Apis/PostRequest"
-import { SocketContext } from "../../../Context/socketContext"
+import { socket } from "../../../Context/socketContext"
+// import { SocketContext } from "../../../Context/socketContext"
 
 
 
 function Post({ post , setBlock}) {
 
-   const effectRan = useRef(false)
-
+   const navigate = useNavigate()
    const PF = process.env.REACT_APP_PUBLIC_FOLDER
    const userData = useSelector((state) => state.user)
    const userId = userData._id
-   const socket = useContext(SocketContext)
+   // const socket = useContext(SocketContext)
    const [user, setUser] = useState({})
    const [showDrop, setShowDrop]= useState(false)
    const [showModal,setShowModal] = useState(false)
 
+   const handleError = useErrorHandler()
+
 
    useEffect(() => {
-      if (effectRan.current === false) {
          const fetchPostUser = async () => {
-            const res = await axios.get(`/postDetails/users?userId=${post.userId}`)
-            setUser(res.data)
+            try {               
+               const res = await userInstance.get(`/postDetails/users?userId=${post.userId}`)
+               setUser(res.data)
+            } catch (error) {
+               if (!error?.response?.data?.auth && error?.response?.status === 403) {
+                  localStorage.removeItem('userToken')
+                  localStorage.removeItem('user')
+                  navigate("/signin")
+               }
+            }
          }
          fetchPostUser()
-         return () => (effectRan.current = true)
-      }
    }, [post.userId])
 
    /* ---------------------------- HANDLE POST LIKES --------------------------- */
@@ -50,21 +59,26 @@ function Post({ post , setBlock}) {
    const [like, setLike] = useState(post?.likes?.length)
 
    const handleLike = async (e) => {
-      console.log(userId, "oo")
-      console.log(post._id, "piddd")
-
-      let res = await axios.put(`/post/like/${post._id}`, { userId: userId })
-      setLikeState(!likeState)
-      setLike(likeState ? like - 1 : like + 1)
-
-      if(post.userId !== userId){
-         socket.emit('send-notification',{
-            senderId:userId,
-            recieverId:post.userId,
-            type:'liked your post'
-         })
+      try {       
+         let res = await userInstance.put(`/post/like/${post._id}`, { userId: userId })
+         setLikeState(!likeState)
+         setLike(likeState ? like - 1 : like + 1)
+   
+         if(post.userId !== userId){
+            socket.emit('send-notification',{
+               senderId:userId,
+               recieverId:post.userId,
+               type:'liked your post'
+            })
+         }
+      } catch (error) {
+         if (!error?.response?.data?.auth && error?.response?.status === 403) {
+            localStorage.removeItem('userToken')
+            localStorage.removeItem('user')
+            navigate("/signin")
+         }
+         handleError(error)
       }
-      console.log(res, "like res")
    }
 
    useEffect(() => {
@@ -97,9 +111,8 @@ function Post({ post , setBlock}) {
       }
 
       try {
-         let res = await axios.put(`/post/comment/${post._id}`, { ...data })
+         let res = await userInstance.put(`/post/comment/${post._id}`, { ...data })
          setComment("")
-         effectRan.current = false
          setCommentUpdate(!commentUpdate)
 
          if(post.userId !== userId){
@@ -109,15 +122,13 @@ function Post({ post , setBlock}) {
             type:'Commented on your post'
          })
       }
-         toast.success(res.data.message, {
-            position: "top-right",
-            autoClose: 2000,
-            hideProgressBar: true,
-            theme: "dark",
-         })
+         toast.success(res.data.message)
       } catch (error) {
-         console.log("in error")
-         console.log(error)
+         if (!error?.response?.data?.auth && error?.response?.status === 403) {
+            localStorage.removeItem('userToken')
+            localStorage.removeItem('user')
+            navigate("/signin")
+         }
       }
    }
 
@@ -129,9 +140,17 @@ function Post({ post , setBlock}) {
    useEffect(() => {
       
       const fetchComments = async () => {
-         let res = await axios.get(`/post/viewComments/${post._id}`)
-         console.log(res.data,'commen');
-         setAllComments(res.data)
+         try {          
+            let res = await userInstance.get(`/post/viewComments/${post._id}`)
+            console.log(res.data,'commen');
+            setAllComments(res.data)
+         } catch (error) {
+            if (!error?.response?.data?.auth && error?.response?.status === 403) {
+               localStorage.removeItem('userToken')
+               localStorage.removeItem('user')
+               navigate("/signin")
+            }
+         }
       }
       fetchComments()
    }, [viewComment, commentUpdate])
@@ -141,7 +160,6 @@ function Post({ post , setBlock}) {
    const handleViewComment = async (e) => {
       e.preventDefault()
       setViewComment(!viewComment)
-      effectRan.current = false
    }
 
    // DELETE POST 
@@ -151,14 +169,13 @@ function Post({ post , setBlock}) {
       try {
          const {data} = await deleteUserPost(post._id) 
          setBlock(Date.now())
-         toast.warn(data.message, {
-            position: "top-right",
-            autoClose: 2000,
-            hideProgressBar: true,
-            theme: "dark",
-         })
+         toast.warn(data.message)
       } catch (error) {
-         console.log(error);
+         if (!error?.response?.data?.auth && error?.response?.status === 403) {
+            localStorage.removeItem('userToken')
+            localStorage.removeItem('user')
+            navigate("/signin")
+         }
       }
    }
 
@@ -172,16 +189,16 @@ function Post({ post , setBlock}) {
          setReason('')
          console.log(data,'block response');
          setBlock(Date.now())
-         toast.warn(data.message, {
-            position: "top-right",
-            autoClose: 2000,
-            hideProgressBar: true,
-            theme: "dark",
-         })
+         toast.warn(data.message)
          } catch (error) {
-            console.log(error);
+            if (!error?.response?.data?.auth && error?.response?.status === 403) {
+               localStorage.removeItem('userToken')
+               localStorage.removeItem('user')
+               navigate("/signin")
+            }
          }
    }
+
 
    return (
 <>
@@ -284,12 +301,6 @@ function Post({ post , setBlock}) {
                               <span>{allComments.length}</span>
                            </div>
 
-                           {/* <span title='Share' className='text-gray-600'>
-                              {React.createElement(FaRegPaperPlane, { size: 18 })}
-                           </span>
-                           <span title='Connect' className='text-gray-600'>
-                              {React.createElement(FaRegStar, { size: 18 })}
-                           </span> */}
                         </div>
                      </div>
 
@@ -346,7 +357,17 @@ function Post({ post , setBlock}) {
 
             {/* FEEDS AREA END  */}
          </div>
-         <ToastContainer />
+         <ToastContainer
+         position="top-center"
+         autoClose={3000}
+         hideProgressBar
+         newestOnTop
+         closeOnClick
+         rtl={false}
+         pauseOnFocusLoss={false}
+         draggable
+         pauseOnHover
+         theme="dark" />
       </div>
       {showModal ? (
   <>

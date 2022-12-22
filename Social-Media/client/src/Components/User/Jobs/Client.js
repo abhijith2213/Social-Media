@@ -1,7 +1,7 @@
 import React, { useState } from "react"
 import { useSelector } from "react-redux"
 import { format } from "timeago.js"
-import { Link } from "react-router-dom"
+import { Link,useNavigate } from "react-router-dom"
 import { ToastContainer, toast } from "react-toastify" //Toast
 import "react-toastify/dist/ReactToastify.css" //Toast Css
 
@@ -13,6 +13,7 @@ function Client({ job, setEffect }) {
 
    const PF = process.env.REACT_APP_PUBLIC_FOLDER
 
+   const navigate = useNavigate()
    const userData = useSelector((state) => state.user)
    const userId = userData._id
    const [options, setOptions] = useState(false)
@@ -25,14 +26,14 @@ function Client({ job, setEffect }) {
       try {
          const { data } = await deleteJob(job._id)
          console.log(data)
-         toast.warn(data.message, {
-            position: "top-right",
-            autoClose: 2000,
-            hideProgressBar: true,
-            theme: "dark",
-         })
+         toast.warn(data.message)
          setEffect(Date.now())
       } catch (error) {
+         if (!error?.response?.data?.auth && error?.response?.status === 403) {
+            localStorage.removeItem('userToken')
+            localStorage.removeItem('user')
+            navigate("/signin")
+         }
          console.log(error)
       }
    }
@@ -137,7 +138,17 @@ function Client({ job, setEffect }) {
                   </div>
                </div>
             </div>
-            <ToastContainer />
+            <ToastContainer
+            position="top-center"
+            autoClose={3000}
+            hideProgressBar
+            newestOnTop
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss={false}
+            draggable
+            pauseOnHover
+            theme="dark" />
          </div>
 
          

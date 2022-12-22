@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react"
 import { useSelector } from "react-redux"
-import { format } from "timeago.js"
+import { useNavigate } from "react-router"
 import { ToastContainer, toast } from "react-toastify" //Toast
 import "react-toastify/dist/ReactToastify.css" //Toast Css
+import { useErrorHandler } from "react-error-boundary"
 
 // Assets
 import { GrAdd } from "react-icons/gr"
@@ -15,9 +16,11 @@ function Jobs() {
    const userData = useSelector((state) => state.user)
    const userId = userData._id
 
+   const handleError = useErrorHandler()
+   const navigate = useNavigate()
    const [effect, setEffect] = useState('')
    const [showModal, setShowModal] = useState(false)
-   const [showReport, setShowReport] = useState(false)
+   // const [showReport, setShowReport] = useState(false)
    const [selected,setSelected] = useState(true)
 
    /* ------------------------------- ADD NEW JOB ------------------------------ */
@@ -38,14 +41,15 @@ function Jobs() {
          if (data) {
             setShowModal(false)
             setEffect(Date.now())
-            toast.success(data.message, {
-               position: "top-right",
-               autoClose: 2000,
-               hideProgressBar: true,
-               theme: "dark",
-            })
+            toast.success(data.message)
          }
       } catch (error) {
+         if (!error?.response?.data?.auth && error?.response?.status === 403) {
+            localStorage.removeItem('userToken')
+            localStorage.removeItem('user')
+            navigate("/signin")
+         }
+         handleError(error)
          console.log(error)
       }
    }
@@ -66,6 +70,12 @@ function Jobs() {
    
                findMyJobs()
             } catch (error) {
+               if (!error?.response?.data?.auth && error?.response?.status === 403) {
+                  localStorage.removeItem('userToken')
+                  localStorage.removeItem('user')
+                  navigate("/signin")
+               }
+               handleError(error)
                console.log(error)
             }
          }else{
@@ -79,6 +89,12 @@ function Jobs() {
    
                findMyJobs()
             } catch (error) {
+               if (!error?.response?.data?.auth && error?.response?.status === 403) {
+                  localStorage.removeItem('userToken')
+                  localStorage.removeItem('user')
+                  navigate("/signin")
+               }
+               handleError(error)
                console.log(error)
             }
          }
@@ -92,7 +108,14 @@ function Jobs() {
             }
             findAllJobs()
          } catch (error) {
+            if (!error?.response?.data?.auth && error?.response?.status === 403) {
+               localStorage.removeItem('userToken')
+               localStorage.removeItem('user')
+               navigate("/signin")
+            }
             console.log(error)
+            handleError(error)
+
          }
       }else{
          try {
@@ -103,6 +126,12 @@ function Jobs() {
             }
             findMyJobs()
          } catch (error) {
+            if (!error?.response?.data?.auth && error?.response?.status === 403) {
+               localStorage.removeItem('userToken')
+               localStorage.removeItem('user')
+               navigate("/signin")
+            }
+            handleError(error)
             console.log(error)
          }
       }
@@ -293,7 +322,17 @@ function Jobs() {
             </>
          )}
 
-         <ToastContainer />
+         <ToastContainer 
+         position="top-center"
+         autoClose={3000}
+         hideProgressBar
+         newestOnTop
+         closeOnClick
+         rtl={false}
+         pauseOnFocusLoss={false}
+         draggable
+         pauseOnHover
+         theme="dark"/>
       </>
    )
 }

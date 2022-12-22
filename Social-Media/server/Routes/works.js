@@ -2,30 +2,31 @@ const express = require('express')
 const router = express.Router()
 const {PostAddWork,getMyPosts,getAssignedPosts,getAllPosts, deleteJob, sendJobRequest,
         getRequests ,getRequestUsers,assignWork ,reportJob, assignedWorksToMe  } = require('../Controller/jobController')
+const verifyJWT = require('../Middlewares/verifyJWT')
 
-router.post('/newWork',PostAddWork)
+router.post('/newWork',verifyJWT,PostAddWork)
 
-router.get('/myPosts/:id',getMyPosts)
+router.get('/myPosts/:id',verifyJWT,getMyPosts)
 
-router.get('/assignedPosts/:id',getAssignedPosts)
+router.get('/assignedPosts/:id',verifyJWT,getAssignedPosts)
 
-router.get('/allPosts/:id',getAllPosts)
+router.get('/allPosts/:id',verifyJWT,getAllPosts)
 
-router.delete('/delete/:id',deleteJob)
+router.delete('/delete/:id',verifyJWT,deleteJob)
 
-router.put('/sendRequest/:id',sendJobRequest)
+router.put('/sendRequest/:id',verifyJWT,sendJobRequest)
 
-router.get('/requests/:id',getRequests)
-
-
-router.get('/requestDetails/:id',getRequestUsers)
+router.get('/requests/:id',verifyJWT,getRequests)
 
 
-router.put('/assignWork/:id',assignWork)
+router.get('/requestDetails/:id',verifyJWT,getRequestUsers)
 
-router.get('/assigneWorks/me/:id',assignedWorksToMe)
 
-router.put('/reportWork/:id',reportJob)
+router.put('/assignWork/:id',verifyJWT,assignWork)
+
+router.get('/assigneWorks/me/:id',verifyJWT,assignedWorksToMe)
+
+router.put('/reportWork/:id',verifyJWT,reportJob)
 
  
 module.exports= router

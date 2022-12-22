@@ -47,24 +47,14 @@ function UserManagement() {
           onClick: () => 
           adminInstance.put("/user_management/block_user",{userId}).then((res)=>{
             if(res.data.update){
-             toast.warn("User blocked successfully!",{
-                position: "top-center",
-                autoClose: 2000,
-                hideProgressBar: true,
-                theme:"dark"
-              });
+             toast.warn("User blocked successfully!");
             }
             setStatus(!status)
           })
         },
         {
           label: 'No',
-          onClick: () => toast.warn("User block Cancelled!",{
-            position: "top-right",
-            autoClose: 2000,
-            hideProgressBar: true,
-            theme:"dark"
-        })
+          onClick: () => toast.warn("User block Cancelled!")
       }
       ]
     });
@@ -85,12 +75,7 @@ function UserManagement() {
                adminInstance.put('/user_management/unblock_user',{userId}).then((res)=>{
                   console.log(res);
                   if(res.data.update){
-                    toast.warn("User unblocked successfully!",{
-                      position: "top-right",
-                      autoClose: 2000,
-                      hideProgressBar: true,
-                      theme:"dark"
-                    });
+                    toast.warn("User unblocked successfully!");
                      setStatus(!status)
                   }
              })
@@ -98,12 +83,7 @@ function UserManagement() {
              
              {
                label: 'No',
-               onClick: () => toast.warn("User unblocked Cancelled!",{
-                  position: "top-right",
-                  autoClose: 2000,
-                  hideProgressBar: true,
-                  theme:"dark"
-                })
+               onClick: () => toast.warn("User unblocked Cancelled!")
              }
             
          ]
@@ -115,11 +95,11 @@ function UserManagement() {
 
    return (
       <>
-         <div className='w-full mr-6 '>
-            <h2 className='text-2xl font-bold my-6'>User Management</h2>
+         <div className='w-full mr-6 max-h-screen overflow-y-auto no-scrollbar'>
+            <h2 className='text-2xl font-bold my-6 '>User Management</h2>
 
-            <div class='overflow-x-auto relative'>
-               <table class='w-full text-sm  text-gray-500 dark:text-gray-400 text-center'>
+            <div class='overflow-x-auto relative  '>
+               <table class='w-full text-sm  text-gray-500 dark:text-gray-400 text-center overflow-y-auto max-h-screen'>
                   <thead class='text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400'>
                      <tr>
                         <th scope='col' class='py-3 px-6'>
@@ -139,7 +119,7 @@ function UserManagement() {
                         </th>
                      </tr>
                   </thead>
-                  <tbody>
+                  <tbody className="">
                      {users?.map((user, i) => {
                         user.created_date = moment(user.created_date).format("YYYY-MM-DD")
                         return (
@@ -179,7 +159,17 @@ function UserManagement() {
                </table>
             </div>
          </div>
-         <ToastContainer />
+         <ToastContainer
+         position="top-center"
+         autoClose={3000}
+         hideProgressBar
+         newestOnTop
+         closeOnClick
+         rtl={false}
+         pauseOnFocusLoss={false}
+         draggable
+         pauseOnHover
+         theme="dark" />
       </>
    )
 }

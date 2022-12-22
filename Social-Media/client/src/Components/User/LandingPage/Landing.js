@@ -1,5 +1,5 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React,{useEffect} from "react";
+import { Link, useNavigate } from "react-router-dom";
 import logo from '../../../assets/images/talentF-c.png'
 
 /* ------------------------------ IMAGES IMPORT ----------------------------- */
@@ -10,6 +10,17 @@ import Bg3 from "../../../assets/images/freelance-work_set-04.jpg"
 
 
 function Landing() {
+
+  const navigate = useNavigate()
+
+
+  useEffect(()=>{
+    const token = localStorage.getItem('userToken')
+    if(token){
+      navigate('/home')
+    }
+  },[])
+
   return (
     <>
       

@@ -1,102 +1,97 @@
-import './App.css';
-import {BrowserRouter as Router, Navigate, Route, Routes } from 'react-router-dom'
-import {Provider } from 'react-redux'
+import "./App.css"
+import { lazy, Suspense } from "react"
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom"
+import { Provider } from "react-redux"
+
+import LoadingOverlay from "react-loading-overlay-ts"
+import HashLoader from "react-spinners/HashLoader"
 
 /* ------------------------------ PAGE IMPORTS ------------------------------ */
 
-// Redux components 
-import store from './Redux/User/Store'
-
-// SOCKET CONTEXT 
-import { SocketContext,socket } from './Context/socketContext';
-
-// ERROR PAGE 
-import ErrorPage from './Pages/ErrorPage/ErrorPage';
+// Redux components
+import store from "./Redux/User/Store"
 
 
-// CLIENT 
+// PROTECTED ROUTE
 
-import LandingPage from './Pages/User/LandingPage/LandingPage';
-import SignupPage from './Pages/User/SignUp/SignupPage';
-import SigninPage from './Pages/User/Signin/SigninPage';
-import HomePage from './Pages/User/Home/HomePage';
-import ChatPage from './Pages/User/ChatPage/ChatPage';
-import UserProfilePage from './Pages/User/UserProfile/UserProfilePage';
-import EditProfilePage from './Pages/User/EditProfilePage/EditProfilePage';
-import ChangePasswordPage from './Pages/User/EditProfilePage/ChangePasswordPage';
-import NotificationPage from './Pages/User/NotificationPage/NotificationPage';
-import JobsPage from './Pages/User/JobsPage/JobsPage';
+import ProtectedRoutes from "./Utils/ProtectedRoutes"
 
+// ERROR PAGE
+const ErrorPage = lazy(()=>import ("./Pages/ErrorPage/ErrorPage")) 
 
-// ADMIN 
+// ADMIN
 
-import AdminLoginPage from './Pages/Admin/AdminLogin/AdminLoginPage';
-import AdminDashboard from './Components/Admin/AdminDashboard/AdminDashboard';
-import UserManagement from './Components/Admin/UserManagement/UserManagement';
-import AdminStructure from './Pages/Admin/AdminStructure/AdminStructure';
-import PostManagement from './Components/Admin/PostManagement/PostManagement';
-import JobManagement from './Components/Admin/Job Management/JobManagement';
+const AdminLoginPage = lazy(() => import("./Pages/Admin/AdminLogin/AdminLoginPage"))
+const AdminDashboard = lazy(() => import("./Components/Admin/AdminDashboard/AdminDashboard"))
+const UserManagement = lazy(() => import("./Components/Admin/UserManagement/UserManagement"))
+const AdminStructure = lazy(() => import("./Pages/Admin/AdminStructure/AdminStructure"))
+const PostManagement = lazy(() => import("./Components/Admin/PostManagement/PostManagement"))
+const JobManagement = lazy(() => import("./Components/Admin/Job Management/JobManagement"))
+// CLIENT
 
-
-
+const LandingPage = lazy(() => import("./Pages/User/LandingPage/LandingPage"))
+const SignupPage = lazy(() => import("./Pages/User/SignUp/SignupPage"))
+const SigninPage = lazy(() => import("./Pages/User/Signin/SigninPage"))
+const HomePage = lazy(() => import("./Pages/User/Home/HomePage"))
+const ChatPage = lazy(() => import("./Pages/User/ChatPage/ChatPage"))
+const UserProfilePage = lazy(() => import("./Pages/User/UserProfile/UserProfilePage"))
+const EditProfilePage = lazy(() => import("./Pages/User/EditProfilePage/EditProfilePage"))
+const NotificationPage = lazy(() => import("./Pages/User/NotificationPage/NotificationPage"))
+const JobsPage = lazy(() => import("./Pages/User/JobsPage/JobsPage"))
+const ForgotPassword = lazy(() => import("./Components/User/ForgotPassword/ForgotPassword"))
+const ResetPassword = lazy(() => import("./Components/User/ForgotPassword/ResetPassword"))
 
 function App() {
+   const isActive = true
+   return (
+      <div className='App'>
+         <Router>
+            {/* USER */}
+            <Suspense
+               fallback={
+                  <div className=' absolute w-full h-full backdrop-blur-sm  flex items-center justify-center'>
+                     <LoadingOverlay
+                        active={isActive}
+                        spinner={<HashLoader color={"#146CF0"} />}
+                        text='Please Wait !'
+                     ></LoadingOverlay>
+                  </div>
+               }
+            >
+               <Provider store={store}>
+                  <Routes>
+                     <Route path='/' exact element={<LandingPage />}></Route>
+                     <Route path='/create_account' element={<SignupPage />}></Route>
+                     <Route path='/forgotPassword' element={<ForgotPassword />}></Route>
+                     <Route path='/forgotPassword/:email/:otp' element={<ResetPassword />}></Route>
+                     <Route path='/signin' element={<SigninPage />}></Route>
 
-  const currentUser = localStorage.getItem('userToken')
+                     <Route element={<ProtectedRoutes />}>
+                        <Route path='/home' element={<HomePage />}></Route>
+                        <Route path='/profile/:userName' element={<UserProfilePage />}></Route>
+                        <Route path='/myprofile' element={<UserProfilePage />}></Route>
+                        <Route path='/message' element={<ChatPage />}></Route>
+                        <Route path='/notifications' element={<NotificationPage />}></Route>
+                        <Route path='/works' element={<JobsPage />}></Route>
+                        <Route path='/account/editProfile' element={<EditProfilePage />}></Route>
+                     </Route>
 
-  const ProtectedRoute = ({children}) =>{
-    if(!currentUser){
-      return <Navigate to='/signin'/>
-    }
-    return children
-  }
 
+                     <Route path='/admin_login' element={<AdminLoginPage />}/>
+                     <Route path='/admin' element={<AdminStructure />}>
+                        <Route path='admin_panel' element={<AdminDashboard />}/>
+                        <Route path='user_management' element={<UserManagement />}/>
+                        <Route path='post_management' element={<PostManagement />}/>
+                        <Route path='job_management' element={<JobManagement />}/>
+                     </Route>
 
-
-  return (
-    <div className='App'>
-      <Router>
-
-        {/* USER */}
-        <Routes>
-          <Route path='/' element={<LandingPage/>}></Route>
-          <Route path='/create_account' element={<SignupPage/>}></Route>
-        </Routes>
-        <SocketContext.Provider value={socket}>
-          <Provider store={store}>
-        <Routes>        
-          <Route path='/signin' element={<SigninPage/>}></Route>
-          <Route path='/home' element={<HomePage/>}></Route>
-          <Route path='/profile/:userName' element={<ProtectedRoute><UserProfilePage/></ProtectedRoute>}></Route>
-          <Route path='/myprofile' element={<ProtectedRoute><UserProfilePage/></ProtectedRoute>}></Route>
-          <Route path='/message' element={<ChatPage/>}></Route>
-          <Route path='/notifications' element={<ProtectedRoute><NotificationPage/></ProtectedRoute>}></Route>
-          <Route path='/works' element={<ProtectedRoute><JobsPage/></ProtectedRoute>}></Route>
-          <Route path='/account/editProfile' element={<ProtectedRoute><EditProfilePage/></ProtectedRoute>}></Route>
-          <Route path='/account/changePassword' element={<ProtectedRoute><ChangePasswordPage/></ProtectedRoute>}></Route>
-        </Routes>
-          </Provider>
-          </SocketContext.Provider>
-        {/* ADMIN */}
-
-        <Routes>
-          <Route path='/admin_login' element={<AdminLoginPage/>}></Route>
-          <Route path='/admin' element={<AdminStructure/>}>
-          <Route path='/admin/admin_panel' element={<AdminDashboard/>}></Route>
-          <Route path='/admin/user_management' element={<UserManagement/>}></Route>
-          <Route path='/admin/post_management' element={<PostManagement/>}></Route>
-          <Route path='/admin/job_management' element={<JobManagement/>}></Route>
-          </Route>
-        </Routes>
-
-        {/* Error Page  */}
-
-        {/* <Routes>
-          <Route path='/m*' element={<ErrorPage/>}></Route>
-        </Routes> */}
-      </Router>
-    </div>
-  );
+                     <Route path="*" element={<ErrorPage/>}/>
+                  </Routes>
+               </Provider>
+            </Suspense>
+         </Router>
+      </div>
+   )
 }
 
-export default App;
+export default App

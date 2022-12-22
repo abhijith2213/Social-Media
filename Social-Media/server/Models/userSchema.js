@@ -55,7 +55,7 @@ const userSchema = mongoose.Schema({
     },
     coverPic:{
         type:String,
-        default :null
+        default :'defaultCover.png'
     },
     followers:{
         type:Array,

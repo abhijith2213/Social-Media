@@ -78,11 +78,10 @@ let transporter = nodemailer.createTransport({
    },
 })
 
-const otpGenerate =async(email,res)=>{
+const otpGenerate =async(email,res,link)=>{
    try {
       const OTP = await Math.floor(100000 + Math.random() * 900000).toString()
       console.log(OTP)
-
       const hashOtp = await bcrypt.hash(OTP,10)
       const user = await userVerification.findOne({user:email})
       if(!user){
@@ -96,16 +95,26 @@ const otpGenerate =async(email,res)=>{
       }else{
         await userVerification.updateOne({user:email},{otp:hashOtp})
       }
-
-
+         let info
+         if(link){
+              // send mail with defined transport object
+               info = await transporter.sendMail({
+               from: process.env.NODEMAILER, // sender address
+               to: email, // list of receivers
+               subject: "TalentF Password Reset Link", // Subject line
+               text: `Hello User Your link to reset your password is  http://localhost:3000/forgotPassword/${email}/${OTP} `, // plain text body
+               // html: `<p>Hello User Your link to reset your password is http://localhost:3000/forgotPassword/${email}/${OTP}</p>`, // html body
+               })
+            }else{
             // send mail with defined transport object
-            let info = await transporter.sendMail({
+                info = await transporter.sendMail({
                 from: process.env.NODEMAILER, // sender address
                 to: email, // list of receivers
                 subject: "One Time Password for TalentF", // Subject line
                 text: `Hello User Your six digit OTP for authentication is ${OTP} `, // plain text body
                 html: `<p>Hello User Your six digit OTP for authentication is <b>${OTP}</b></p>`, // html body
              })
+         }
 
              if(info.messageId){
                 console.log('in ifffffff');
@@ -210,7 +219,7 @@ const putFollowUser = async (req, res) => {
       time:Date.now()
   }
    try {
-      const user = await User.findById({ _id: req.params.id })
+      const user = await User.findById({ _id: req.params.iid })
       const userToFollow = await User.findById({ _id: req.body.Id })
       if (!user.following.includes(req.body.Id)) {
          await user.updateOne({ $push: { following: req.body.Id } })
@@ -495,6 +504,44 @@ const changeUserPassword = async (req,res)=>{
    }
 }
 
+/* ----------------------------- FORGOT PASSWORD ---------------------------- */
+
+const forgotPassLinkSend =async (req,res)=>{
+   console.log(req.params.email,'emailk');
+   const link = true;
+   const user = await User.findOne({email:req.params.email})
+   console.log(user,'mmmvvcccsseerr');
+   if(user){
+      const data =await otpGenerate(req.params.email,res,link)
+   }else{
+      res.status(403).json({message:'User Details not found'})
+   }
+}
+
+/* --------------------------- UPDATE NEW PASSWORD -------------------------- */
+
+const updateNewPassword =async(req,res)=>{
+   const {email,otp,pass} = req.body
+   try {     
+      const user = await userVerification.findOne({user:email})
+       if(user){
+          const validUrl = await bcrypt.compare(otp,user.otp)
+         if(validUrl){
+         const password =await bcrypt.hash(pass,10)
+         await User.updateOne({email:email},{$set:{password:password}})
+        
+         res.status(200).json({message:'Password updated Successfully'})
+         }else{
+          res.status(403).json({message:'Authentication Failed'})
+         }
+       }
+   } catch (error) {
+      console.log(error);
+      res.status(500).json(error)
+   }
+}
+
+
 module.exports = {
    postCreateAccount,
    postSignIn,
@@ -516,5 +563,7 @@ module.exports = {
    resendOtp,
    changeUserPassword,
    manageNotificationCount,
-   getNotifCount
+   getNotifCount,
+   forgotPassLinkSend,
+   updateNewPassword
 }
