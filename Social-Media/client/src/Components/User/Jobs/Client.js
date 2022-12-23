@@ -76,8 +76,7 @@ function Client({ job, setEffect }) {
                                     <span
                                        onClick={()=>setdeleteModal(true)}
                                        class='dropdown-item text-sm py-2 px-4 font-normal block w-full whitespace-nowrap
-                                              bg-transparent text-gray-700 hover:bg-gray-100'
-                                    >
+                                              bg-transparent text-gray-700 hover:bg-gray-100'>
                                        Delete
                                     </span>
                                  </li>
@@ -85,8 +84,7 @@ function Client({ job, setEffect }) {
                                     <span
                                        class='dropdown-item text-sm py-2 px-4 font-normal block w-full whitespace-nowrap
                                             bg-transparent text-gray-700 hover:bg-gray-100'
-                                       onClick={() => setOptions(false)}
-                                    >
+                                       onClick={() => setOptions(false)}>
                                        cancel
                                     </span>
                                  </li>
@@ -154,7 +152,6 @@ function Client({ job, setEffect }) {
          
          {deleteModal ?
             <div class=" flex-col space-y-4 min-w-screen h-screen animated fadeIn faster  fixed  left-0 top-0 flex justify-center items-center inset-0 z-50 outline-none focus:outline-none   ">
-
             <div class="flex flex-col p-8 bg-gray-800 shadow-md hover:shodow-lg rounded-2xl">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center">

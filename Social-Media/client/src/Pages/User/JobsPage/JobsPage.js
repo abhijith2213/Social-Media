@@ -25,8 +25,8 @@ function JobsPage() {
       </ErrorBoundary>
       </div>
       {userData?.accountType === 'client'?
-      <JobRequests/>
-      :<RightSidebar/>}
+       <div className="hidden lg:block"><JobRequests/></div>
+      : <div className="hidden lg:block"><RightSidebar/></div> }
       <Bottombar/>
     </div>
   )

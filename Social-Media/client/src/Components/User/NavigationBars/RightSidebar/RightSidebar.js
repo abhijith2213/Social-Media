@@ -71,8 +71,8 @@ const handleUnFollow = (Id)=>{
 
 
    return (
-      <div className='bg-white m-12 shadow-md rounded-md p-8 fixed right-0 top-0 hidden lg:block'>
-         <p className='mb-6 text-blue-500 font-medium'>Suggestions For You</p>
+      <div className='bg-white  lg:mx-0 lg:m-12  lg:fixed right-0 top-0  shadow-md rounded-md p-8 '>
+         <p className='mb-6 text-black lg:text-blue-500 font-medium'>Suggestions For You</p>
 
 
          {suggestions.length !==0? suggestions?.map((user,index)=>{
@@ -96,15 +96,11 @@ const handleUnFollow = (Id)=>{
             
         
           }
-      }) :<div className="flex flex-col items-center gap-2">
+         }) :<div className="flex flex-col items-center gap-2">
              <p>Connect with more People.</p> 
              <img className="w-20 opacity-60" src={connect}></img>
              <p className="text-xs">No suggestions available ....</p>   
           </div>}
-
-
-
-
 
       </div>
    )

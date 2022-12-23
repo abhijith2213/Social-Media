@@ -146,7 +146,7 @@ const resendOtp =(req,res)=>{
 const verifyOtp = async (req, res) => {
     console.log(req.body,'verify body');
    try {
-    let validUser = await userVerification.findOne({user:req?.body?.email})
+    let validUser = await userVerification.findOne({user:req?.body?.email,Expiry:{$lte:Date.now()}})
     console.log(validUser,'valid user');
     let validOtp = await bcrypt.compare(req.body.otp,validUser.otp)
     console.log(validOtp,'otp validd');
@@ -219,7 +219,7 @@ const putFollowUser = async (req, res) => {
       time:Date.now()
   }
    try {
-      const user = await User.findById({ _id: req.params.iid })
+      const user = await User.findById({ _id: req.params.id })
       const userToFollow = await User.findById({ _id: req.body.Id })
       if (!user.following.includes(req.body.Id)) {
          await user.updateOne({ $push: { following: req.body.Id } })

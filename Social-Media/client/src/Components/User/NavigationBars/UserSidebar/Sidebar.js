@@ -4,7 +4,7 @@
 import {  HiOutlineLogout } from "react-icons/hi";
 import { MdNotificationsNone , MdWorkOutline} from "react-icons/md";
 import { FiMessageSquare} from "react-icons/fi";
-import { BiHome, BiMessageSquareAdd} from "react-icons/bi";
+import { BiHome} from "react-icons/bi";
 import { CgProfile} from "react-icons/cg";
 
 import log from '../../../../assets/images/talentF-c.png'
@@ -17,7 +17,6 @@ import { useNavigate, Link, NavLink } from "react-router-dom";
 import {confirmAlert} from 'react-confirm-alert';
 import { useDispatch ,useSelector} from "react-redux";
 import { remove } from "../../../../Redux/User/userSlice";
-// import { SocketContext } from "../../../../Context/socketContext";
 import { fetchNoCounts, handleNotCount } from "../../../../Apis/userRequests";
 import { socket } from "../../../../Context/socketContext";
 
@@ -32,6 +31,21 @@ function Sidebar() {
 
   const [notifications, setNotifications] = useState('')
 
+  
+  useEffect(() => {
+    if(userData){
+      socket.emit("new-user-add", userData._id)
+    }
+    fetchnotificationCount()
+  }, []);
+  
+  useEffect(()=>{
+    socket.on("getNotification",data =>{
+      fetchnotificationCount()
+    })
+    
+  },[socket,notifications])
+  
   const fetchnotificationCount=async()=>{
     try {
       const {data} = await fetchNoCounts(userData._id)
@@ -41,20 +55,6 @@ function Sidebar() {
       console.log(error);
     }
   }
-
-  useEffect(() => {
-    if(userData){
-      socket.emit("new-user-add", userData._id)
-    }
-    fetchnotificationCount()
-  }, []);
-
-  useEffect(()=>{
-    socket.on("getNotification",data =>{
-      fetchnotificationCount()
-    })
-
-  },[socket,notifications])
   
 
   /* ------------------------------ HANDLE LOGOUT ----------------------------- */
@@ -103,7 +103,7 @@ function Sidebar() {
         { name: "Notifications", link: "/notifications", icon: MdNotificationsNone ,notifications:true ,action:handleNotiView},
         { name: "Works", link: "/works", icon: MdWorkOutline },
         { name: "My Profile", link: "/myprofile", icon: CgProfile },   
-        { name: "Logout", link:'/', icon: HiOutlineLogout},
+        { name: "Logout", link:'/#',  icon: HiOutlineLogout , action:handleLogout},
       ];
 
 
@@ -124,7 +124,7 @@ function Sidebar() {
               onClick={menu.action}
               className={` ${menu?.notifications && ""
               } group flex items-center text-sm  gap-3.5 font-medium p-2 hover:bg-gray-300 rounded-md`}>
-             {menu.name == 'Logout'? <div className="text-2xl" onClick={handleLogout}>{React.createElement(menu?.icon, )}</div> :<div className="text-2xl">{React.createElement(menu?.icon, )}</div> }
+            <div className="text-2xl">{React.createElement(menu?.icon, )}</div> 
               <h2 
                 style={{
                   transitionDelay: `${i + 3}00ms`,
@@ -133,7 +133,7 @@ function Sidebar() {
               >
                 {menu?.name}
               </h2>
-             {menu.notifications && notifications !== 0 ?  <p className="px-1 text-white bg-red-500 rounded-full">{notifications}</p> :null}
+             {menu.notifications && notifications !== 0 ?  <p className="px-2 text-white bg-red-600 rounded-lg">{notifications}</p> :null}
             </NavLink>
           ))}
         </div>

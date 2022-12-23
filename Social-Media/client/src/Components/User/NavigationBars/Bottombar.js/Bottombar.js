@@ -9,7 +9,7 @@ import { Link ,NavLink,useNavigate} from "react-router-dom";
 import { useSelector, useDispatch} from "react-redux";
 import {confirmAlert} from 'react-confirm-alert';
 import { remove } from "../../../../Redux/User/userSlice";
-import { fetchNoCounts } from "../../../../Apis/userRequests";
+import { fetchNoCounts, handleNotCount } from "../../../../Apis/userRequests";
 import { socket } from "../../../../Context/socketContext";
 
 
@@ -51,6 +51,19 @@ function Bottombar() {
       fetchnotificationCount()
    })
   },[socket,notifications])
+
+
+    /* ------------------------ HANDLE NOTIFICATION COUNT ----------------------- */
+
+    const handleNotiView =async()=>{
+      console.log('hi action');
+      try {
+        const {data} = await handleNotCount(userData._id)
+        console.log(data,'pppoooyyttrre');
+      } catch (error) {
+        console.log(error);
+      }
+  }
 
   /* --------------------------------- LOGOUT --------------------------------- */
 
@@ -122,7 +135,7 @@ function Bottombar() {
         </div>
 
         <div className="flex gap-5 text-2xl ">
-          <div>
+          <div onClick={handleNotiView}>
             {notifications !== 0 ?  <p className="px-1 text-xs absolute text-white bg-red-500 rounded-full">{notifications}</p> :null}
             <Link to={'/notifications'}>{React.createElement(MdNotificationsNone, )}</Link>
 
