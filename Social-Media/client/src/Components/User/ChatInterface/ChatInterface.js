@@ -90,12 +90,12 @@ function ChatInterface() {
    }
 
    return (
-      <div className='lg:ml-20 mt-20 md:mt-0 bg-[#FFFFFF] shadow-md  w-full md:w-11/12 lg:w-3/4 '>
-         <div class='container mx-auto '>
-            <div class='min-w-full border rounded lg:grid lg:grid-cols-3 h-screen flex'>
+      <div className='lg:ml-20  max-h-screen md:mt-0 bg-[#FFFFFF] shadow-md  w-full md:w-11/12 lg:w-3/4 no-scrollbar'>
+         <div class='md:container mx-auto no-scrollbar'>
+            <div class='min-w-full border rounded lg:grid lg:grid-cols-3 h-screen flex justify-between'>
                <div class='border-r border-gray-300 md:col-span-1 '>
-                  <div class='mx-3 my-3'>
-                     <div class='relative text-gray-600'>
+                  <div class='mx-3 my-3 '>
+                     <div class='relative text-gray-600 hidden md:block'>
                         <span class='absolute inset-y-0 left-0 flex items-center pl-2'>
                            <svg
                               fill='none'
@@ -112,7 +112,7 @@ function ChatInterface() {
                         <input
                            type='search'
                            onChange={handleSearch}
-                           class='block w-full py-2 pl-10 bg-gray-100 rounded outline-none'
+                           className='block w-full py-2 pl-10 bg-gray-100 rounded outline-none'
                            name='search'
                            placeholder='Search....'
                            required
@@ -149,9 +149,9 @@ function ChatInterface() {
                      )}
                   </div>
 
-                  <ul class='overflow-auto h-[32rem]'>
+                  <ul class='overflow-auto h-[32rem] '>
                      <h2 class='my-2 mb-2 ml-4 text-lg text-gray-600 '>Chats</h2>
-                     <li>
+                     <li className="">
                         {chats?.map((chat) => (
                            <div className='' onClick={() => setCurrentChat(chat)}>
                               <Conversation data={chat} currentUserId={user._id} online={checkOnlineStatus(chat)} />

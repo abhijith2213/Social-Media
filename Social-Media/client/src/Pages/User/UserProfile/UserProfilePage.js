@@ -6,7 +6,7 @@ import Profile from "../../../Components/User/UserProfile/Profile"
 
 function UserProfilePage() {
    return (
-      <div className=' bg-[#F3F2EF] flex w-full min-h-screen  md:pr-4 '>
+      <div className=' bg-[#F3F2EF] flex w-full min-h-screen  md:pr-4'>
          <Sidebar />
          <div className=' w-full flex justify-end '>
                <Profile />

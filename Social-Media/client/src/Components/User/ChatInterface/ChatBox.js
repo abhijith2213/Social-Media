@@ -101,14 +101,13 @@ function ChatBox({ chat, currentUser, setSendMessage, recieveMessage }) {
    return (
         <>
         {chat?
-      <div class={`md:col-span-2 md:block  relative `}>
+      <div class={`md:col-span-2 md:block relative w-full my-10`}>
          <div class='w-full'>
             <div class='relative flex items-center p-3 border-b border-gray-300'>
                <img
                   class='object-cover w-10 h-10 rounded-full'
                   src={userData?.profilePic? PF+userData.profilePic : profile}
-                  alt='username'
-               />
+                  alt='username'/>
                <span class='block ml-2 font-bold text-gray-600'>{userData?.userName}</span>
             </div>
             <div class='relative w-full p-6 overflow-y-auto h-[28rem] no-scrollbar'>
@@ -148,15 +147,14 @@ function ChatBox({ chat, currentUser, setSendMessage, recieveMessage }) {
                   class='w-5 h-5 text-gray-500 origin-center transform rotate-90'
                   xmlns='http://www.w3.org/2000/svg'
                   viewBox='0 0 20 20'
-                  fill='currentColor'
-               >
+                  fill='currentColor'>
                   <path d='M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z' />
                </svg>
             </button>
          </div>
       </div>
      :
-     <div className="w-full flex items-center justify-end">
+     <div className="w-full flex items-center text-center justify-center lg:justify-end">
       <span>
         Tap on a chat to start Conversation
       </span>

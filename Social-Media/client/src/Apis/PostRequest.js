@@ -1,8 +1,9 @@
 import adminInstance from '../Axios/adminAuth'
 import axios from '../Axios/axios'
+import userInstance from '../Axios/userAuth'
 
 
-export const deleteUserPost = (postId) => axios.delete(`/post/delete/${postId}`)
+export const deleteUserPost = (postId) => userInstance.delete(`/post/delete/${postId}`)
 
 
 export const reportUserPost = (reason,postId,userId) => axios.put(`/post/report/${postId}`,{userId:userId,reason:reason})

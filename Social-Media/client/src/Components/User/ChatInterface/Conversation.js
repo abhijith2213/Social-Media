@@ -23,8 +23,8 @@ function Conversation({ data, currentUserId, online }) {
 
 
    return (
-      <div>
-         <a class='flex items-center px-3 py-2 text-sm transition duration-150  ease-in-out border-b border-gray-300 cursor-pointer hover:bg-gray-100 focus:outline-none'>
+      <div className="">
+         <a class='min-w-max  flex items-center px-5 py-2 text-sm transition duration-150  ease-in-out border-b border-gray-300 cursor-pointer hover:bg-gray-100 focus:outline-none'>
             {/* <span className="absolute w-3 h-3 bg-green-600 rounded-full "></span> */}
             <img class='object-cover w-10 h-10 rounded-full' src={PF + userData?.profilePic} alt='username' />
             <div class='w-full pb-2'>

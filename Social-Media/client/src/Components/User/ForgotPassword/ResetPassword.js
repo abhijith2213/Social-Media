@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { updateNewPass } from "../../../Apis/userRequests";
 import { toast,ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css" //Toast Css
@@ -9,29 +9,32 @@ import logo from "../../../assets/images/talentF-c.png"
 
 
 function ResetPassword() {
-
+      const navigate = useNavigate()
     const [newPass, setNewPass] = useState('')
     const [newCPass, setCNewPass] = useState('')
     const [error, setError] = useState('')
 
-    const email = useParams().email
-    const otp = useParams().otp
-
-
+    const {email,otp} = useParams()
     const handleReset =async(e)=>{
         e.preventDefault()
-        console.log('reacheddddddd');
-        if(newPass === newCPass){
-            setError('')
-            try {
-                const {data} = await updateNewPass(newPass,email,otp)
-                console.log(data);
-                toast.success(data.message)
-            } catch (error) {
-                console.log(error);
-            }
+        if(newPass.length < 8 || newPass.length >15){
+         setError('password must be in between 8 to 15 letters')
         }else{
-            setError('Passwords doesnt match')
+           if(newPass === newCPass){
+               setError('')
+               try {
+                   const {data} = await updateNewPass(newPass,email,otp)
+                   console.log(data);
+                   toast.success(data.message)
+                    setTimeout(() => {     
+                      navigate('/signin')
+                   }, 2000);
+               } catch (error) {
+                   toast.warn(error.response.data.message)
+               }
+           }else{
+               setError('Passwords doesnt match')
+           }
         }
     }
 

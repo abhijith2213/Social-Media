@@ -11,7 +11,7 @@ function ChatPage() {
 
         <Sidebar/> 
 
-        <div className=' w-full  flex justify-center md:justify-end'>
+        <div className=' w-full  flex justify-center md:justify-end '>
             <ChatInterface/>
         </div>
 

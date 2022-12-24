@@ -89,11 +89,11 @@ const otpGenerate =async(email,res,link)=>{
             user:email,
             otp:hashOtp,
             created:Date.now(),
-            Expiry:Date.now()+100000
+            Expiry:Date.now()+1000
         })
         await data.save()
       }else{
-        await userVerification.updateOne({user:email},{otp:hashOtp})
+        await userVerification.updateOne({user:email},{otp:hashOtp,Expiry:Date.now()})
       }
          let info
          if(link){
@@ -146,12 +146,13 @@ const resendOtp =(req,res)=>{
 const verifyOtp = async (req, res) => {
     console.log(req.body,'verify body');
    try {
-    let validUser = await userVerification.findOne({user:req?.body?.email,Expiry:{$lte:Date.now()}})
+    let validUser = await userVerification.findOne({user:req?.body?.email})
     console.log(validUser,'valid user');
     let validOtp = await bcrypt.compare(req.body.otp,validUser.otp)
     console.log(validOtp,'otp validd');
 
     if(validOtp){
+         await validUser.updateOne({otp:'used'})
         res.status(200).json({message:'otp verified',auth:true})
     }else{
         res.status(403).json({message:'invalid Otp'})
@@ -406,6 +407,7 @@ const searchUsers = async (req, res) => {
          { fullName: 1, userName: 1, profilePic: 1, accountType: 1 }
       )
       res.status(200).json(users)
+      console.log(users);
    } catch (error) {
       console.log(error)
       res.status(500).json(error)
@@ -529,7 +531,7 @@ const updateNewPassword =async(req,res)=>{
          if(validUrl){
          const password =await bcrypt.hash(pass,10)
          await User.updateOne({email:email},{$set:{password:password}})
-        
+         await user.updateOne({otp:'used'})
          res.status(200).json({message:'Password updated Successfully'})
          }else{
           res.status(403).json({message:'Authentication Failed'})
