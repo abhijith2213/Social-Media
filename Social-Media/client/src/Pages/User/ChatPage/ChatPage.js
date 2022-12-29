@@ -7,16 +7,12 @@ import Bottombar from '../../../Components/User/NavigationBars/Bottombar.js/Bott
 function ChatPage() {
   return (
 
-    <div className=' bg-[#F3F2EF] flex w-full min-h-screen md:pr-4'> 
-
+    <div className=' bg-[#F3F2EF] flex w-full min-h-screen overflow-y-hidden md:pr-4 overflow-hidden'> 
         <Sidebar/> 
-
-        <div className=' w-full  flex justify-center md:justify-end '>
-            <ChatInterface/>
-        </div>
-
+      <div className=' w-full h-screen  flex justify-center md:justify-end '>
+          <ChatInterface/>
+      </div>
         <Bottombar/>
-
     </div>      
   )
 }

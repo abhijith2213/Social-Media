@@ -329,16 +329,14 @@ function SignUp() {
                                     autoFocus
                                     OTPLength={6}
                                     otpType='number'
-                                    disabled={false}
-                                 />
+                                    disabled={false}/>
                               </div>
 
                               <div className=' flex justify-center pt-2'>
                                  {resend ? (
                                     <button
                                        className='flex items-center mt-4 text-gray-600 cursor-pointer font-bold bg-slate-300 rounded-lg pl-2 pr-2 '
-                                       onClick={resendOtp}
-                                    >
+                                       onClick={resendOtp}>
                                        Resend OTP
                                     </button>
                                  ) : (

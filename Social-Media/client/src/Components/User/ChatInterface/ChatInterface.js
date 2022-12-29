@@ -5,7 +5,7 @@ import 'react-loading-skeleton/dist/skeleton.css'
 
 import ChatBox from "./ChatBox"
 import Conversation from "./Conversation"
-import { userChats } from "../../../Apis/chatRequests"
+import { newUserChat, userChats } from "../../../Apis/chatRequests"
 import { findSearch } from "../../../Apis/userRequests"
 
 import profile from "../../../assets/images/download.png"
@@ -13,13 +13,14 @@ import { socket } from "../../../Context/socketContext"
 
 function ChatInterface() {
    const user = useSelector((state) => state.user)
+   const {AnotherUserId} = useSelector((state)=>state.anotheruser)
    const PF = process.env.REACT_APP_PUBLIC_FOLDER
 
    const [isPending, startTransition] = useTransition()
 
 
    // STATES
-
+   const [responsive,setResponsive] = useState(false)
    const [chats, setChats] = useState([])
    const [currentChat, setCurrentChat] = useState(null)
    const [onlineUsers, setOnlineUsers] = useState([])
@@ -52,6 +53,23 @@ function ChatInterface() {
    }, [])
 
    useEffect(() => {
+      if (AnotherUserId) {
+          const users = {
+              senderId: user._id,
+              receiverId: AnotherUserId
+          }
+          console.log(users, 'userssssssssssssss');
+          newUserChat(users).then((res) => {
+              if (res.data) {
+                  setCurrentChat(res.data)
+                  setResponsive(true)
+              }
+              console.log(res.data, 'ksksksksksksk');
+          })
+      }
+  }, [])
+
+   useEffect(() => {
      const getChats = async () => {
          try {
             const { data } = await userChats(user._id)
@@ -77,25 +95,26 @@ function ChatInterface() {
       const val = e.target.value
       if (val == "") {
          setSearchUser([])
+      }else{
+         startTransition(async () => {
+            try {
+               const { data } = await findSearch(val)
+               console.log(data, "jjjjjj")
+               setSearchUser(data)
+            } catch (error) {
+               console.log(error)
+            }
+         })
       }
-      startTransition(async () => {
-         try {
-            const { data } = await findSearch(val)
-            console.log(data, "jjjjjj")
-            setSearchUser(data)
-         } catch (error) {
-            console.log(error)
-         }
-      })
    }
 
    return (
-      <div className='lg:ml-20  max-h-screen md:mt-0 bg-[#FFFFFF] shadow-md  w-full md:w-11/12 lg:w-3/4 no-scrollbar'>
-         <div class='md:container mx-auto no-scrollbar'>
-            <div class='min-w-full border rounded lg:grid lg:grid-cols-3 h-screen flex justify-between'>
-               <div class='border-r border-gray-300 md:col-span-1 '>
-                  <div class='mx-3 my-3 '>
-                     <div class='relative text-gray-600 hidden md:block'>
+      <div className='lg:ml-20 md:mt-0 bg-[#FFFFFF] shadow-md w-full md:w-11/12 lg:w-3/4 no-scrollbar'>
+         <div class=' no-scrollbar h-full'>
+            <div class='w-full border rounded h-full  md:flex'>
+               <div className={`${responsive ? 'hidden':''} md:block border-r border-gray-300 md:col-span-1 md:w-4/12`}>
+                  <div class='mx-3 my-3'>
+                     <div className='relative text-gray-600 hidden md:block'>
                         <span class='absolute inset-y-0 left-0 flex items-center pl-2'>
                            <svg
                               fill='none'
@@ -104,8 +123,7 @@ function ChatInterface() {
                               stroke-linejoin='round'
                               stroke-width='2'
                               viewBox='0 0 24 24'
-                              class='w-6 h-6 text-gray-300'
-                           >
+                              class='w-6 h-6 text-gray-300'>
                               <path d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'></path>
                            </svg>
                         </span>
@@ -120,7 +138,7 @@ function ChatInterface() {
                      </div>
                      {isPending ? (
                         <p>Searching...</p>
-                     ) : (
+                     ):(
                         <>
                            {serachUser.length !== 0
                               ? serachUser.map((user) => (
@@ -149,23 +167,26 @@ function ChatInterface() {
                      )}
                   </div>
 
-                  <ul class='overflow-auto h-[32rem] '>
+                  <ul class=' h-[32rem]  w-full mt-4 overflow-y-auto no-scrollbar py-14 lg:py-0'>
                      <h2 class='my-2 mb-2 ml-4 text-lg text-gray-600 '>Chats</h2>
                      <li className="">
                         {chats?.map((chat) => (
-                           <div className='' onClick={() => setCurrentChat(chat)}>
+                           <div className='' onClick={() => {setCurrentChat(chat); setResponsive(true)}}>
                               <Conversation data={chat} currentUserId={user._id} online={checkOnlineStatus(chat)} />
                            </div>
                         ))}
                      </li>
                   </ul>
                </div>
+               <div className={`${responsive ? '':'hidden'} md:block md:w-8/12 h-full py-14 lg:py-0`}>
                <ChatBox
                   chat={currentChat}
                   currentUser={user._id}
                   setSendMessage={setSendMessage}
                   recieveMessage={recieveMessage}
+                  setResponsive={setResponsive}
                />
+               </div>
             </div>
          </div>
       </div>

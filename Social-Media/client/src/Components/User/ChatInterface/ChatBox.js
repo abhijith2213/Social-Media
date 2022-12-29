@@ -3,11 +3,11 @@ import { addMessage, getMessages } from "../../../Apis/MessageRequest"
 import { getUser } from "../../../Apis/userRequests"
 import {format} from 'timeago.js'
 import InputEmoji from 'react-input-emoji'
-
+import {BiArrowBack} from 'react-icons/bi'
 import profile from "../../../assets/images/download.png"
 
 
-function ChatBox({ chat, currentUser, setSendMessage, recieveMessage }) {
+function ChatBox({ chat, currentUser, setSendMessage, recieveMessage, setResponsive}) {
 
     const PF = process.env.REACT_APP_PUBLIC_FOLDER
 
@@ -101,16 +101,17 @@ function ChatBox({ chat, currentUser, setSendMessage, recieveMessage }) {
    return (
         <>
         {chat?
-      <div class={`md:col-span-2 md:block relative w-full my-10`}>
-         <div class='w-full'>
-            <div class='relative flex items-center p-3 border-b border-gray-300'>
+      <div class={`md:col-span-2 relative md:w-full h-[90%]`}>
+         <div class='w-full h-full'>
+            <div class='relative flex gap-2 items-center p-3 border-b border-gray-300'>
+             <span onClick={()=>setResponsive(false)}><BiArrowBack /></span>
                <img
                   class='object-cover w-10 h-10 rounded-full'
                   src={userData?.profilePic? PF+userData.profilePic : profile}
                   alt='username'/>
                <span class='block ml-2 font-bold text-gray-600'>{userData?.userName}</span>
             </div>
-            <div class='relative w-full p-6 overflow-y-auto h-[28rem] no-scrollbar'>
+            <div class='relative w-full p-6 overflow-y-auto h-[29rem] no-scrollbar'>
                <ul class='space-y-2'>
                 {messages?.map((message)=>(
                     <>
@@ -134,7 +135,7 @@ function ChatBox({ chat, currentUser, setSendMessage, recieveMessage }) {
                </ul>
             </div>
          </div>
-         <div class=' flex items-center justify-between w-full p-3 border-t border-gray-300 absolute bottom-0'>
+         <div class=' flex items-center justify-between w-full p-3 border-t border-gray-300 bottom-0'>
 
             <InputEmoji
              placeholder='Message'
@@ -154,7 +155,7 @@ function ChatBox({ chat, currentUser, setSendMessage, recieveMessage }) {
          </div>
       </div>
      :
-     <div className="w-full flex items-center text-center justify-center lg:justify-end">
+     <div className="hidden md:block w-full h-full lg:flex items-center  justify-center ">
       <span>
         Tap on a chat to start Conversation
       </span>

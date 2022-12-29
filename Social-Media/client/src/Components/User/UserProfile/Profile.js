@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react"
 import { useNavigate } from "react-router"
 import { Link } from "react-router-dom"
-import { useSelector } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { useParams } from "react-router"
 
 import { ToastContainer, toast } from "react-toastify" //Toast
@@ -17,12 +17,13 @@ import { getUserByUsername, getUserFollowers, getUserFollowing, updateCoverPic }
 import { newUserChat, userChats } from "../../../Apis/chatRequests"
 import userInstance from "../../../Axios/userAuth"
 import { useErrorHandler } from "react-error-boundary"
+import { addMessage } from "../../../Redux/User/message"
 
 function Profile() {
    const navigate = useNavigate()
 
    const PF = process.env.REACT_APP_PUBLIC_FOLDER
-
+   const dispatch = useDispatch()
    const userData = useSelector((state) => state.user)
    let userId = userData?._id
    const handleError = useErrorHandler()
@@ -105,13 +106,9 @@ function Profile() {
    // HANDLE MESSAGE
 
    const handleMessage = async (rid) => {
-      let users = {
-         senderId: userId,
-         receiverId: rid,
-      }
+
       try {
-         const { data } = await newUserChat(users)
-         console.log(data, "chat ress")
+        await dispatch(addMessage(rid))
          navigate("/message")
       } catch (error) {
          console.log(error)
@@ -439,7 +436,7 @@ function Profile() {
                                     </div>
                                     {userId === follower._id ? (
                                        <div className='p-4 w-20'>&nbsp;</div>
-                                    ) : (
+                                    ):(
                                        <>
                                           {!user.following.includes(follower?._id) ? (
                                              <button

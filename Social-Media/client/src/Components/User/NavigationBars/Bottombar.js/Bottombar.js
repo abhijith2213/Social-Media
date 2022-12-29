@@ -11,6 +11,7 @@ import { confirmAlert } from "react-confirm-alert"
 import { remove } from "../../../../Redux/User/userSlice"
 import { fetchNoCounts, findSearch, handleNotCount } from "../../../../Apis/userRequests"
 import { socket } from "../../../../Context/socketContext"
+import { addMessage } from "../../../../Redux/User/message"
 
 function Bottombar() {
    const userData = useSelector((state) => state.user)
@@ -87,6 +88,9 @@ function Bottombar() {
       }
       
    }
+   const handleMessage = async ()=>{
+      await dispatch(addMessage(null))
+   }
 
    /* ---------------------------------- MENUS --------------------------------- */
    const [modal,setModal] = useState(false)
@@ -94,7 +98,7 @@ function Bottombar() {
    const menus = [
       { name: "works", link: "/works", icon: MdWorkOutline },
       { name: "Home", link: "/home", icon: BiHome },
-      { name: "Messages", link: "/message", icon: FiMessageSquare, bottom: true },
+      { name: "Messages", link: "/message", icon: FiMessageSquare, bottom: true ,action:handleMessage},
    ]
 
    return (
@@ -105,6 +109,7 @@ function Bottombar() {
                   <Link
                      to={menu?.link}
                      key={i}
+                     onClick={menu.action}
                      className={` ${
                         menu?.bottom && ""
                      } group flex items-center text-sm  gap-3.5 font-medium p-2 hover:bg-gray-300 rounded-md`}
