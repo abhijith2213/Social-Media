@@ -56,8 +56,7 @@ function App() {
                         text='Please Wait !'
                      ></LoadingOverlay>
                   </div>
-               }
-            >
+               }>
                <Provider store={store}>
                   <Routes>
                      <Route path='/' exact element={<LandingPage />}></Route>
@@ -73,7 +72,6 @@ function App() {
                         <Route path='/message' element={<ChatPage />}></Route>
                         <Route path='/notifications' element={<NotificationPage />}></Route>
                         <Route path='/works' element={<JobsPage />}></Route>
-                        {/* <Route path='/search'></Route> */}
                         <Route path='/account/editProfile' element={<EditProfilePage />}></Route>
                      </Route>
 

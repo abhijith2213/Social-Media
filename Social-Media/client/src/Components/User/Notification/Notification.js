@@ -50,8 +50,8 @@ function Notification() {
          <div className=' w-full h-full '>
             {/* FEEDS ADD  */}
             <div>
-               <div className=' flex  justify-center h-3/4'>
-                  <div className='relative w-4/5 md:ml-10 lg:ml-0 lg:w-1/2 flex-col justify-center rounded-md  bg-white min-h-screen max-h-screen overflow-y-auto no-scrollbar'>
+               <div className='w-screen md:w-full md:flex  md:justify-center h-3/4'>
+                  <div className='relative px-10 lg:px-0 md:w-4/5 md:ml-10 lg:ml-0 lg:w-1/2 flex-col justify-center rounded-md  bg-white min-h-screen max-h-screen overflow-y-auto no-scrollbar'>
                      <div className='w-full sticky top-8 md:top-0 p-3 bg-white '>
                         <h2 className='ml-4 mt-5 font-medium text-xl'>Notifications</h2>
                      </div>
@@ -71,7 +71,8 @@ function Notification() {
                               </div>
                               <div className='p-2  flex  md:items-center'>
                                  <p className='font-medium pr-2 mt-2 md:mt-0'>{data?.user?.userName}</p>
-                                 <p className="mt-2 md:mt-0">{data?.desc} <span className="text-gray-400  pl-2 text-sm'">{format(data?.time)}</span> </p>
+                                    <p className="mt-2 md:mt-0">{data?.desc}   <span className="text-gray-400  pl-2 text-sm'">{format(data?.time)}</span></p>
+                                   
                               </div>
                            </div>
                         ))
