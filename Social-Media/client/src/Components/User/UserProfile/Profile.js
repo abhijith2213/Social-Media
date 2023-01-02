@@ -11,7 +11,7 @@ import "./Profile.css"
 
 import { MdOutlinePhotoCameraBack, MdArchive, MdDynamicFeed, MdModeEditOutline } from "react-icons/md"
 import { BiImage } from "react-icons/bi"
-import { FaRegHeart, FaRegComment, } from "react-icons/fa"
+import { FaRegHeart, FaRegComment } from "react-icons/fa"
 
 import { getUserByUsername, getUserFollowers, getUserFollowing, updateCoverPic } from "../../../Apis/userRequests"
 import { newUserChat, userChats } from "../../../Apis/chatRequests"
@@ -106,9 +106,8 @@ function Profile() {
    // HANDLE MESSAGE
 
    const handleMessage = async (rid) => {
-
       try {
-        await dispatch(addMessage(rid))
+         await dispatch(addMessage(rid))
          navigate("/message")
       } catch (error) {
          console.log(error)
@@ -240,7 +239,7 @@ function Profile() {
                         {!user?.followers?.includes(userId) ? (
                            <button
                               type='button'
-                              className='text-white flex justify-center bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:outline-none  font-medium rounded-lg text-sm px-4 py-2 text-center mr-2 mb-2 w-20'
+                              className='text-white hidden sm:flex justify-center bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:outline-none  font-medium rounded-lg text-sm px-4 py-2 text-center mr-2 mb-2 w-20'
                               onClick={(e) => handleFollow(user._id)}
                            >
                               follow
@@ -310,22 +309,36 @@ function Profile() {
                         <span className='font-medium'>following</span>
                      </div>
                   </div>
-                  <div className='flex '>
-                     <button
-                        onClick={(e) => handleMessage(user._id)}
-                        type='button'
-                        class='text-gray-900 sm:hidden bg-white hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center mr-2 mb-2'
-                     >
-                        message
-                     </button>
-                     <button
-                        type='button'
-                        className='text-white sm:hidden  flex justify-center items-center bg-gradient-to-r from-violet-500 via-violet-600 to-violet-700 hover:bg-gradient-to-br focus:outline-none  font-medium rounded-lg text-sm px-4 py-2 text-center mr-2 mb-2 w-20'
-                        onClick={(e) => handleUnFollow(user._id)}
-                     >
-                        unfollow
-                     </button>
-                  </div>
+                  {userName !== userData.userName && (
+                     <>
+                        {!user?.followers?.includes(userId) ? (
+                           <button
+                              type='button'
+                              className='text-white sm:hidden  flex justify-center items-center bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:outline-none  font-medium rounded-lg text-sm px-4 py-2 text-center mr-2 mb-2 w-20'
+                              onClick={(e) => handleFollow(user._id)}
+                           >
+                              follow
+                           </button>
+                        ) : (
+                           <div className='flex '>
+                              <button
+                                 onClick={(e) => handleMessage(user._id)}
+                                 type='button'
+                                 class='text-gray-900 sm:hidden bg-white hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center mr-2 mb-2'
+                              >
+                                 message
+                              </button>
+                              <button
+                                 type='button'
+                                 className='text-white sm:hidden  flex justify-center items-center bg-gradient-to-r from-violet-500 via-violet-600 to-violet-700 hover:bg-gradient-to-br focus:outline-none  font-medium rounded-lg text-sm px-4 py-2 text-center mr-2 mb-2 w-20'
+                                 onClick={(e) => handleUnFollow(user._id)}
+                              >
+                                 unfollow
+                              </button>
+                           </div>
+                        )}{" "}
+                     </>
+                  )}
                   <hr />
                </div>
 
@@ -353,39 +366,37 @@ function Profile() {
 
                {/* profile feeds */}
                {myPosts.length !== 0 ? (
-                     <div class='flex flex-wrap -mx-px md:-mx-3'>
-                        {myPosts?.map((posts, i) => {
-                           return (
-                                 <div class='w-1/3 p-px md:px-3' key={i}>
-                                    <article class='post bg-gray-100 text-white relative pb-full md:mb-6'>
-                                       <img
-                                          class='w-full h-full absolute left-0 top-0 object-cover'
-                                          src={PF + posts.image}
-                                          alt='image'
-                                       />
+                  <div class='flex flex-wrap -mx-px md:-mx-3'>
+                     {myPosts?.map((posts, i) => {
+                        return (
+                           <div class='w-1/3 p-px md:px-3' key={i}>
+                              <article class='post bg-gray-100 text-white relative pb-full md:mb-6'>
+                                 <img
+                                    class='w-full h-full absolute left-0 top-0 object-cover'
+                                    src={PF + posts.image}
+                                    alt='image'
+                                 />
 
-                                       <div
-                                          class='overlay bg-gray-800 bg-opacity-25 w-full h-full absolute 
+                                 <div
+                                    class='overlay bg-gray-800 bg-opacity-25 w-full h-full absolute 
                                       left-0 top-0 hidden'
-                                       >
-                                          <div
-                                             class='flex flex-col justify-center items-center 
+                                 >
+                                    <div
+                                       class='flex flex-col justify-center items-center 
                                           space-x-4 h-full'
-                                          >
-                                             <span class='p-2 inline-flex items-center gap-2'>
-                                                <FaRegHeart/>
-                                                {posts?.likes?.length}
-                                             </span>
-                                             <span class='p-2 inline-flex items-center gap-2'>
-                                                {posts?.description}
-                                             </span>
-                                          </div>
-                                       </div>
-                                    </article>
+                                    >
+                                       <span class='p-2 inline-flex items-center gap-2'>
+                                          <FaRegHeart />
+                                          {posts?.likes?.length}
+                                       </span>
+                                       <span class='p-2 inline-flex items-center gap-2'>{posts?.description}</span>
+                                    </div>
                                  </div>
-                           )
-                        })}
-                     </div>
+                              </article>
+                           </div>
+                        )
+                     })}
+                  </div>
                ) : (
                   <div className='flex flex-col justify-center items-center w-full'>
                      <MdOutlinePhotoCameraBack className='text-6xl text-gray-400' />
@@ -436,7 +447,7 @@ function Profile() {
                                     </div>
                                     {userId === follower._id ? (
                                        <div className='p-4 w-20'>&nbsp;</div>
-                                    ):(
+                                    ) : (
                                        <>
                                           {!user.following.includes(follower?._id) ? (
                                              <button

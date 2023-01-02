@@ -465,7 +465,6 @@ const manageNotificationCount = async (req,res)=>{
 /* ---------------------- GET UNREAD NOTIFICATION COUNT --------------------- */
 
 const getNotifCount =async(req,res)=>{
-   console.log(req.params.id,'sssssssssssssuuuuuuuuuuuuuuuuuiiiiiiiii');
    try {
       const result = await NotificationModel.findOne({userId:req.params.id})
       const unread =  result?.Notifications?.filter((data)=>{
@@ -473,7 +472,6 @@ const getNotifCount =async(req,res)=>{
             return data
          }
       })
-      console.log(unread.length,'counttttttt99999999900000000');
       res.status(200).json(unread?.length)
    } catch (error) {
       res.status(500).json(error)
