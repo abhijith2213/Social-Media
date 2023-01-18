@@ -24,9 +24,9 @@ export const findWorksToMe = (userId) => userInstance.get(`/works/assigneWorks/m
 
 export const reportJobPost = (reason,postId,userId) => axios.put(`/works/reportWork/${postId}`,{reason:reason,userId:userId})
 
-export const fetchReportedJobss = ()=> adminInstance.get(`/admin/reportedWorks`)
+export const fetchReportedJobss = ()=> adminInstance.get(`/reportJobs`)
 
 
-export const fetchReportedJobDetails = (jobId)=> adminInstance.get(`/admin/reportedJobs/details/${jobId}`)
+export const fetchReportedJobDetails = (jobId)=> adminInstance.get(`/reportedJobs/details/${jobId}`)
 
-export const blockUserJob = (jobId) => axios.put(`/admin/jobs/block/${jobId}`)
+export const blockUserJob = (jobId) => axios.put(`/jobs/block/${jobId}`)

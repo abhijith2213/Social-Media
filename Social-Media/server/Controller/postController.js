@@ -186,7 +186,7 @@ const getReportedPosts = async (req,res)=>{
     console.log('in report post find');
 
     try {
-        const posts =await Post.find()
+        const posts =await Post.find().populate('userId','userName')
         console.log(posts,'allposts');
       const result =  posts.filter((post)=>{
             if(post?.reports?.length != 0)

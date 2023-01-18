@@ -115,7 +115,7 @@ function PostManagement() {
                          >
                            {post?._id}
                          </th>
-                         <td class='py-4 px-6'>{post?.userId}</td>
+                         <td class='py-4 px-6'>{post?.userId?.userName}</td>
                          <td class='py-4 px-6'>{date}</td>
                          <td class='py-4 px-6'>{post?.status}</td>
                          <td class='py-4 px-6'>{post?.reports?.length}</td>

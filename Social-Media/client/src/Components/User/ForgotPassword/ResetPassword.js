@@ -14,7 +14,7 @@ function ResetPassword() {
     const [newCPass, setCNewPass] = useState('')
     const [error, setError] = useState('')
 
-    const {email,otp} = useParams()
+    const {token} = useParams()
     const handleReset =async(e)=>{
         e.preventDefault()
         if(newPass.length < 8 || newPass.length >15){
@@ -23,7 +23,7 @@ function ResetPassword() {
            if(newPass === newCPass){
                setError('')
                try {
-                   const {data} = await updateNewPass(newPass,email,otp)
+                   const {data} = await updateNewPass(newPass,token)
                    console.log(data);
                    toast.success(data.message)
                     setTimeout(() => {     

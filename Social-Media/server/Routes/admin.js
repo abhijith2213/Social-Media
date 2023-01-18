@@ -25,7 +25,7 @@ router.put('/post/block/:id',verifyJWT,blockPost)
 
 router.put('/post/unblock/:id',verifyJWT,unBlockPost)
 
-router.get(`/reportedWorks`,verifyJWT,fetchReportedJobs)
+router.get(`/reportJobs`,verifyJWT,fetchReportedJobs)
 
 router.get(`/reportedJobs/details/:id`,verifyJWT,ReportedJobDetails)
 

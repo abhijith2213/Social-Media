@@ -12,6 +12,7 @@ import HashLoader from "react-spinners/HashLoader"
 import store from "./Redux/User/Store"
 
 
+import AdminStructure from "./Pages/Admin/AdminStructure/AdminStructure"
 // PROTECTED ROUTE
 
 import ProtectedRoutes from "./Utils/ProtectedRoutes"
@@ -20,11 +21,9 @@ import ProtectedRoutes from "./Utils/ProtectedRoutes"
 const ErrorPage = lazy(()=>import ("./Pages/ErrorPage/ErrorPage")) 
 
 // ADMIN
-
 const AdminLoginPage = lazy(() => import("./Pages/Admin/AdminLogin/AdminLoginPage"))
 const AdminDashboard = lazy(() => import("./Components/Admin/AdminDashboard/AdminDashboard"))
 const UserManagement = lazy(() => import("./Components/Admin/UserManagement/UserManagement"))
-const AdminStructure = lazy(() => import("./Pages/Admin/AdminStructure/AdminStructure"))
 const PostManagement = lazy(() => import("./Components/Admin/PostManagement/PostManagement"))
 const JobManagement = lazy(() => import("./Components/Admin/Job Management/JobManagement"))
 // CLIENT
@@ -62,7 +61,7 @@ function App() {
                      <Route path='/' exact element={<LandingPage />}></Route>
                      <Route path='/create_account' element={<SignupPage />}></Route>
                      <Route path='/forgotPassword' element={<ForgotPassword />}></Route>
-                     <Route path='/forgotPassword/:email/:otp' element={<ResetPassword />}></Route>
+                     <Route path='/forgotPassword/:token' element={<ResetPassword />}></Route>
                      <Route path='/signin' element={<SigninPage />}></Route>
 
                      <Route element={<ProtectedRoutes />}>
@@ -75,10 +74,9 @@ function App() {
                         <Route path='/account/editProfile' element={<EditProfilePage />}></Route>
                      </Route>
 
-
                      <Route path='/admin_login' element={<AdminLoginPage />}/>
                      <Route path='/admin' element={<AdminStructure />}>
-                        <Route path='admin_panel' element={<AdminDashboard />}/>
+                        {/* <Route path='admin_panel' element={<AdminDashboard />}/> */}
                         <Route path='user_management' element={<UserManagement />}/>
                         <Route path='post_management' element={<PostManagement />}/>
                         <Route path='job_management' element={<JobManagement />}/>

@@ -178,10 +178,11 @@ const reportJob = async (req,res)=>{
 const fetchReportedJobs = async (req,res)=>{
     console.log('heeerererererrere');
     try {
-        const posts =await Job.find({reports:{$exists:true,$ne:[]}}).populate('userId','userName')
+        const posts =await Job.find().populate('userId','userName')
         console.log(posts,'allposts');
         res.status(200).json(posts) 
     } catch (error) {
+        console.log(error);
         res.status(500).json(error)
     }
 }
